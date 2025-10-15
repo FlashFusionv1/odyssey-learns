@@ -15,7 +15,7 @@ const Index = () => {
   useEffect(() => {
     if (!authLoading) {
       if (!user) {
-        navigate('/login');
+        navigate('/');
       } else {
         loadChildren();
       }

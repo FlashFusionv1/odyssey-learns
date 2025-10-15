@@ -14,16 +14,49 @@ export type Database = {
   }
   public: {
     Tables: {
+      avatar_items: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_default: boolean | null
+          item_name: string
+          item_svg_data: string
+          item_type: string
+          points_cost: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          item_name: string
+          item_svg_data: string
+          item_type: string
+          points_cost?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          item_name?: string
+          item_svg_data?: string
+          item_type?: string
+          points_cost?: number | null
+        }
+        Relationships: []
+      }
       children: {
         Row: {
           avatar_config: Json | null
           challenge_mode_enabled: boolean | null
           created_at: string | null
+          daily_quest_id: string | null
           grade_level: number
           id: string
           name: string
           parent_id: string
           pin_hash: string | null
+          quest_bonus_points: number | null
+          quest_completed_at: string | null
           total_points: number | null
           weekly_report_enabled: boolean | null
         }
@@ -31,11 +64,14 @@ export type Database = {
           avatar_config?: Json | null
           challenge_mode_enabled?: boolean | null
           created_at?: string | null
+          daily_quest_id?: string | null
           grade_level: number
           id?: string
           name: string
           parent_id: string
           pin_hash?: string | null
+          quest_bonus_points?: number | null
+          quest_completed_at?: string | null
           total_points?: number | null
           weekly_report_enabled?: boolean | null
         }
@@ -43,15 +79,25 @@ export type Database = {
           avatar_config?: Json | null
           challenge_mode_enabled?: boolean | null
           created_at?: string | null
+          daily_quest_id?: string | null
           grade_level?: number
           id?: string
           name?: string
           parent_id?: string
           pin_hash?: string | null
+          quest_bonus_points?: number | null
+          quest_completed_at?: string | null
           total_points?: number | null
           weekly_report_enabled?: boolean | null
         }
         Relationships: [
+          {
+            foreignKeyName: "children_daily_quest_id_fkey"
+            columns: ["daily_quest_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "children_parent_id_fkey"
             columns: ["parent_id"]
@@ -304,18 +350,24 @@ export type Database = {
           created_at: string | null
           full_name: string
           id: string
+          onboarding_completed: boolean | null
+          onboarding_step: number | null
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string | null
           full_name: string
           id: string
+          onboarding_completed?: boolean | null
+          onboarding_step?: number | null
         }
         Update: {
           avatar_url?: string | null
           created_at?: string | null
           full_name?: string
           id?: string
+          onboarding_completed?: boolean | null
+          onboarding_step?: number | null
         }
         Relationships: []
       }

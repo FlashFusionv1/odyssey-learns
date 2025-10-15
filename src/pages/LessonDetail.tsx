@@ -12,6 +12,7 @@ import { toast } from "@/hooks/use-toast";
 import ReactMarkdown from "react-markdown";
 import { DigitalNotebook } from "@/components/learning/DigitalNotebook";
 import { CollaborativeActivity } from "@/components/learning/CollaborativeActivity";
+import { CelebrationModal } from "@/components/celebration/CelebrationModal";
 
 interface Lesson {
   id: string;
@@ -50,6 +51,7 @@ const LessonDetail = () => {
   const [completing, setCompleting] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
   const [quizAnswers, setQuizAnswers] = useState<Record<number, string>>({});
+  const [celebration, setCelebration] = useState<any>(null);
 
   useEffect(() => {
     if (!isValidating && childId && id) {
@@ -165,19 +167,50 @@ const LessonDetail = () => {
 
       if (progressError) throw progressError;
 
+      // Check if this was the daily quest
+      let totalPoints = lesson.points_value;
+      let isQuestComplete = false;
+      
+      const { data: childData } = await supabase
+        .from("children")
+        .select("daily_quest_id, quest_bonus_points")
+        .eq("id", childId)
+        .single();
+
+      if (childData?.daily_quest_id === id) {
+        totalPoints += childData.quest_bonus_points || 0;
+        isQuestComplete = true;
+        
+        // Mark quest as completed
+        await supabase
+          .from("children")
+          .update({ quest_completed_at: new Date().toISOString() })
+          .eq("id", childId);
+      }
+
       // Award points
       const { error: pointsError } = await supabase
         .from("children")
         .update({
-          total_points: (child?.total_points || 0) + lesson.points_value,
+          total_points: (child?.total_points || 0) + totalPoints,
         })
         .eq("id", childId);
 
       if (pointsError) throw pointsError;
 
+      // Show celebration
+      setCelebration({
+        type: isQuestComplete ? 'quest' : 'lesson',
+        title: isQuestComplete ? '🎯 Quest Complete!' : '🎉 Lesson Complete!',
+        message: isQuestComplete 
+          ? `Amazing work! You completed today's quest and earned bonus points!`
+          : `Great job! You're on your way to mastering ${lesson.subject}!`,
+        points: totalPoints,
+      });
+
       toast({
-        title: "🎉 Lesson Complete!",
-        description: `You earned ${lesson.points_value} points! Score: ${score}%`,
+        title: isQuestComplete ? "🎯 Quest Complete!" : "🎉 Lesson Complete!",
+        description: `You earned ${totalPoints} points! Score: ${score}%`,
       });
 
       setTimeout(() => {
@@ -227,6 +260,17 @@ const LessonDetail = () => {
 
   return (
     <AppLayout childName={child.name} points={child.total_points}>
+      {celebration && (
+        <CelebrationModal
+          open={true}
+          onClose={() => setCelebration(null)}
+          type={celebration.type}
+          title={celebration.title}
+          message={celebration.message}
+          points={celebration.points}
+          gradeLevel={child.grade_level}
+        />
+      )}
       <div className="max-w-4xl mx-auto space-y-6">
         <Button variant="ghost" onClick={() => navigate("/lessons")}>
           <ArrowLeft className="mr-2 h-4 w-4" />

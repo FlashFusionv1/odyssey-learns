@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { AvatarDisplay } from "@/components/avatar/AvatarDisplay";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -27,11 +27,11 @@ export const ChildSelector = ({ children, onSelect }: ChildSelectorProps) => {
           )}
           onClick={() => onSelect(child.id)}
         >
-          <Avatar className="w-24 h-24">
-            <AvatarFallback className="bg-primary text-primary-foreground text-3xl">
-              {child.name.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <AvatarDisplay 
+            config={child.avatar_config}
+            name={child.name}
+            size="large"
+          />
           
           <div>
             <h3 className="text-xl font-semibold">{child.name}</h3>

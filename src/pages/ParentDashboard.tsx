@@ -10,6 +10,7 @@ import { Users, Award, BookOpen, Plus, FileText, CheckCircle } from "lucide-reac
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { WeeklyReportCard } from "@/components/parent/WeeklyReportCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { OnboardingTutorial } from "@/components/onboarding/OnboardingTutorial";
 
 const ParentDashboard = () => {
   const { user } = useAuth();
@@ -17,6 +18,7 @@ const ParentDashboard = () => {
   const [weeklyReports, setWeeklyReports] = useState<any[]>([]);
   const [collaborationRequests, setCollaborationRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,6 +29,17 @@ const ParentDashboard = () => {
 
   const loadDashboardData = async () => {
     if (!user) return;
+
+    // Check onboarding status
+    const { data: profileData } = await supabase
+      .from('profiles')
+      .select('onboarding_completed')
+      .eq('id', user.id)
+      .single();
+
+    if (profileData && !profileData.onboarding_completed) {
+      setShowOnboarding(true);
+    }
 
     // Load children
     const { data: childrenData } = await supabase
@@ -88,6 +101,10 @@ const ParentDashboard = () => {
 
   return (
     <ParentLayout>
+      <OnboardingTutorial 
+        open={showOnboarding} 
+        onComplete={() => setShowOnboarding(false)} 
+      />
       <div className="space-y-8 animate-fade-in">
         <div className="flex items-center justify-between">
           <div>

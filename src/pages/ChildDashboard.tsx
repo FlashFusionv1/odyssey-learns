@@ -9,6 +9,11 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useValidatedChild } from "@/hooks/useValidatedChild";
+import { CelebrationModal } from "@/components/celebration/CelebrationModal";
+import { generateDailyQuest, isQuestStale } from "@/lib/questGenerator";
+import { Sparkles, Settings } from "lucide-react";
+import { AvatarCustomizer } from "@/components/avatar/AvatarCustomizer";
+import { useState as useLocalState } from "react";
 
 const ChildDashboard = () => {
   const { childId, isValidating } = useValidatedChild();
@@ -16,6 +21,9 @@ const ChildDashboard = () => {
   const [lessons, setLessons] = useState<any[]>([]);
   const [stats, setStats] = useState({ completed: 0, streak: 0 });
   const [loading, setLoading] = useState(true);
+  const [dailyQuest, setDailyQuest] = useState<any>(null);
+  const [celebration, setCelebration] = useState<any>(null);
+  const [showAvatarCustomizer, setShowAvatarCustomizer] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -86,7 +94,57 @@ const ChildDashboard = () => {
     setChild(childData);
     setLessons(lessonsData || []);
     setStats({ completed: completedCount || 0, streak });
+
+    // Generate or load daily quest
+    if (childData) {
+      await loadOrGenerateQuest(childData);
+    }
+
     setLoading(false);
+  };
+
+  const loadOrGenerateQuest = async (childData: any) => {
+    // Check if quest needs to be regenerated
+    const needsNewQuest = 
+      !childData.daily_quest_id || 
+      isQuestStale(childData.quest_completed_at);
+
+    if (needsNewQuest) {
+      const quest = await generateDailyQuest(childData.id, childData.grade_level);
+      if (quest) {
+        // Save quest to database
+        await supabase
+          .from('children')
+          .update({ 
+            daily_quest_id: quest.lesson_id,
+            quest_bonus_points: quest.bonus_points,
+            quest_completed_at: null
+          })
+          .eq('id', childData.id);
+
+        // Load full lesson details
+        const { data: questLesson } = await supabase
+          .from('lessons')
+          .select('*')
+          .eq('id', quest.lesson_id)
+          .single();
+
+        setDailyQuest({ ...quest, lesson: questLesson });
+      }
+    } else if (childData.daily_quest_id) {
+      // Load existing quest
+      const { data: questLesson } = await supabase
+        .from('lessons')
+        .select('*')
+        .eq('id', childData.daily_quest_id)
+        .single();
+
+      setDailyQuest({
+        lesson_id: childData.daily_quest_id,
+        bonus_points: childData.quest_bonus_points,
+        lesson: questLesson,
+      });
+    }
   };
 
   if (isValidating || loading) {
@@ -104,15 +162,47 @@ const ChildDashboard = () => {
 
   return (
     <AppLayout childName={child?.name} points={child?.total_points || 0}>
+      {celebration && (
+        <CelebrationModal
+          open={true}
+          onClose={() => setCelebration(null)}
+          type={celebration.type}
+          title={celebration.title}
+          message={celebration.message}
+          points={celebration.points}
+          gradeLevel={child?.grade_level || 5}
+        />
+      )}
+      {showAvatarCustomizer && child && (
+        <AvatarCustomizer
+          open={showAvatarCustomizer}
+          onClose={() => setShowAvatarCustomizer(false)}
+          childId={child.id}
+          currentConfig={child.avatar_config}
+          onSave={(newConfig) => {
+            setChild({ ...child, avatar_config: newConfig });
+            setShowAvatarCustomizer(false);
+          }}
+        />
+      )}
       <div className="space-y-8 animate-fade-in">
         {/* Welcome Section */}
         <div className="text-center py-8">
           <h1 className="text-4xl font-bold mb-2">
             Welcome back, {child?.name}! 👋
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mb-4">
             Ready to learn something amazing today?
           </p>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setShowAvatarCustomizer(true)}
+            className="gap-2"
+          >
+            <Settings className="w-4 h-4" />
+            Customize Avatar
+          </Button>
         </div>
 
         {/* Quick Stats */}
@@ -153,6 +243,44 @@ const ChildDashboard = () => {
             </div>
           </Card>
         </div>
+
+        {/* Daily Quest */}
+        {dailyQuest && dailyQuest.lesson && (
+          <Card className="p-6 bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
+            <div className="relative z-10">
+              <div className="flex items-start gap-4">
+                <div className="w-14 h-14 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="w-7 h-7 text-primary animate-pulse" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="text-xl font-bold">🎯 Today's Quest</h3>
+                    <span className="px-2 py-1 text-xs font-semibold bg-accent text-accent-foreground rounded-full">
+                      +{dailyQuest.bonus_points} BONUS
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Complete this lesson today for bonus points!
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <SubjectBadge subject={dailyQuest.lesson.subject} className="mb-2" />
+                      <h4 className="font-semibold">{dailyQuest.lesson.title}</h4>
+                    </div>
+                    <Button 
+                      onClick={() => navigate(`/lesson/${dailyQuest.lesson_id}`)}
+                      className="gap-2"
+                    >
+                      Start Quest
+                      <Sparkles className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Available Lessons */}
         <div>

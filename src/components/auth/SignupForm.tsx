@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { z } from "zod";
 
-const signupSchema = z.object({
+const signupFormSchema = z.object({
   fullName: z.string().trim().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
   email: z.string().trim().email("Invalid email address").max(255, "Email must be less than 255 characters"),
   password: z.string().min(8, "Password must be at least 8 characters"),
@@ -30,7 +30,7 @@ export const SignupForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const result = signupSchema.safeParse({ fullName, email, password, confirmPassword });
+    const result = signupFormSchema.safeParse({ fullName, email, password, confirmPassword });
     
     if (!result.success) {
       const firstError = result.error.errors[0];

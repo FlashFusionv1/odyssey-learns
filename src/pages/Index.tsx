@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useValidatedChild } from "@/hooks/useValidatedChild";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { ChildSelector } from "@/components/auth/ChildSelector";
@@ -8,6 +9,7 @@ import { Card } from "@/components/ui/card";
 
 const Index = () => {
   const { user, loading: authLoading } = useAuth();
+  const { selectChild } = useValidatedChild();
   const [children, setChildren] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -39,9 +41,11 @@ const Index = () => {
     setLoading(false);
   };
 
-  const handleChildSelect = (childId: string) => {
-    localStorage.setItem('selectedChildId', childId);
-    navigate('/dashboard');
+  const handleChildSelect = async (childId: string) => {
+    const success = await selectChild(childId);
+    if (success) {
+      navigate('/dashboard');
+    }
   };
 
   if (authLoading || loading) {

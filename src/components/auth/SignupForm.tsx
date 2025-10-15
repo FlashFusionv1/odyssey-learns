@@ -6,6 +6,17 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { z } from "zod";
+
+const signupSchema = z.object({
+  fullName: z.string().trim().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
+  email: z.string().trim().email("Invalid email address").max(255, "Email must be less than 255 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string()
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
 
 export const SignupForm = () => {
   const [fullName, setFullName] = useState("");
@@ -19,19 +30,17 @@ export const SignupForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
-      toast.error("Passwords don't match");
-      return;
-    }
-
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+    const result = signupSchema.safeParse({ fullName, email, password, confirmPassword });
+    
+    if (!result.success) {
+      const firstError = result.error.errors[0];
+      toast.error(firstError.message);
       return;
     }
 
     setLoading(true);
 
-    const { error } = await signUp(email, password, fullName);
+    const { error } = await signUp(result.data.email, result.data.password, result.data.fullName);
 
     if (error) {
       toast.error(error.message || "Failed to create account");

@@ -8,6 +8,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { z } from "zod";
+
+const childProfileSchema = z.object({
+  name: z.string().trim().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
+  gradeLevel: z.number().int().min(0, "Grade level must be at least 0").max(12, "Grade level must be at most 12")
+});
 
 const ParentSetup = () => {
   const [childName, setChildName] = useState("");
@@ -25,14 +31,25 @@ const ParentSetup = () => {
       return;
     }
 
+    const result = childProfileSchema.safeParse({ 
+      name: childName, 
+      gradeLevel: parseInt(gradeLevel) 
+    });
+    
+    if (!result.success) {
+      const firstError = result.error.errors[0];
+      toast.error(firstError.message);
+      return;
+    }
+
     setLoading(true);
 
     const { error } = await supabase
       .from('children')
       .insert({
         parent_id: user.id,
-        name: childName,
-        grade_level: parseInt(gradeLevel),
+        name: result.data.name,
+        grade_level: result.data.gradeLevel,
       });
 
     if (error) {

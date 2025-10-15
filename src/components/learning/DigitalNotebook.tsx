@@ -6,6 +6,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Save, BookOpen, Search, FileDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { z } from "zod";
+
+const noteSchema = z.object({
+  noteContent: z.string().trim().max(5000, "Note must be less than 5000 characters"),
+  lessonId: z.string().uuid("Invalid lesson ID"),
+  childId: z.string().uuid("Invalid child ID")
+});
 
 interface DigitalNotebookProps {
   childId: string;
@@ -50,7 +57,23 @@ export const DigitalNotebook = ({ childId, lessonId, lessonTitle }: DigitalNoteb
   };
 
   const saveNote = async () => {
-    if (!noteContent.trim()) {
+    const result = noteSchema.safeParse({ 
+      noteContent, 
+      lessonId, 
+      childId 
+    });
+    
+    if (!result.success) {
+      const firstError = result.error.errors[0];
+      toast({
+        title: "Validation error",
+        description: firstError.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!result.data.noteContent.trim()) {
       toast({
         title: "Cannot save empty note",
         description: "Please write something first!",
@@ -63,9 +86,9 @@ export const DigitalNotebook = ({ childId, lessonId, lessonTitle }: DigitalNoteb
     const { error } = await supabase
       .from('lesson_notes')
       .upsert({
-        child_id: childId,
-        lesson_id: lessonId,
-        note_content: noteContent,
+        child_id: result.data.childId,
+        lesson_id: result.data.lessonId,
+        note_content: result.data.noteContent,
         updated_at: new Date().toISOString(),
       }, {
         onConflict: 'child_id,lesson_id'

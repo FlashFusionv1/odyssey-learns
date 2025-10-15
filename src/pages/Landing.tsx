@@ -47,7 +47,10 @@ const Landing = () => {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center shadow-lg">
                 <span className="text-xl font-bold text-primary-foreground">IO</span>
               </div>
-              <span className="text-xl font-bold tracking-tight">Inner Odyssey</span>
+              <div>
+                <span className="text-xl font-bold tracking-tight">Inner Odyssey</span>
+                <span className="text-xs text-muted-foreground ml-2">by Flashfusion</span>
+              </div>
             </div>
             <div className="flex items-center gap-4">
               <Button variant="ghost" onClick={() => navigate('/login')}>
@@ -91,9 +94,10 @@ const Landing = () => {
               <Button 
                 size="lg" 
                 variant="outline"
+                onClick={() => navigate('/contact')}
                 className="text-lg h-14 px-8"
               >
-                Watch 2-Min Demo
+                Watch Demo
               </Button>
             </div>
 
@@ -232,6 +236,7 @@ const Landing = () => {
             <Button 
               size="lg" 
               variant="outline"
+              onClick={() => navigate('/contact')}
               className="text-lg h-14 px-8"
             >
               Talk To Our Team
@@ -259,33 +264,33 @@ const Landing = () => {
             <div>
               <h4 className="font-semibold mb-4">Product</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">Features</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Pricing</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Beta Program</a></li>
+                <li><a href="/features" className="hover:text-foreground transition-colors">Features</a></li>
+                <li><a href="/pricing" className="hover:text-foreground transition-colors">Pricing</a></li>
+                <li><a href="/beta-program" className="hover:text-foreground transition-colors">Beta Program</a></li>
               </ul>
             </div>
             
             <div>
               <h4 className="font-semibold mb-4">Company</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">About Us</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Contact</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Privacy Policy</a></li>
+                <li><a href="/about" className="hover:text-foreground transition-colors">About Us</a></li>
+                <li><a href="/contact" className="hover:text-foreground transition-colors">Contact</a></li>
+                <li><a href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</a></li>
               </ul>
             </div>
             
             <div>
               <h4 className="font-semibold mb-4">Connect</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">Discord Community</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Support</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Beta Feedback</a></li>
+                <li><a href="/discord" className="hover:text-foreground transition-colors">Discord Community</a></li>
+                <li><a href="/support" className="hover:text-foreground transition-colors">Support</a></li>
+                <li><a href="/beta-feedback" className="hover:text-foreground transition-colors">Beta Feedback</a></li>
               </ul>
             </div>
           </div>
           
           <div className="border-t mt-12 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2025 Inner Odyssey. All rights reserved. COPPA Compliant.</p>
+            <p>&copy; 2025 Flashfusion, Inc. | Inner Odyssey is a product of Flashfusion. All rights reserved. COPPA Compliant.</p>
           </div>
         </div>
       </footer>

@@ -2,10 +2,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
+import { PasswordStrengthMeter } from "@/components/auth/PasswordStrengthMeter";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
 import { z } from "zod";
 
 const signupFormSchema = z.object({
@@ -26,6 +29,7 @@ export const SignupForm = () => {
   const [loading, setLoading] = useState(false);
   const { signUp } = useAuth();
   const navigate = useNavigate();
+  const { executeRecaptcha } = useRecaptcha();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,6 +44,7 @@ export const SignupForm = () => {
 
     setLoading(true);
 
+    await executeRecaptcha('signup');
     const { error } = await signUp(result.data.email, result.data.password, result.data.fullName);
 
     if (error) {
@@ -81,30 +86,27 @@ export const SignupForm = () => {
 
       <div className="space-y-2">
         <Label htmlFor="password">Password</Label>
-        <Input
+        <PasswordInput
           id="password"
-          type="password"
           placeholder="••••••••"
           value={password}
           maxLength={128}
           onChange={(e) => setPassword(e.target.value)}
           required
-          minLength={6}
           className="focus-ring"
         />
+        <PasswordStrengthMeter password={password} />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="confirmPassword">Confirm Password</Label>
-        <Input
+        <PasswordInput
           id="confirmPassword"
-          type="password"
           maxLength={128}
           placeholder="••••••••"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
-          minLength={6}
           className="focus-ring"
         />
       </div>

@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/ui/password-input";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { loginSchema } from "@/lib/schemas/auth";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
 
 export const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -15,6 +17,7 @@ export const LoginForm = () => {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const { signIn } = useAuth();
   const navigate = useNavigate();
+  const { executeRecaptcha } = useRecaptcha();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +38,7 @@ export const LoginForm = () => {
 
     setLoading(true);
 
+    await executeRecaptcha('login');
     const { error } = await signIn(validation.data.email, validation.data.password);
 
     if (error) {
@@ -72,10 +76,14 @@ export const LoginForm = () => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
-        <Input
+        <div className="flex items-center justify-between">
+          <Label htmlFor="password">Password</Label>
+          <Link to="/reset-password" className="text-sm text-primary hover:underline">
+            Forgot password?
+          </Link>
+        </div>
+        <PasswordInput
           id="password"
-          type="password"
           placeholder="••••••••"
           value={password}
           maxLength={128}

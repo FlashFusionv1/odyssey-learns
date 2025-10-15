@@ -98,6 +98,41 @@ export type Database = {
           },
         ]
       }
+      analytics_events: {
+        Row: {
+          child_id: string
+          event_category: string | null
+          event_properties: Json | null
+          event_type: string
+          id: string
+          timestamp: string | null
+        }
+        Insert: {
+          child_id: string
+          event_category?: string | null
+          event_properties?: Json | null
+          event_type: string
+          id?: string
+          timestamp?: string | null
+        }
+        Update: {
+          child_id?: string
+          event_category?: string | null
+          event_properties?: Json | null
+          event_type?: string
+          id?: string
+          timestamp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       avatar_items: {
         Row: {
           created_at: string | null
@@ -127,6 +162,65 @@ export type Database = {
           points_cost?: number | null
         }
         Relationships: []
+      }
+      beta_feedback: {
+        Row: {
+          category: string | null
+          child_id: string | null
+          created_at: string | null
+          description: string
+          device_info: Json | null
+          feedback_type: string
+          id: string
+          page_url: string | null
+          resolved_at: string | null
+          screenshot_url: string | null
+          severity: string | null
+          status: string | null
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          category?: string | null
+          child_id?: string | null
+          created_at?: string | null
+          description: string
+          device_info?: Json | null
+          feedback_type: string
+          id?: string
+          page_url?: string | null
+          resolved_at?: string | null
+          screenshot_url?: string | null
+          severity?: string | null
+          status?: string | null
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          category?: string | null
+          child_id?: string | null
+          created_at?: string | null
+          description?: string
+          device_info?: Json | null
+          feedback_type?: string
+          id?: string
+          page_url?: string | null
+          resolved_at?: string | null
+          screenshot_url?: string | null
+          severity?: string | null
+          status?: string | null
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "beta_feedback_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       children: {
         Row: {

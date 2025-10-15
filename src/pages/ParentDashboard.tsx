@@ -6,11 +6,15 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Users, Award, BookOpen, Plus, FileText, CheckCircle } from "lucide-react";
+import { Users, Award, BookOpen, Plus, FileText, CheckCircle, Gift, Clock, MessageCircle } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { WeeklyReportCard } from "@/components/parent/WeeklyReportCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OnboardingTutorial } from "@/components/onboarding/OnboardingTutorial";
+import { RewardManagement } from "@/components/parent/RewardManagement";
+import { RewardRedemptions } from "@/components/parent/RewardRedemptions";
+import { ScreenTimeTracker } from "@/components/parent/ScreenTimeTracker";
+import { ParentChildMessaging } from "@/components/parent/ParentChildMessaging";
 
 const ParentDashboard = () => {
   const { user } = useAuth();
@@ -160,12 +164,18 @@ const ParentDashboard = () => {
 
         {/* Tabbed Content */}
         <Tabs defaultValue="children" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 max-w-md">
+          <TabsList className="grid w-full grid-cols-6 max-w-4xl">
             <TabsTrigger value="children">Children</TabsTrigger>
             <TabsTrigger value="reports">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4" />
                 Reports
+              </div>
+            </TabsTrigger>
+            <TabsTrigger value="rewards">
+              <div className="flex items-center gap-2">
+                <Gift className="w-4 h-4" />
+                Rewards
               </div>
             </TabsTrigger>
             <TabsTrigger value="approvals">
@@ -177,6 +187,18 @@ const ParentDashboard = () => {
                     {collaborationRequests.length}
                   </span>
                 )}
+              </div>
+            </TabsTrigger>
+            <TabsTrigger value="screentime">
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                Screen Time
+              </div>
+            </TabsTrigger>
+            <TabsTrigger value="messages">
+              <div className="flex items-center gap-2">
+                <MessageCircle className="w-4 h-4" />
+                Messages
               </div>
             </TabsTrigger>
           </TabsList>
@@ -311,6 +333,22 @@ const ParentDashboard = () => {
                 ))}
               </div>
             )}
+          </TabsContent>
+
+          {/* Rewards Tab */}
+          <TabsContent value="rewards" className="space-y-8">
+            <RewardManagement parentId={user?.id || ''} />
+            <RewardRedemptions parentId={user?.id || ''} />
+          </TabsContent>
+
+          {/* Screen Time Tab */}
+          <TabsContent value="screentime">
+            <ScreenTimeTracker parentId={user?.id || ''} />
+          </TabsContent>
+
+          {/* Messages Tab */}
+          <TabsContent value="messages">
+            <ParentChildMessaging parentId={user?.id || ''} />
           </TabsContent>
         </Tabs>
       </div>

@@ -92,6 +92,7 @@ export type Database = {
           challenge_mode_enabled: boolean | null
           created_at: string | null
           daily_quest_id: string | null
+          daily_screen_time_limit_minutes: number | null
           grade_level: number
           id: string
           name: string
@@ -99,6 +100,7 @@ export type Database = {
           pin_hash: string | null
           quest_bonus_points: number | null
           quest_completed_at: string | null
+          screen_time_enabled: boolean | null
           total_points: number | null
           weekly_report_enabled: boolean | null
         }
@@ -107,6 +109,7 @@ export type Database = {
           challenge_mode_enabled?: boolean | null
           created_at?: string | null
           daily_quest_id?: string | null
+          daily_screen_time_limit_minutes?: number | null
           grade_level: number
           id?: string
           name: string
@@ -114,6 +117,7 @@ export type Database = {
           pin_hash?: string | null
           quest_bonus_points?: number | null
           quest_completed_at?: string | null
+          screen_time_enabled?: boolean | null
           total_points?: number | null
           weekly_report_enabled?: boolean | null
         }
@@ -122,6 +126,7 @@ export type Database = {
           challenge_mode_enabled?: boolean | null
           created_at?: string | null
           daily_quest_id?: string | null
+          daily_screen_time_limit_minutes?: number | null
           grade_level?: number
           id?: string
           name?: string
@@ -129,6 +134,7 @@ export type Database = {
           pin_hash?: string | null
           quest_bonus_points?: number | null
           quest_completed_at?: string | null
+          screen_time_enabled?: boolean | null
           total_points?: number | null
           weekly_report_enabled?: boolean | null
         }
@@ -377,6 +383,114 @@ export type Database = {
         }
         Relationships: []
       }
+      parent_child_messages: {
+        Row: {
+          child_id: string
+          created_at: string | null
+          id: string
+          is_important: boolean | null
+          message_text: string
+          message_type: string | null
+          parent_id: string
+          reaction: string | null
+          read_at: string | null
+          sender_type: string
+        }
+        Insert: {
+          child_id: string
+          created_at?: string | null
+          id?: string
+          is_important?: boolean | null
+          message_text: string
+          message_type?: string | null
+          parent_id: string
+          reaction?: string | null
+          read_at?: string | null
+          sender_type: string
+        }
+        Update: {
+          child_id?: string
+          created_at?: string | null
+          id?: string
+          is_important?: boolean | null
+          message_text?: string
+          message_type?: string | null
+          parent_id?: string
+          reaction?: string | null
+          read_at?: string | null
+          sender_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parent_child_messages_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parent_child_messages_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      parent_notifications: {
+        Row: {
+          action_url: string | null
+          child_id: string | null
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          metadata: Json | null
+          notification_type: string
+          parent_id: string
+          title: string
+        }
+        Insert: {
+          action_url?: string | null
+          child_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          metadata?: Json | null
+          notification_type: string
+          parent_id: string
+          title: string
+        }
+        Update: {
+          action_url?: string | null
+          child_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          metadata?: Json | null
+          notification_type?: string
+          parent_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parent_notifications_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parent_notifications_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       parent_weekly_reports: {
         Row: {
           child_id: string
@@ -485,6 +599,8 @@ export type Database = {
         Row: {
           child_id: string
           id: string
+          parent_id: string | null
+          parent_notes: string | null
           requested_at: string | null
           resolved_at: string | null
           reward_id: string
@@ -493,6 +609,8 @@ export type Database = {
         Insert: {
           child_id: string
           id?: string
+          parent_id?: string | null
+          parent_notes?: string | null
           requested_at?: string | null
           resolved_at?: string | null
           reward_id: string
@@ -501,6 +619,8 @@ export type Database = {
         Update: {
           child_id?: string
           id?: string
+          parent_id?: string | null
+          parent_notes?: string | null
           requested_at?: string | null
           resolved_at?: string | null
           reward_id?: string
@@ -512,6 +632,13 @@ export type Database = {
             columns: ["child_id"]
             isOneToOne: false
             referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reward_redemptions_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
@@ -602,22 +729,28 @@ export type Database = {
       }
       screen_time_sessions: {
         Row: {
+          activity_type: string | null
           child_id: string
           id: string
+          lesson_id: string | null
           minutes_used: number | null
           session_end: string | null
           session_start: string | null
         }
         Insert: {
+          activity_type?: string | null
           child_id: string
           id?: string
+          lesson_id?: string | null
           minutes_used?: number | null
           session_end?: string | null
           session_start?: string | null
         }
         Update: {
+          activity_type?: string | null
           child_id?: string
           id?: string
+          lesson_id?: string | null
           minutes_used?: number | null
           session_end?: string | null
           session_start?: string | null
@@ -628,6 +761,13 @@ export type Database = {
             columns: ["child_id"]
             isOneToOne: false
             referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "screen_time_sessions_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
             referencedColumns: ["id"]
           },
         ]

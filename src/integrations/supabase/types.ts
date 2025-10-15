@@ -56,6 +56,48 @@ export type Database = {
         }
         Relationships: []
       }
+      activity_participants: {
+        Row: {
+          activity_id: string
+          child_id: string
+          contribution: Json | null
+          id: string
+          joined_at: string | null
+          status: string | null
+        }
+        Insert: {
+          activity_id: string
+          child_id: string
+          contribution?: Json | null
+          id?: string
+          joined_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          activity_id?: string
+          child_id?: string
+          contribution?: Json | null
+          id?: string
+          joined_at?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_participants_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "shared_activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_participants_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       avatar_items: {
         Row: {
           created_at: string | null
@@ -544,6 +586,48 @@ export type Database = {
           },
         ]
       }
+      peer_connections: {
+        Row: {
+          accepted_at: string | null
+          child_id: string
+          id: string
+          peer_id: string
+          requested_at: string | null
+          status: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          child_id: string
+          id?: string
+          peer_id: string
+          requested_at?: string | null
+          status?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          child_id?: string
+          id?: string
+          peer_id?: string
+          requested_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "peer_connections_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "peer_connections_peer_id_fkey"
+            columns: ["peer_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -765,6 +849,66 @@ export type Database = {
           },
           {
             foreignKeyName: "screen_time_sessions_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shared_activities: {
+        Row: {
+          activity_type: string
+          completed_at: string | null
+          content: Json | null
+          created_at: string | null
+          created_by: string
+          description: string | null
+          id: string
+          lesson_id: string | null
+          max_participants: number | null
+          started_at: string | null
+          status: string | null
+          title: string
+        }
+        Insert: {
+          activity_type: string
+          completed_at?: string | null
+          content?: Json | null
+          created_at?: string | null
+          created_by: string
+          description?: string | null
+          id?: string
+          lesson_id?: string | null
+          max_participants?: number | null
+          started_at?: string | null
+          status?: string | null
+          title: string
+        }
+        Update: {
+          activity_type?: string
+          completed_at?: string | null
+          content?: Json | null
+          created_at?: string | null
+          created_by?: string
+          description?: string | null
+          id?: string
+          lesson_id?: string | null
+          max_participants?: number | null
+          started_at?: string | null
+          status?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_activities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shared_activities_lesson_id_fkey"
             columns: ["lesson_id"]
             isOneToOne: false
             referencedRelation: "lessons"

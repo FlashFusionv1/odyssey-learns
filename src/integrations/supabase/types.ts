@@ -17,6 +17,7 @@ export type Database = {
       children: {
         Row: {
           avatar_config: Json | null
+          challenge_mode_enabled: boolean | null
           created_at: string | null
           grade_level: number
           id: string
@@ -24,9 +25,11 @@ export type Database = {
           parent_id: string
           pin_hash: string | null
           total_points: number | null
+          weekly_report_enabled: boolean | null
         }
         Insert: {
           avatar_config?: Json | null
+          challenge_mode_enabled?: boolean | null
           created_at?: string | null
           grade_level: number
           id?: string
@@ -34,9 +37,11 @@ export type Database = {
           parent_id: string
           pin_hash?: string | null
           total_points?: number | null
+          weekly_report_enabled?: boolean | null
         }
         Update: {
           avatar_config?: Json | null
+          challenge_mode_enabled?: boolean | null
           created_at?: string | null
           grade_level?: number
           id?: string
@@ -44,6 +49,7 @@ export type Database = {
           parent_id?: string
           pin_hash?: string | null
           total_points?: number | null
+          weekly_report_enabled?: boolean | null
         }
         Relationships: [
           {
@@ -51,6 +57,103 @@ export type Database = {
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collaboration_requests: {
+        Row: {
+          approved_at: string | null
+          created_at: string | null
+          id: string
+          lesson_id: string | null
+          parent_approved: boolean | null
+          recipient_child_id: string
+          requester_child_id: string
+          status: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          created_at?: string | null
+          id?: string
+          lesson_id?: string | null
+          parent_approved?: boolean | null
+          recipient_child_id: string
+          requester_child_id: string
+          status?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          created_at?: string | null
+          id?: string
+          lesson_id?: string | null
+          parent_approved?: boolean | null
+          recipient_child_id?: string
+          requester_child_id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collaboration_requests_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collaboration_requests_recipient_child_id_fkey"
+            columns: ["recipient_child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collaboration_requests_requester_child_id_fkey"
+            columns: ["requester_child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lesson_notes: {
+        Row: {
+          child_id: string
+          created_at: string | null
+          id: string
+          lesson_id: string
+          note_content: string
+          updated_at: string | null
+        }
+        Insert: {
+          child_id: string
+          created_at?: string | null
+          id?: string
+          lesson_id: string
+          note_content: string
+          updated_at?: string | null
+        }
+        Update: {
+          child_id?: string
+          created_at?: string | null
+          id?: string
+          lesson_id?: string
+          note_content?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_notes_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_notes_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
             referencedColumns: ["id"]
           },
         ]
@@ -105,6 +208,59 @@ export type Database = {
           title?: string
         }
         Relationships: []
+      }
+      parent_weekly_reports: {
+        Row: {
+          child_id: string
+          conversation_starter: string | null
+          growth_area: string | null
+          id: string
+          lessons_completed: number | null
+          parent_id: string
+          report_data: Json | null
+          sent_at: string | null
+          strongest_subject: string | null
+          top_achievement: string | null
+          total_points_earned: number | null
+          week_start_date: string
+        }
+        Insert: {
+          child_id: string
+          conversation_starter?: string | null
+          growth_area?: string | null
+          id?: string
+          lessons_completed?: number | null
+          parent_id: string
+          report_data?: Json | null
+          sent_at?: string | null
+          strongest_subject?: string | null
+          top_achievement?: string | null
+          total_points_earned?: number | null
+          week_start_date: string
+        }
+        Update: {
+          child_id?: string
+          conversation_starter?: string | null
+          growth_area?: string | null
+          id?: string
+          lessons_completed?: number | null
+          parent_id?: string
+          report_data?: Json | null
+          sent_at?: string | null
+          strongest_subject?: string | null
+          top_achievement?: string | null
+          total_points_earned?: number | null
+          week_start_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parent_weekly_reports_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {

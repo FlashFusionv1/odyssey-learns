@@ -6,32 +6,76 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Users, Award, BookOpen, Plus } from "lucide-react";
+import { Users, Award, BookOpen, Plus, FileText, CheckCircle } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { WeeklyReportCard } from "@/components/parent/WeeklyReportCard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ParentDashboard = () => {
   const { user } = useAuth();
   const [children, setChildren] = useState<any[]>([]);
+  const [weeklyReports, setWeeklyReports] = useState<any[]>([]);
+  const [collaborationRequests, setCollaborationRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
-      loadChildren();
+      loadDashboardData();
     }
   }, [user]);
 
-  const loadChildren = async () => {
+  const loadDashboardData = async () => {
     if (!user) return;
 
-    const { data } = await supabase
+    // Load children
+    const { data: childrenData } = await supabase
       .from('children')
       .select('*')
       .eq('parent_id', user.id)
       .order('created_at', { ascending: false });
 
-    setChildren(data || []);
+    setChildren(childrenData || []);
+
+    // Load weekly reports
+    const { data: reportsData } = await supabase
+      .from('parent_weekly_reports')
+      .select('*, children(name)')
+      .eq('parent_id', user.id)
+      .order('week_start_date', { ascending: false })
+      .limit(5);
+
+    setWeeklyReports(reportsData || []);
+
+    // Load pending collaboration requests
+    if (childrenData && childrenData.length > 0) {
+      const childIds = childrenData.map(c => c.id);
+      const { data: requestsData } = await supabase
+        .from('collaboration_requests')
+        .select('*, requester:children!collaboration_requests_requester_child_id_fkey(name), recipient:children!collaboration_requests_recipient_child_id_fkey(name)')
+        .in('recipient_child_id', childIds)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
+
+      setCollaborationRequests(requestsData || []);
+    }
+
     setLoading(false);
+  };
+
+  const approveCollaboration = async (requestId: string, approved: boolean) => {
+    const { error } = await supabase
+      .from('collaboration_requests')
+      .update({ 
+        status: approved ? 'approved' : 'rejected',
+        parent_approved: approved,
+        approved_at: new Date().toISOString()
+      })
+      .eq('id', requestId);
+
+    if (!error) {
+      loadDashboardData();
+    }
   };
 
   if (loading) {
@@ -97,9 +141,32 @@ const ParentDashboard = () => {
           </Card>
         </div>
 
-        {/* Children List */}
-        <div>
-          <h2 className="text-2xl font-bold mb-6">Your Children</h2>
+        {/* Tabbed Content */}
+        <Tabs defaultValue="children" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3 max-w-md">
+            <TabsTrigger value="children">Children</TabsTrigger>
+            <TabsTrigger value="reports">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                Reports
+              </div>
+            </TabsTrigger>
+            <TabsTrigger value="approvals">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4" />
+                Approvals
+                {collaborationRequests.length > 0 && (
+                  <span className="ml-1 px-1.5 py-0.5 bg-accent text-accent-foreground text-xs rounded-full">
+                    {collaborationRequests.length}
+                  </span>
+                )}
+              </div>
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Children Tab */}
+          <TabsContent value="children">
+            <h2 className="text-2xl font-bold mb-6">Your Children</h2>
           
           {children.length === 0 ? (
             <Card className="p-12 text-center">
@@ -152,7 +219,83 @@ const ParentDashboard = () => {
               ))}
             </div>
           )}
-        </div>
+          </TabsContent>
+
+          {/* Weekly Reports Tab */}
+          <TabsContent value="reports">
+            <h2 className="text-2xl font-bold mb-6">Weekly Learning Reports</h2>
+            {weeklyReports.length === 0 ? (
+              <Card className="p-12 text-center">
+                <FileText className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+                <h3 className="text-xl font-semibold mb-2">No reports yet</h3>
+                <p className="text-muted-foreground">
+                  Weekly reports will appear here as your children complete lessons
+                </p>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {weeklyReports.map((report) => (
+                  <WeeklyReportCard 
+                    key={report.id}
+                    report={report}
+                    childName={report.children?.name || "Your child"}
+                  />
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* Collaboration Approvals Tab */}
+          <TabsContent value="approvals">
+            <h2 className="text-2xl font-bold mb-6">Collaboration Requests</h2>
+            {collaborationRequests.length === 0 ? (
+              <Card className="p-12 text-center">
+                <CheckCircle className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+                <h3 className="text-xl font-semibold mb-2">No pending requests</h3>
+                <p className="text-muted-foreground">
+                  Collaboration requests from your children will appear here for approval
+                </p>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {collaborationRequests.map((request) => (
+                  <Card key={request.id} className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <Avatar className="w-12 h-12">
+                          <AvatarFallback className="bg-primary text-primary-foreground">
+                            {request.requester?.name?.charAt(0) || '?'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">
+                            {request.requester?.name} wants to collaborate with {request.recipient?.name}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Requested {new Date(request.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => approveCollaboration(request.id, false)}
+                        >
+                          Deny
+                        </Button>
+                        <Button
+                          onClick={() => approveCollaboration(request.id, true)}
+                        >
+                          Approve
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     </ParentLayout>
   );

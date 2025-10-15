@@ -1,29 +1,45 @@
 import { useEffect, useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { SubjectBadge } from "@/components/ui/subject-badge";
-import { supabase } from "@/integrations/supabase/client";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { Clock, Award } from "lucide-react";
 import { useValidatedChild } from "@/hooks/useValidatedChild";
+import { Search, BookOpen, Clock, Star, Filter } from "lucide-react";
+import { BackButton } from "@/components/ui/back-button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Lessons = () => {
   const { childId, isValidating } = useValidatedChild();
   const [child, setChild] = useState<any>(null);
   const [lessons, setLessons] = useState<any[]>([]);
-  const [filter, setFilter] = useState<string>("all");
-  const [gradeFilter, setGradeFilter] = useState<number | null>(null);
+  const [filteredLessons, setFilteredLessons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [subjectFilter, setSubjectFilter] = useState("all");
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!isValidating && childId) {
-      loadData();
+      loadLessons();
     }
   }, [childId, isValidating]);
 
-  const loadData = async () => {
+  useEffect(() => {
+    filterLessons();
+  }, [searchTerm, subjectFilter, lessons]);
+
+  const loadLessons = async () => {
     if (!childId) return;
 
     const { data: childData } = await supabase
@@ -32,33 +48,39 @@ const Lessons = () => {
       .eq('id', childId)
       .single();
 
-    setChild(childData);
-    setGradeFilter(childData?.grade_level || 1);
-
     const { data: lessonsData } = await supabase
       .from('lessons')
       .select('*')
+      .eq('grade_level', childData?.grade_level || 1)
       .eq('is_active', true)
       .order('subject', { ascending: true });
 
+    setChild(childData);
     setLessons(lessonsData || []);
+    setFilteredLessons(lessonsData || []);
     setLoading(false);
   };
 
-  const filteredLessons = lessons.filter(lesson => {
-    const matchesSubject = filter === 'all' || lesson.subject === filter;
-    const matchesGrade = gradeFilter === null || lesson.grade_level === gradeFilter;
-    return matchesSubject && matchesGrade;
-  });
+  const filterLessons = () => {
+    let filtered = lessons;
 
-  const subjects = [
-    { value: 'all', label: 'All Lessons' },
-    { value: 'reading', label: 'Reading' },
-    { value: 'math', label: 'Math' },
-    { value: 'science', label: 'Science' },
-    { value: 'social', label: 'Social Studies' },
-    { value: 'lifeskills', label: 'Life Skills' }
-  ];
+    if (searchTerm) {
+      filtered = filtered.filter(lesson =>
+        lesson.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lesson.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (subjectFilter !== "all") {
+      filtered = filtered.filter(lesson => 
+        lesson.subject.toLowerCase() === subjectFilter.toLowerCase()
+      );
+    }
+
+    setFilteredLessons(filtered);
+  };
+
+  const subjects = Array.from(new Set(lessons.map(l => l.subject)));
 
   if (isValidating || loading) {
     return (
@@ -68,83 +90,118 @@ const Lessons = () => {
     );
   }
 
-  const grades = [1, 2, 3, 4, 5, 6, 7, 8];
-
   return (
     <AppLayout childName={child?.name} points={child?.total_points || 0}>
-      <div className="space-y-8 animate-fade-in">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold mb-2">
-            Grade {gradeFilter} Learning Adventures
-          </h1>
-          <p className="text-muted-foreground">Choose a lesson to start learning!</p>
+      <div className="space-y-6 animate-fade-in">
+        <BackButton to="/dashboard" label="Back to Dashboard" />
+
+        <div className="text-center py-6">
+          <div className="inline-block w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center mb-4">
+            <BookOpen className="w-8 h-8 text-primary-foreground" />
+          </div>
+          <h1 className="text-3xl font-bold mb-2">Learning Library</h1>
+          <p className="text-muted-foreground">
+            Explore {lessons.length} lessons designed for Grade {child?.grade_level}
+          </p>
         </div>
 
-        {/* Grade Level Filter */}
-        <div className="flex flex-wrap gap-2 justify-center">
-          {grades.map(grade => (
-            <button
-              key={grade}
-              onClick={() => setGradeFilter(grade)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                gradeFilter === grade
-                  ? 'bg-secondary text-secondary-foreground shadow-md'
-                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
-              }`}
-            >
-              Grade {grade}
-            </button>
-          ))}
-        </div>
+        {/* Filters */}
+        <Card className="p-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search lessons..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Select value={subjectFilter} onValueChange={setSubjectFilter}>
+              <SelectTrigger className="w-full md:w-48">
+                <Filter className="w-4 h-4 mr-2" />
+                <SelectValue placeholder="All Subjects" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Subjects</SelectItem>
+                {subjects.map(subject => (
+                  <SelectItem key={subject} value={subject.toLowerCase()}>
+                    {subject}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </Card>
 
-        {/* Subject Filter */}
-        <div className="flex flex-wrap gap-2 justify-center">
-          {subjects.map(subject => (
-            <button
-              key={subject.value}
-              onClick={() => setFilter(subject.value)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                filter === subject.value
-                  ? 'bg-primary text-primary-foreground shadow-md'
-                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
-              }`}
+        {/* Results Count */}
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            Showing {filteredLessons.length} of {lessons.length} lessons
+          </p>
+          {(searchTerm || subjectFilter !== "all") && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setSearchTerm("");
+                setSubjectFilter("all");
+              }}
             >
-              {subject.label}
-            </button>
-          ))}
+              Clear Filters
+            </Button>
+          )}
         </div>
 
         {/* Lessons Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredLessons.map((lesson) => (
-            <Card
-              key={lesson.id}
-              className="p-6 elevated-card hover-scale cursor-pointer"
-              onClick={() => navigate(`/lesson/${lesson.id}`)}
+        {filteredLessons.length === 0 ? (
+          <Card className="p-12 text-center">
+            <BookOpen className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+            <h3 className="text-xl font-semibold mb-2">No lessons found</h3>
+            <p className="text-muted-foreground mb-6">
+              Try adjusting your search or filters
+            </p>
+            <Button
+              onClick={() => {
+                setSearchTerm("");
+                setSubjectFilter("all");
+              }}
             >
-              <SubjectBadge subject={lesson.subject} className="mb-4" />
-              
-              <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-                {lesson.title}
-              </h3>
-              
-              <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                {lesson.description}
-              </p>
-              
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-1 text-muted-foreground">
-                  <Clock className="w-4 h-4" />
-                  <span>{lesson.estimated_minutes} min</span>
+              Clear Filters
+            </Button>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredLessons.map((lesson) => (
+              <Card
+                key={lesson.id}
+                className="p-6 elevated-card hover-scale cursor-pointer transition-all"
+                onClick={() => navigate(`/lesson/${lesson.id}`)}
+              >
+                <SubjectBadge subject={lesson.subject} className="mb-4" />
+                
+                <h3 className="font-semibold text-lg mb-2 line-clamp-2">
+                  {lesson.title}
+                </h3>
+                
+                <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+                  {lesson.description}
+                </p>
+
+                <div className="flex items-center gap-4 text-sm text-muted-foreground border-t pt-4 mt-4">
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-4 h-4" />
+                    {lesson.estimated_minutes} min
+                  </div>
+                  <div className="flex items-center gap-1 text-accent font-medium">
+                    <Star className="w-4 h-4" />
+                    +{lesson.points_value} pts
+                  </div>
                 </div>
-                <div className="flex items-center gap-1 font-medium text-accent">
-                  <Award className="w-4 h-4" />
-                  <span>+{lesson.points_value}</span>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </AppLayout>
   );

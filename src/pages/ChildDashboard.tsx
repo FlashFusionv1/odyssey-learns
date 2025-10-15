@@ -16,6 +16,7 @@ import { AvatarCustomizer } from "@/components/avatar/AvatarCustomizer";
 import { EmotionCheckIn } from "@/components/emotional/EmotionCheckIn";
 import { BadgeShowcase } from "@/components/badges/BadgeShowcase";
 import { checkAndAwardBadges } from "@/lib/badgeChecker";
+import { DailyQuest } from "@/components/quests/DailyQuest";
 
 const ChildDashboard = () => {
   const { childId, isValidating } = useValidatedChild();
@@ -246,43 +247,8 @@ const ChildDashboard = () => {
           </Card>
         </div>
 
-        {/* Daily Quest */}
-        {dailyQuest && dailyQuest.lesson && (
-          <Card className="p-6 bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
-            <div className="relative z-10">
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0">
-                  <Sparkles className="w-7 h-7 text-primary animate-pulse" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <h3 className="text-xl font-bold">🎯 Today's Quest</h3>
-                    <span className="px-2 py-1 text-xs font-semibold bg-accent text-accent-foreground rounded-full">
-                      +{dailyQuest.bonus_points} BONUS
-                    </span>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Complete this lesson today for bonus points!
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <SubjectBadge subject={dailyQuest.lesson.subject} className="mb-2" />
-                      <h4 className="font-semibold">{dailyQuest.lesson.title}</h4>
-                    </div>
-                    <Button 
-                      onClick={() => navigate(`/lesson/${dailyQuest.lesson_id}`)}
-                      className="gap-2"
-                    >
-                      Start Quest
-                      <Sparkles className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Card>
-        )}
+        {/* Daily Quest - Age-Adaptive UI */}
+        <DailyQuest />
 
         {/* Emotional Check-In */}
         <EmotionCheckIn 

@@ -60,12 +60,14 @@ export type Database = {
           content_markdown: string
           created_at: string | null
           description: string | null
+          differentiation: Json | null
           estimated_minutes: number | null
           grade_level: number
           id: string
           is_active: boolean | null
           points_value: number | null
           quiz_questions: Json | null
+          standards_alignment: string | null
           subject: string
           thumbnail_url: string | null
           title: string
@@ -74,12 +76,14 @@ export type Database = {
           content_markdown: string
           created_at?: string | null
           description?: string | null
+          differentiation?: Json | null
           estimated_minutes?: number | null
           grade_level: number
           id?: string
           is_active?: boolean | null
           points_value?: number | null
           quiz_questions?: Json | null
+          standards_alignment?: string | null
           subject: string
           thumbnail_url?: string | null
           title: string
@@ -88,12 +92,14 @@ export type Database = {
           content_markdown?: string
           created_at?: string | null
           description?: string | null
+          differentiation?: Json | null
           estimated_minutes?: number | null
           grade_level?: number
           id?: string
           is_active?: boolean | null
           points_value?: number | null
           quiz_questions?: Json | null
+          standards_alignment?: string | null
           subject?: string
           thumbnail_url?: string | null
           title?: string

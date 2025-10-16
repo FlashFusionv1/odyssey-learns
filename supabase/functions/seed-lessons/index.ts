@@ -49,9 +49,8 @@ serve(async (req) => {
       
       for (const subject of SUBJECTS) {
         try {
-          // Generate 1 lesson per subject per grade (total: 6 subjects × 13 grades = 78 lessons)
-          // If you want 50 per grade, change this loop
-          const lessonCount = 1; // Change to 8-9 to get ~50 lessons per grade
+          // Generate ~8 lessons per subject × 6 subjects = ~48 lessons per grade (close to 50)
+          const lessonCount = 8;
           
           for (let i = 0; i < lessonCount; i++) {
             const lessonNum = i + 1;

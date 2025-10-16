@@ -17,7 +17,7 @@ export default function SeedLessons() {
     setResult(null);
 
     try {
-      toast.info('Starting automated lesson generation... This will take 10-15 minutes.');
+      toast.info('Starting automated lesson generation... This will take 2-3 hours.');
       
       setProgress(20);
       
@@ -66,9 +66,9 @@ export default function SeedLessons() {
                 <div className="bg-blue-50 dark:bg-blue-900/20 p-3 sm:p-4 rounded-lg">
                   <h4 className="font-semibold mb-2 text-sm sm:text-base">What will happen:</h4>
                   <ul className="text-xs sm:text-sm space-y-1 text-muted-foreground">
-                    <li>✓ Generates ~78 lessons (6 subjects × 13 grades)</li>
+                    <li>✓ Generates ~624 lessons (8 per subject × 6 subjects × 13 grades)</li>
                     <li>✓ Uses Lovable AI (Gemini Flash model)</li>
-                    <li>✓ Takes approximately 10-15 minutes</li>
+                    <li>✓ Takes approximately 2-3 hours</li>
                     <li>✓ Includes built-in rate limit handling</li>
                     <li>✓ Lessons saved directly to database</li>
                   </ul>
@@ -79,8 +79,8 @@ export default function SeedLessons() {
                     ⚠️ Important Notes:
                   </h4>
                   <ul className="text-xs sm:text-sm space-y-1 text-yellow-800 dark:text-yellow-200">
-                    <li>• Currently generates 1 lesson per subject/grade (78 total)</li>
-                    <li>• To generate 50 per grade, edit the edge function</li>
+                    <li>• Generates 8 lessons per subject per grade (~50 total per grade)</li>
+                    <li>• This will take 2-3 hours to complete</li>
                     <li>• Keep this tab open during generation</li>
                     <li>• Uses your Lovable AI credits</li>
                   </ul>
@@ -103,7 +103,7 @@ export default function SeedLessons() {
                   <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 animate-spin mx-auto mb-4 text-primary" />
                   <h3 className="text-base sm:text-lg font-semibold">Generating Lessons...</h3>
                   <p className="text-xs sm:text-sm text-muted-foreground mt-2">
-                    This will take 10-15 minutes. Please keep this tab open.
+                    This will take 2-3 hours. Please keep this tab open.
                   </p>
                 </div>
                 <Progress value={progress} className="w-full" />

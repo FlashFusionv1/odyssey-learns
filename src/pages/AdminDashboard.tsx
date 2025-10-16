@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { BatchLessonGenerator } from "@/components/admin/BatchLessonGenerator";
 import { 
   Users, BookOpen, MessageSquare, AlertCircle, 
   TrendingUp, Award, Settings, Database 
@@ -223,6 +224,7 @@ export default function AdminDashboard() {
           <TabsList>
             <TabsTrigger value="feedback">Recent Feedback</TabsTrigger>
             <TabsTrigger value="users">Recent Users</TabsTrigger>
+            <TabsTrigger value="lessons">Lesson Generator</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
@@ -288,6 +290,10 @@ export default function AdminDashboard() {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="lessons" className="space-y-4">
+            <BatchLessonGenerator />
           </TabsContent>
 
           <TabsContent value="settings" className="space-y-4">

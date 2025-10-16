@@ -1126,6 +1126,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_admin_role: {
+        Args: { _email: string }
+        Returns: undefined
+      }
       calculate_streak: {
         Args: { p_child_id: string }
         Returns: number

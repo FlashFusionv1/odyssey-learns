@@ -47,7 +47,15 @@ export const LoginForm = () => {
       setLoading(false);
     } else {
       toast.success("Welcome back!");
-      navigate('/parent-dashboard');
+      // Check if user is admin and route accordingly
+      const { supabase } = await import('@/integrations/supabase/client');
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: isAdmin } = await supabase.rpc('is_admin', { _user_id: user.id });
+        navigate(isAdmin ? '/admin' : '/parent-dashboard');
+      } else {
+        navigate('/parent-dashboard');
+      }
     }
   };
 

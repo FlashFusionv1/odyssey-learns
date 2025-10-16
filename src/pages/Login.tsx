@@ -39,6 +39,16 @@ const Login = () => {
         <p className="text-center text-sm text-muted-foreground">
           By continuing, you agree to our Terms of Service and Privacy Policy
         </p>
+
+        <div className="text-center">
+          <Button
+            variant="link"
+            onClick={() => window.location.href = '/admin-setup'}
+            className="text-xs text-muted-foreground hover:text-primary"
+          >
+            Need to set up an admin? Click here
+          </Button>
+        </div>
       </div>
     </div>
   );

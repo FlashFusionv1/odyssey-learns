@@ -94,7 +94,7 @@ export const AvatarCustomizer = ({ open, onClose, childId, currentConfig, onSave
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="w-[95vw] max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Customize Your Avatar ✨</DialogTitle>
         </DialogHeader>

@@ -32,6 +32,7 @@ import BetaFeedbackAdmin from "./pages/BetaFeedbackAdmin";
 import AdminDashboard from "./pages/AdminDashboard";
 import CommunityLessons from "./pages/CommunityLessons";
 import SeedLessons from "./pages/SeedLessons";
+import AdminSetup from "./pages/AdminSetup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -72,6 +73,7 @@ const App = () => (
             <Route path="/beta-feedback" element={<BetaFeedbackAdmin />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/seed-lessons" element={<SeedLessons />} />
+            <Route path="/admin-setup" element={<AdminSetup />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

@@ -12,6 +12,26 @@ serve(async (req) => {
   }
 
   try {
+    // Parse request body
+    const { scheduled } = await req.json().catch(() => ({ scheduled: false }));
+    
+    // Security check: Only allow calls from cron job
+    // Cron job passes { scheduled: true } in the body
+    if (!scheduled) {
+      console.warn('Unauthorized weekly report generation attempt');
+      return new Response(
+        JSON.stringify({ 
+          error: 'This endpoint is restricted to scheduled jobs only. Weekly reports are generated automatically every Monday at 8 AM.' 
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 403 
+        }
+      );
+    }
+
+    console.log('Starting scheduled weekly report generation...');
+    
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);

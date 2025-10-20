@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { BatchLessonGenerator } from "@/components/admin/BatchLessonGenerator";
 import { ContentReviewDashboard } from "@/components/admin/ContentReviewDashboard";
+import { LessonSeedTrigger } from "@/components/admin/LessonSeedTrigger";
 import { 
   Users, BookOpen, MessageSquare, AlertCircle, 
   TrendingUp, Award, Settings, Database, ClipboardCheck
@@ -223,12 +224,17 @@ export default function AdminDashboard() {
         {/* Tabs for Different Sections */}
         <Tabs defaultValue="feedback" className="space-y-4">
           <TabsList>
+            <TabsTrigger value="seed">Seed Lessons</TabsTrigger>
             <TabsTrigger value="feedback">Recent Feedback</TabsTrigger>
             <TabsTrigger value="review">Content Review</TabsTrigger>
             <TabsTrigger value="users">Recent Users</TabsTrigger>
             <TabsTrigger value="lessons">Lesson Generator</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="seed" className="space-y-4">
+            <LessonSeedTrigger />
+          </TabsContent>
 
           <TabsContent value="feedback" className="space-y-4">
             <Card>

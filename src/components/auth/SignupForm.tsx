@@ -44,15 +44,35 @@ export const SignupForm = () => {
 
     setLoading(true);
 
-    await executeRecaptcha('signup');
-    const { error } = await signUp(result.data.email, result.data.password, result.data.fullName);
+    try {
+      // Execute and verify reCAPTCHA
+      const recaptchaToken = await executeRecaptcha('signup');
+      if (recaptchaToken) {
+        const { supabase } = await import('@/integrations/supabase/client');
+        const { data: verifyResult, error: verifyError } = await supabase.functions.invoke('verify-recaptcha', {
+          body: { token: recaptchaToken, action: 'signup' }
+        });
 
-    if (error) {
-      toast.error(error.message || "Failed to create account");
+        if (verifyError || !verifyResult?.valid) {
+          toast.error('Security verification failed. Please try again.');
+          setLoading(false);
+          return;
+        }
+      }
+
+      const { error } = await signUp(result.data.email, result.data.password, result.data.fullName);
+
+      if (error) {
+        toast.error(error.message || "Failed to create account");
+      } else {
+        toast.success("Account created! Please check your email.");
+        navigate('/parent-setup');
+      }
+    } catch (err) {
+      console.error('Signup error:', err);
+      toast.error('An unexpected error occurred. Please try again.');
+    } finally {
       setLoading(false);
-    } else {
-      toast.success("Account created! Please check your email.");
-      navigate('/parent-setup');
     }
   };
 

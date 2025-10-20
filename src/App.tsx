@@ -35,6 +35,7 @@ import LessonReview from "./pages/LessonReview";
 import CommunityLessons from "./pages/CommunityLessons";
 import SeedLessons from "./pages/SeedLessons";
 import AdminSetup from "./pages/AdminSetup";
+import SecurityMonitoring from "./pages/SecurityMonitoring";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -75,6 +76,7 @@ const App = () => (
             <Route path="/beta-feedback" element={<BetaFeedbackAdmin />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/review/:reviewId" element={<LessonReview />} />
+            <Route path="/security-monitoring" element={<SecurityMonitoring />} />
             <Route path="/seed-lessons" element={<SeedLessons />} />
             <Route path="/admin-setup" element={<AdminSetup />} />
             <Route path="*" element={<NotFound />} />

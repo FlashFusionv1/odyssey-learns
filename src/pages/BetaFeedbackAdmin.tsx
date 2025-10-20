@@ -51,7 +51,7 @@ export default function BetaFeedbackAdmin() {
       }
 
       try {
-        const { data, error } = await supabase.rpc('is_admin', { _user_id: user.id });
+        const { data, error } = await supabase.rpc('is_current_user_admin');
         if (error) throw error;
         setIsAdmin(data as boolean);
       } catch (error) {

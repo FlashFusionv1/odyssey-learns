@@ -1499,8 +1499,12 @@ export type Database = {
         }
         Returns: boolean
       }
-      is_admin: {
+      internal_is_admin: {
         Args: { _user_id: string }
+        Returns: boolean
+      }
+      is_current_user_admin: {
+        Args: Record<PropertyKey, never>
         Returns: boolean
       }
       request_collaboration: {

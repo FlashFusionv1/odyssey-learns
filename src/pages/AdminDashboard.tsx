@@ -41,7 +41,7 @@ export default function AdminDashboard() {
       }
 
       try {
-        const { data, error } = await supabase.rpc('is_admin', { _user_id: user.id });
+        const { data, error } = await supabase.rpc('is_current_user_admin');
         
         if (error) {
           console.error('Admin check failed:', error);

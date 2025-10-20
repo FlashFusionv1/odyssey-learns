@@ -47,11 +47,31 @@ export const LoginForm = () => {
       setLoading(false);
     } else {
       toast.success("Welcome back!");
+      // Verify reCAPTCHA before authentication
+      const recaptchaToken = await executeRecaptcha('login');
+      if (recaptchaToken) {
+        try {
+          const { supabase } = await import('@/integrations/supabase/client');
+          const { data: verifyResult } = await supabase.functions.invoke('verify-recaptcha', {
+            body: { token: recaptchaToken, action: 'login' }
+          });
+
+          if (!verifyResult?.valid) {
+            toast.error('Security verification failed. Please try again.');
+            setLoading(false);
+            return;
+          }
+        } catch (verifyError) {
+          console.warn('reCAPTCHA verification failed:', verifyError);
+          // Continue with login but log the issue
+        }
+      }
+
       // Check if user is admin and route accordingly
       const { supabase } = await import('@/integrations/supabase/client');
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data: isAdmin } = await supabase.rpc('is_admin', { _user_id: user.id });
+        const { data: isAdmin } = await supabase.rpc('is_current_user_admin');
         navigate(isAdmin ? '/admin' : '/parent-dashboard');
       } else {
         navigate('/parent-dashboard');

@@ -7,8 +7,10 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const SUBJECTS = ["Reading", "Math", "Science", "Social Studies", "Art", "Life Skills"];
+const SUBJECTS = ["Reading", "Math", "Science", "Social Studies", "Life Skills"];
 const GRADES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+const LESSONS_PER_GRADE = 50;
+const LESSONS_PER_SUBJECT = 10; // 10 lessons × 5 subjects = 50 lessons per grade
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -26,11 +28,10 @@ serve(async (req) => {
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: authHeader } } }
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
     );
 
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const { data: { user }, error: userError } = await supabase.auth.getUser(authHeader.replace('Bearer ', ''));
     if (userError || !user) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
@@ -38,114 +39,174 @@ serve(async (req) => {
       });
     }
 
-    console.log('Starting automated lesson generation for all grades...');
+    console.log('Starting automated lesson generation...');
+    console.log(`Target: ${LESSONS_PER_GRADE} lessons per grade × ${GRADES.length} grades = ${LESSONS_PER_GRADE * GRADES.length} total lessons`);
     
-    let totalLessons = 0;
+    let totalLessonsCreated = 0;
     const results: any[] = [];
 
-    // Generate lessons for each grade
     for (const grade of GRADES) {
-      console.log(`\n=== Generating lessons for Grade ${grade === 0 ? 'K' : grade} ===`);
+      console.log(`\n=== Processing Grade ${grade === 0 ? 'K' : grade} ===`);
+      
+      const { count: existingCount } = await supabase
+        .from('lessons')
+        .select('*', { count: 'exact', head: true })
+        .eq('grade_level', grade);
+      
+      console.log(`Existing: ${existingCount || 0}/${LESSONS_PER_GRADE}`);
+      
+      if (existingCount && existingCount >= LESSONS_PER_GRADE) {
+        console.log(`✓ Grade ${grade === 0 ? 'K' : grade} complete. Skipping...`);
+        continue;
+      }
+
+      let gradeLessons = 0;
       
       for (const subject of SUBJECTS) {
         try {
-          // Generate ~8 lessons per subject × 6 subjects = ~48 lessons per grade (close to 50)
-          const lessonCount = 8;
+          const { data: existingLessons } = await supabase
+            .from('lessons')
+            .select('id')
+            .eq('grade_level', grade)
+            .eq('subject', subject);
           
-          for (let i = 0; i < lessonCount; i++) {
-            const lessonNum = i + 1;
-            const prompt = buildLessonPrompt(grade, subject, lessonNum);
+          const existingForSubject = existingLessons?.length || 0;
+          const lessonsToCreate = LESSONS_PER_SUBJECT - existingForSubject;
+          
+          if (lessonsToCreate <= 0) {
+            console.log(`✓ ${subject} complete (${existingForSubject}/${LESSONS_PER_SUBJECT})`);
+            continue;
+          }
+          
+          console.log(`Creating ${lessonsToCreate} ${subject} lessons...`);
+          
+          for (let i = 0; i < lessonsToCreate; i++) {
+            const lessonNum = existingForSubject + i + 1;
+            let retries = 3;
+            let success = false;
+            
+            while (retries > 0 && !success) {
+              try {
+                const prompt = buildLessonPrompt(grade, subject, lessonNum);
+                const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
+                
+                if (!lovableApiKey) {
+                  throw new Error('LOVABLE_API_KEY not configured');
+                }
 
-            const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
-            if (!lovableApiKey) {
-              throw new Error('LOVABLE_API_KEY not configured');
-            }
-
-            const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${lovableApiKey}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                model: 'google/gemini-2.5-flash',
-                messages: [
-                  {
-                    role: 'system',
-                    content: 'You are an expert educational content creator. Generate well-structured, age-appropriate lesson content in valid JSON format.'
+                const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+                  method: 'POST',
+                  headers: {
+                    'Authorization': `Bearer ${lovableApiKey}`,
+                    'Content-Type': 'application/json',
                   },
-                  {
-                    role: 'user',
-                    content: prompt
+                  body: JSON.stringify({
+                    model: 'google/gemini-2.5-flash',
+                    messages: [
+                      {
+                        role: 'system',
+                        content: 'You are an expert educational content creator. Generate well-structured, age-appropriate lesson content in valid JSON format.'
+                      },
+                      {
+                        role: 'user',
+                        content: prompt
+                      }
+                    ],
+                  }),
+                });
+
+                if (!aiResponse.ok) {
+                  const errorText = await aiResponse.text();
+                  console.error(`AI API error:`, aiResponse.status, errorText);
+                  
+                  if (aiResponse.status === 429) {
+                    console.log('Rate limit hit, waiting 30 seconds...');
+                    await new Promise(resolve => setTimeout(resolve, 30000));
+                    retries--;
+                    continue;
                   }
-                ],
-              }),
-            });
+                  
+                  if (aiResponse.status === 402) {
+                    throw new Error('Payment required - out of AI credits');
+                  }
+                  
+                  throw new Error(`AI API error: ${aiResponse.status}`);
+                }
 
-            if (!aiResponse.ok) {
-              const errorText = await aiResponse.text();
-              console.error(`AI API error for ${subject} Grade ${grade}:`, aiResponse.status, errorText);
-              
-              if (aiResponse.status === 429) {
-                console.log('Rate limit hit, waiting 20 seconds...');
-                await new Promise(resolve => setTimeout(resolve, 20000));
-                continue;
+                const aiData = await aiResponse.json();
+                const content = aiData.choices?.[0]?.message?.content;
+
+                if (!content) {
+                  console.error('No content in AI response');
+                  retries--;
+                  continue;
+                }
+
+                let lessonData;
+                try {
+                  const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) || content.match(/\{[\s\S]*\}/);
+                  const jsonStr = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : content;
+                  lessonData = JSON.parse(jsonStr);
+                } catch (parseError) {
+                  console.error('Failed to parse JSON:', parseError);
+                  lessonData = {
+                    title: `${subject} Lesson ${lessonNum}`,
+                    description: content.substring(0, 200),
+                    content_markdown: content,
+                    quiz_questions: generateDefaultQuiz(subject, grade),
+                  };
+                }
+
+                const { error: insertError } = await supabase.from('lessons').insert({
+                  title: lessonData.title || `${subject} - Grade ${grade === 0 ? 'K' : grade} Lesson ${lessonNum}`,
+                  description: lessonData.description || `Learn about ${subject.toLowerCase()} concepts`,
+                  subject: subject,
+                  grade_level: grade,
+                  content_markdown: lessonData.content_markdown || lessonData.content || content,
+                  quiz_questions: lessonData.quiz_questions || generateDefaultQuiz(subject, grade),
+                  estimated_minutes: calculateDuration(grade),
+                  points_value: calculatePoints(grade, subject),
+                  standards_alignment: lessonData.standards_alignment || '',
+                  differentiation: lessonData.differentiation || { support: '', extension: '' },
+                  is_active: true,
+                  thumbnail_url: '/placeholder.svg',
+                });
+
+                if (insertError) {
+                  console.error(`Insert failed:`, insertError);
+                  retries--;
+                  continue;
+                }
+
+                totalLessonsCreated++;
+                gradeLessons++;
+                success = true;
+                console.log(`✓ ${subject} Lesson ${lessonNum} created (${totalLessonsCreated} total, ${gradeLessons}/${LESSONS_PER_GRADE} for grade)`);
+
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+              } catch (innerError) {
+                console.error(`Attempt ${4 - retries} failed:`, innerError);
+                retries--;
+                if (retries > 0) {
+                  await new Promise(resolve => setTimeout(resolve, 5000));
+                }
               }
-              throw new Error(`AI API error: ${aiResponse.status}`);
             }
-
-            const aiData = await aiResponse.json();
-            const content = aiData.choices?.[0]?.message?.content;
-
-            if (!content) {
-              console.error('No content in AI response');
-              continue;
+            
+            if (!success) {
+              console.error(`Failed: ${subject} Grade ${grade} Lesson ${lessonNum} after 3 retries`);
+              results.push({
+                grade,
+                subject,
+                lessonNum,
+                error: 'Failed after 3 retries',
+              });
             }
-
-            // Parse JSON from AI response
-            let lessonData;
-            try {
-              const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) || content.match(/\{[\s\S]*\}/);
-              const jsonStr = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : content;
-              lessonData = JSON.parse(jsonStr);
-            } catch (parseError) {
-              console.error('Failed to parse AI response as JSON:', parseError);
-              lessonData = {
-                title: `${subject} Lesson ${lessonNum}`,
-                description: content.substring(0, 200),
-                content_markdown: content,
-                quiz_questions: generateDefaultQuiz(subject, grade),
-              };
-            }
-
-            // Insert lesson into database
-            const { error: insertError } = await supabase.from('lessons').insert({
-              title: lessonData.title || `${subject} - Grade ${grade === 0 ? 'K' : grade} Lesson ${lessonNum}`,
-              description: lessonData.description || `Learn about ${subject.toLowerCase()} concepts`,
-              subject: subject,
-              grade_level: grade,
-              content_markdown: lessonData.content_markdown || lessonData.content || content,
-              quiz_questions: lessonData.quiz_questions || generateDefaultQuiz(subject, grade),
-              estimated_minutes: calculateDuration(grade),
-              points_value: calculatePoints(grade, subject),
-              standards_alignment: lessonData.standards_alignment || '',
-              differentiation: lessonData.differentiation || { support: '', extension: '' },
-              is_active: true,
-            });
-
-            if (insertError) {
-              console.error(`Failed to insert lesson:`, insertError);
-            } else {
-              totalLessons++;
-              console.log(`✓ Created: ${subject} Grade ${grade} Lesson ${lessonNum}`);
-            }
-
-            // Small delay to avoid rate limits
-            await new Promise(resolve => setTimeout(resolve, 1000));
           }
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          console.error(`Error generating ${subject} for grade ${grade}:`, error);
+          console.error(`Error generating ${subject}:`, error);
           results.push({
             grade,
             subject,
@@ -153,19 +214,31 @@ serve(async (req) => {
           });
         }
       }
+      
+      const { count: finalCount } = await supabase
+        .from('lessons')
+        .select('*', { count: 'exact', head: true })
+        .eq('grade_level', grade);
+      
+      console.log(`✓ Grade ${grade === 0 ? 'K' : grade} complete: ${finalCount || 0}/${LESSONS_PER_GRADE}`);
 
-      // Delay between grades to avoid rate limits
       if (grade < GRADES[GRADES.length - 1]) {
-        console.log('Waiting 10 seconds before next grade...');
-        await new Promise(resolve => setTimeout(resolve, 10000));
+        console.log('Waiting 15 seconds before next grade...');
+        await new Promise(resolve => setTimeout(resolve, 15000));
       }
     }
+
+    const { count: totalCount } = await supabase
+      .from('lessons')
+      .select('*', { count: 'exact', head: true });
 
     return new Response(
       JSON.stringify({
         success: true,
-        totalLessons,
-        message: `Successfully generated ${totalLessons} lessons across all grades!`,
+        totalLessonsCreated,
+        totalLessonsInDB: totalCount,
+        target: LESSONS_PER_GRADE * GRADES.length,
+        message: `Created ${totalLessonsCreated} new lessons. Total in DB: ${totalCount}/${LESSONS_PER_GRADE * GRADES.length}`,
         results,
       }),
       {
@@ -244,7 +317,7 @@ function calculateDuration(grade: number): number {
 
 function calculatePoints(grade: number, subject: string): number {
   const basePoints = 50 + (grade * 5);
-  return subject === 'Math' || subject === 'Science' ? basePoints * 1.2 : basePoints;
+  return subject === 'Math' || subject === 'Science' ? Math.floor(basePoints * 1.2) : basePoints;
 }
 
 function generateDefaultQuiz(subject: string, grade: number): any[] {

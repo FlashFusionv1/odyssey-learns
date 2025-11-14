@@ -38,6 +38,8 @@ import AdminSetup from "./pages/AdminSetup";
 import SecurityMonitoring from "./pages/SecurityMonitoring";
 import Phase1LessonGeneration from "./pages/Phase1LessonGeneration";
 import SystemHealth from "./pages/SystemHealth";
+import LessonAnalytics from "./pages/LessonAnalytics";
+import CreatorDashboard from "./pages/CreatorDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -78,6 +80,8 @@ const App = () => (
             <Route path="/beta-feedback" element={<BetaFeedbackAdmin />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/review/:reviewId" element={<LessonReview />} />
+            <Route path="/lesson-analytics/:lessonId" element={<LessonAnalytics />} />
+            <Route path="/creator-dashboard" element={<CreatorDashboard />} />
             <Route path="/security-monitoring" element={<SecurityMonitoring />} />
             <Route path="/system-health" element={<SystemHealth />} />
             <Route path="/seed-lessons" element={<SeedLessons />} />

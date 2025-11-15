@@ -133,6 +133,36 @@ export type Database = {
           },
         ]
       }
+      api_rate_limits: {
+        Row: {
+          created_at: string | null
+          endpoint: string
+          id: string
+          ip_address: string | null
+          request_count: number | null
+          user_id: string | null
+          window_start: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          endpoint: string
+          id?: string
+          ip_address?: string | null
+          request_count?: number | null
+          user_id?: string | null
+          window_start?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          endpoint?: string
+          id?: string
+          ip_address?: string | null
+          request_count?: number | null
+          user_id?: string | null
+          window_start?: string | null
+        }
+        Relationships: []
+      }
       avatar_items: {
         Row: {
           created_at: string | null
@@ -227,16 +257,23 @@ export type Database = {
           child_id: string
           content_markdown: string
           created_at: string | null
+          creator_child_id: string | null
+          description: string | null
           difficulty: string | null
           estimated_minutes: number | null
           generation_prompt: string | null
           grade_level: number
           id: string
           is_active: boolean | null
+          parent_approved_at: string | null
+          parent_approved_by: string | null
           parent_id: string
           points_value: number | null
           quiz_questions: Json | null
+          rejection_reason: string | null
+          share_status: string | null
           subject: string
+          times_used: number | null
           title: string
           updated_at: string | null
         }
@@ -244,16 +281,23 @@ export type Database = {
           child_id: string
           content_markdown: string
           created_at?: string | null
+          creator_child_id?: string | null
+          description?: string | null
           difficulty?: string | null
           estimated_minutes?: number | null
           generation_prompt?: string | null
           grade_level: number
           id?: string
           is_active?: boolean | null
+          parent_approved_at?: string | null
+          parent_approved_by?: string | null
           parent_id: string
           points_value?: number | null
           quiz_questions?: Json | null
+          rejection_reason?: string | null
+          share_status?: string | null
           subject: string
+          times_used?: number | null
           title: string
           updated_at?: string | null
         }
@@ -261,16 +305,23 @@ export type Database = {
           child_id?: string
           content_markdown?: string
           created_at?: string | null
+          creator_child_id?: string | null
+          description?: string | null
           difficulty?: string | null
           estimated_minutes?: number | null
           generation_prompt?: string | null
           grade_level?: number
           id?: string
           is_active?: boolean | null
+          parent_approved_at?: string | null
+          parent_approved_by?: string | null
           parent_id?: string
           points_value?: number | null
           quiz_questions?: Json | null
+          rejection_reason?: string | null
+          share_status?: string | null
           subject?: string
+          times_used?: number | null
           title?: string
           updated_at?: string | null
         }
@@ -278,6 +329,13 @@ export type Database = {
           {
             foreignKeyName: "child_generated_lessons_child_id_fkey"
             columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_generated_lessons_creator_child_id_fkey"
+            columns: ["creator_child_id"]
             isOneToOne: false
             referencedRelation: "children"
             referencedColumns: ["id"]
@@ -440,6 +498,86 @@ export type Database = {
           },
         ]
       }
+      creator_reward_history: {
+        Row: {
+          child_id: string
+          created_at: string | null
+          id: string
+          lesson_id: string | null
+          points_change: number
+          reason: string
+        }
+        Insert: {
+          child_id: string
+          created_at?: string | null
+          id?: string
+          lesson_id?: string | null
+          points_change: number
+          reason: string
+        }
+        Update: {
+          child_id?: string
+          created_at?: string | null
+          id?: string
+          lesson_id?: string | null
+          points_change?: number
+          reason?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_reward_history_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "creator_reward_history_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "child_generated_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_rewards: {
+        Row: {
+          badges: string[] | null
+          child_id: string
+          created_at: string | null
+          id: string
+          level: number | null
+          total_points: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          badges?: string[] | null
+          child_id: string
+          created_at?: string | null
+          id?: string
+          level?: number | null
+          total_points?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          badges?: string[] | null
+          child_id?: string
+          created_at?: string | null
+          id?: string
+          level?: number | null
+          total_points?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_rewards_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: true
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daily_lesson_quota: {
         Row: {
           bonus_lessons_granted: number | null
@@ -485,35 +623,44 @@ export type Database = {
         Row: {
           child_id: string
           coping_strategy: string | null
+          coping_strategy_encrypted: string | null
           created_at: string | null
           emotion_type: string
           id: string
           intensity: number
           logged_at: string | null
           reflection_notes: string | null
+          reflection_notes_encrypted: string | null
           trigger: string | null
+          trigger_encrypted: string | null
         }
         Insert: {
           child_id: string
           coping_strategy?: string | null
+          coping_strategy_encrypted?: string | null
           created_at?: string | null
           emotion_type: string
           id?: string
           intensity: number
           logged_at?: string | null
           reflection_notes?: string | null
+          reflection_notes_encrypted?: string | null
           trigger?: string | null
+          trigger_encrypted?: string | null
         }
         Update: {
           child_id?: string
           coping_strategy?: string | null
+          coping_strategy_encrypted?: string | null
           created_at?: string | null
           emotion_type?: string
           id?: string
           intensity?: number
           logged_at?: string | null
           reflection_notes?: string | null
+          reflection_notes_encrypted?: string | null
           trigger?: string | null
+          trigger_encrypted?: string | null
         }
         Relationships: [
           {
@@ -542,6 +689,92 @@ export type Database = {
           result?: Json
         }
         Relationships: []
+      }
+      lesson_analytics: {
+        Row: {
+          avg_time_seconds: number | null
+          created_at: string | null
+          engagement_score: number | null
+          id: string
+          lesson_id: string
+          total_saves: number | null
+          total_shares: number | null
+          total_views: number | null
+          unique_viewers: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avg_time_seconds?: number | null
+          created_at?: string | null
+          engagement_score?: number | null
+          id?: string
+          lesson_id: string
+          total_saves?: number | null
+          total_shares?: number | null
+          total_views?: number | null
+          unique_viewers?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avg_time_seconds?: number | null
+          created_at?: string | null
+          engagement_score?: number | null
+          id?: string
+          lesson_id?: string
+          total_saves?: number | null
+          total_shares?: number | null
+          total_views?: number | null
+          unique_viewers?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_analytics_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: true
+            referencedRelation: "child_generated_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lesson_analytics_events: {
+        Row: {
+          child_id: string
+          created_at: string | null
+          event_type: string
+          id: string
+          lesson_id: string
+        }
+        Insert: {
+          child_id: string
+          created_at?: string | null
+          event_type: string
+          id?: string
+          lesson_id: string
+        }
+        Update: {
+          child_id?: string
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          lesson_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_analytics_events_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_analytics_events_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "child_generated_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       lesson_notes: {
         Row: {
@@ -995,21 +1228,27 @@ export type Database = {
       rate_limit_violations: {
         Row: {
           created_at: string | null
+          endpoint: string | null
           id: string
+          ip_address: string | null
           metadata: Json | null
           parent_id: string
           violation_type: string
         }
         Insert: {
           created_at?: string | null
+          endpoint?: string | null
           id?: string
+          ip_address?: string | null
           metadata?: Json | null
           parent_id: string
           violation_type: string
         }
         Update: {
           created_at?: string | null
+          endpoint?: string | null
           id?: string
+          ip_address?: string | null
           metadata?: Json | null
           parent_id?: string
           violation_type?: string
@@ -1245,6 +1484,48 @@ export type Database = {
           },
         ]
       }
+      security_access_log: {
+        Row: {
+          access_type: string
+          accessed_at: string | null
+          accessed_record_id: string | null
+          accessed_table: string
+          error_message: string | null
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          success: boolean | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          access_type: string
+          accessed_at?: string | null
+          accessed_record_id?: string | null
+          accessed_table: string
+          error_message?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          success?: boolean | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          access_type?: string
+          accessed_at?: string | null
+          accessed_record_id?: string | null
+          accessed_table?: string
+          error_message?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          success?: boolean | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       shared_activities: {
         Row: {
           activity_type: string
@@ -1456,24 +1737,51 @@ export type Database = {
       }
     }
     Functions: {
-      add_admin_role: {
-        Args: { _email: string }
+      add_admin_role: { Args: { _email: string }; Returns: undefined }
+      award_creator_points: {
+        Args: {
+          p_child_id: string
+          p_lesson_id?: string
+          p_points: number
+          p_reason: string
+        }
         Returns: undefined
       }
-      calculate_streak: {
-        Args: { p_child_id: string }
+      calculate_creator_level: { Args: { p_points: number }; Returns: number }
+      calculate_engagement_score: {
+        Args: {
+          p_saves: number
+          p_shares: number
+          p_unique_viewers: number
+          p_views: number
+        }
         Returns: number
       }
+      calculate_streak: { Args: { p_child_id: string }; Returns: number }
       check_platform_lesson_quota: {
         Args: { p_child_id: string }
         Returns: Json
       }
-      cleanup_idempotency_cache: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
+      check_rate_limit: {
+        Args: {
+          p_endpoint: string
+          p_max_requests: number
+          p_user_id: string
+          p_window_minutes: number
+        }
+        Returns: Json
+      }
+      cleanup_idempotency_cache: { Args: never; Returns: undefined }
+      decrypt_emotion_field: {
+        Args: { ciphertext: string; encryption_key: string }
+        Returns: string
+      }
+      encrypt_emotion_field: {
+        Args: { encryption_key: string; plaintext: string }
+        Returns: string
       }
       get_review_statistics: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           approved_reviews: number
           avg_overall_score: number
@@ -1499,13 +1807,19 @@ export type Database = {
         }
         Returns: boolean
       }
-      internal_is_admin: {
-        Args: { _user_id: string }
-        Returns: boolean
+      increment_lesson_usage: {
+        Args: { lesson_uuid: string }
+        Returns: undefined
       }
-      is_current_user_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
+      internal_is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_current_user_admin: { Args: never; Returns: boolean }
+      log_sensitive_access: {
+        Args: {
+          p_access_type: string
+          p_record_id: string
+          p_table_name: string
+        }
+        Returns: undefined
       }
       request_collaboration: {
         Args: {

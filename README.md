@@ -4,6 +4,9 @@ A comprehensive K-12 educational platform combining emotional intelligence train
 
 ## 📚 Documentation
 
+### ⚡ Quick Reference
+- **[DEVELOPER_CHEAT_SHEET.md](docs/DEVELOPER_CHEAT_SHEET.md)** - 🎯 **START HERE!** 2-page quick reference for daily tasks
+
 ### Core Documentation
 - **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System architecture, technology stack, data flow
 - **[DEVELOPER_ONBOARDING.md](docs/DEVELOPER_ONBOARDING.md)** - New developer setup guide

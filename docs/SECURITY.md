@@ -478,6 +478,38 @@ export const sanitizeURL = (url: string): string => {
 
 Rate limiting prevents abuse by limiting the number of requests a user can make within a time window.
 
+### Edge Function Rate Limiting Middleware
+
+All edge functions should use the centralized rate limiting middleware:
+
+```typescript
+import { rateLimitMiddleware } from '../_shared/rateLimitMiddleware.ts';
+
+serve(async (req) => {
+  // Handle CORS
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  // Apply rate limiting
+  const rateLimitResponse = await rateLimitMiddleware(req, {
+    maxRequests: 10,
+    windowMinutes: 60,
+    endpoint: 'my-function'
+  });
+  
+  if (rateLimitResponse) return rateLimitResponse;
+  
+  // ... rest of function logic
+});
+```
+
+This middleware automatically:
+- Validates JWT tokens
+- Checks rate limits via database RPC
+- Logs violations to `rate_limit_violations` table
+- Returns proper 429 responses with `Retry-After` headers
+
 ### Client-Side Rate Limiting
 
 **Purpose:** Provide immediate feedback to user before hitting server

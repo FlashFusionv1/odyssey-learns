@@ -349,6 +349,9 @@ export type Database = {
           created_at: string | null
           daily_quest_id: string | null
           daily_screen_time_limit_minutes: number | null
+          deleted_at: string | null
+          deletion_reason: string | null
+          deletion_scheduled_at: string | null
           grade_level: number
           id: string
           name: string
@@ -366,6 +369,9 @@ export type Database = {
           created_at?: string | null
           daily_quest_id?: string | null
           daily_screen_time_limit_minutes?: number | null
+          deleted_at?: string | null
+          deletion_reason?: string | null
+          deletion_scheduled_at?: string | null
           grade_level: number
           id?: string
           name: string
@@ -383,6 +389,9 @@ export type Database = {
           created_at?: string | null
           daily_quest_id?: string | null
           daily_screen_time_limit_minutes?: number | null
+          deleted_at?: string | null
+          deletion_reason?: string | null
+          deletion_scheduled_at?: string | null
           grade_level?: number
           id?: string
           name?: string
@@ -664,6 +673,92 @@ export type Database = {
           },
         ]
       }
+      data_access_audit: {
+        Row: {
+          access_count: number | null
+          access_type: string
+          accessed_at: string | null
+          accessed_record_id: string | null
+          accessed_table: string
+          id: string
+          ip_address: unknown
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          access_count?: number | null
+          access_type: string
+          accessed_at?: string | null
+          accessed_record_id?: string | null
+          accessed_table: string
+          id?: string
+          ip_address?: unknown
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          access_count?: number | null
+          access_type?: string
+          accessed_at?: string | null
+          accessed_record_id?: string | null
+          accessed_table?: string
+          id?: string
+          ip_address?: unknown
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_access_audit_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      data_export_log: {
+        Row: {
+          child_id: string | null
+          export_format: string
+          export_size_bytes: number | null
+          exported_at: string | null
+          id: string
+          parent_id: string
+        }
+        Insert: {
+          child_id?: string | null
+          export_format: string
+          export_size_bytes?: number | null
+          exported_at?: string | null
+          id?: string
+          parent_id: string
+        }
+        Update: {
+          child_id?: string | null
+          export_format?: string
+          export_size_bytes?: number | null
+          exported_at?: string | null
+          id?: string
+          parent_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "data_export_log_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "data_export_log_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       emotion_logs: {
         Row: {
           child_id: string
@@ -759,6 +854,36 @@ export type Database = {
         }
         Relationships: []
       }
+      failed_auth_attempts: {
+        Row: {
+          attempted_at: string | null
+          email: string | null
+          failure_reason: string
+          id: string
+          ip_address: unknown
+          metadata: Json | null
+          user_agent: string | null
+        }
+        Insert: {
+          attempted_at?: string | null
+          email?: string | null
+          failure_reason: string
+          id?: string
+          ip_address: unknown
+          metadata?: Json | null
+          user_agent?: string | null
+        }
+        Update: {
+          attempted_at?: string | null
+          email?: string | null
+          failure_reason?: string
+          id?: string
+          ip_address?: unknown
+          metadata?: Json | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       idempotency_cache: {
         Row: {
           created_at: string | null
@@ -774,6 +899,30 @@ export type Database = {
           created_at?: string | null
           key?: string
           result?: Json
+        }
+        Relationships: []
+      }
+      ip_blocklist: {
+        Row: {
+          blocked_at: string | null
+          expires_at: string
+          ip_address: unknown
+          metadata: Json | null
+          reason: string
+        }
+        Insert: {
+          blocked_at?: string | null
+          expires_at: string
+          ip_address: unknown
+          metadata?: Json | null
+          reason: string
+        }
+        Update: {
+          blocked_at?: string | null
+          expires_at?: string
+          ip_address?: unknown
+          metadata?: Json | null
+          reason?: string
         }
         Relationships: []
       }
@@ -1427,6 +1576,50 @@ export type Database = {
           },
         ]
       }
+      parental_consent_log: {
+        Row: {
+          consent_text: string
+          consent_type: string
+          consent_version: string
+          consented_at: string
+          id: string
+          ip_address: unknown
+          metadata: Json | null
+          parent_id: string
+          user_agent: string | null
+        }
+        Insert: {
+          consent_text: string
+          consent_type: string
+          consent_version: string
+          consented_at?: string
+          id?: string
+          ip_address?: unknown
+          metadata?: Json | null
+          parent_id: string
+          user_agent?: string | null
+        }
+        Update: {
+          consent_text?: string
+          consent_type?: string
+          consent_version?: string
+          consented_at?: string
+          id?: string
+          ip_address?: unknown
+          metadata?: Json | null
+          parent_id?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parental_consent_log_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       peer_connections: {
         Row: {
           accepted_at: string | null
@@ -1471,7 +1664,11 @@ export type Database = {
       }
       profiles: {
         Row: {
+          age_verified: boolean | null
           avatar_url: string | null
+          birth_year: number | null
+          coppa_consent_version: string | null
+          coppa_consented_at: string | null
           created_at: string | null
           full_name: string
           id: string
@@ -1479,7 +1676,11 @@ export type Database = {
           onboarding_step: number | null
         }
         Insert: {
+          age_verified?: boolean | null
           avatar_url?: string | null
+          birth_year?: number | null
+          coppa_consent_version?: string | null
+          coppa_consented_at?: string | null
           created_at?: string | null
           full_name: string
           id: string
@@ -1487,7 +1688,11 @@ export type Database = {
           onboarding_step?: number | null
         }
         Update: {
+          age_verified?: boolean | null
           avatar_url?: string | null
+          birth_year?: number | null
+          coppa_consent_version?: string | null
+          coppa_consented_at?: string | null
           created_at?: string | null
           full_name?: string
           id?: string
@@ -1827,6 +2032,60 @@ export type Database = {
         }
         Relationships: []
       }
+      security_alerts: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          alert_type: string
+          created_at: string | null
+          id: string
+          message: string
+          metadata: Json | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_type: string
+          created_at?: string | null
+          id?: string
+          message: string
+          metadata?: Json | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          alert_type?: string
+          created_at?: string | null
+          id?: string
+          message?: string
+          metadata?: Json | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "security_alerts_acknowledged_by_fkey"
+            columns: ["acknowledged_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "security_alerts_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shared_activities: {
         Row: {
           activity_type: string
@@ -1957,6 +2216,35 @@ export type Database = {
             columns: ["lesson_id"]
             isOneToOne: false
             referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_access_baselines: {
+        Row: {
+          baseline_updated_at: string | null
+          table_access_patterns: Json | null
+          typical_access_times: string[] | null
+          user_id: string
+        }
+        Insert: {
+          baseline_updated_at?: string | null
+          table_access_patterns?: Json | null
+          typical_access_times?: string[] | null
+          user_id: string
+        }
+        Update: {
+          baseline_updated_at?: string | null
+          table_access_patterns?: Json | null
+          typical_access_times?: string[] | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_access_baselines_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]

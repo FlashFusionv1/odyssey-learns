@@ -1,25 +1,19 @@
-import { useState, useEffect, createContext, useContext } from 'react';
+import { useState, useEffect, createContext, useContext, useCallback } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  isAdmin: boolean;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  checkAdminStatus: () => Promise<boolean>;
 }
 
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  session: null,
-  loading: true,
-  signUp: async () => ({ error: null }),
-  signIn: async () => ({ error: null }),
-  signOut: async () => {},
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -33,27 +27,55 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  const checkAdminStatus = useCallback(async (): Promise<boolean> => {
+    if (!user) return false;
+    try {
+      const { data } = await supabase.rpc('is_current_user_admin');
+      const adminStatus = !!data;
+      setIsAdmin(adminStatus);
+      return adminStatus;
+    } catch {
+      setIsAdmin(false);
+      return false;
+    }
+  }, [user]);
 
   useEffect(() => {
-    // Set up auth state listener
+    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Check admin status when user changes (deferred to avoid deadlock)
+        if (session?.user) {
+          setTimeout(() => {
+            checkAdminStatus();
+          }, 0);
+        } else {
+          setIsAdmin(false);
+        }
       }
     );
 
-    // Check for existing session
+    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      
+      if (session?.user) {
+        setTimeout(() => {
+          checkAdminStatus();
+        }, 0);
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [checkAdminStatus]);
 
   const signUp = async (email: string, password: string, fullName: string) => {
     const redirectUrl = `${window.location.origin}/parent-setup`;
@@ -78,12 +100,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signOut = async () => {
+    setIsAdmin(false);
     await supabase.auth.signOut();
-    navigate('/login');
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      session, 
+      loading, 
+      isAdmin,
+      signUp, 
+      signIn, 
+      signOut,
+      checkAdminStatus 
+    }}>
       {children}
     </AuthContext.Provider>
   );

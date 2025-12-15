@@ -28,18 +28,24 @@ export const SignupForm = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{ fullName?: string; email?: string; password?: string; confirmPassword?: string }>({});
   const { signUp } = useAuth();
   const navigate = useNavigate();
   const { executeRecaptcha } = useRecaptcha();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
 
     const result = signupFormSchema.safeParse({ fullName, email, password, confirmPassword });
     
     if (!result.success) {
-      const firstError = result.error.errors[0];
-      toast.error(firstError.message);
+      const fieldErrors: typeof errors = {};
+      result.error.errors.forEach((err) => {
+        const field = err.path[0] as keyof typeof errors;
+        fieldErrors[field] = err.message;
+      });
+      setErrors(fieldErrors);
       return;
     }
 
@@ -80,9 +86,13 @@ export const SignupForm = () => {
       const { error } = await signUp(result.data.email, result.data.password, result.data.fullName);
 
       if (error) {
-        toast.error(error.message || "Failed to create account");
+        if (error.message?.includes('already registered')) {
+          toast.error("An account with this email already exists. Please login instead.");
+        } else {
+          toast.error(error.message || "Failed to create account");
+        }
       } else {
-        toast.success("Account created! Please check your email.");
+        toast.success("Account created successfully!");
         navigate('/parent-setup');
       }
     } catch (err) {
@@ -94,44 +104,74 @@ export const SignupForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 w-full max-w-md">
+    <form onSubmit={handleSubmit} className="space-y-6 w-full max-w-md" noValidate>
       <div className="space-y-2">
         <Label htmlFor="fullName">Full Name</Label>
         <Input
           id="fullName"
+          name="fullName"
           type="text"
           placeholder="John Doe"
           value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-          required
+          onChange={(e) => {
+            setFullName(e.target.value);
+            setErrors((prev) => ({ ...prev, fullName: undefined }));
+          }}
+          aria-invalid={!!errors.fullName}
+          aria-describedby={errors.fullName ? "fullName-error" : undefined}
           className="focus-ring"
         />
+        {errors.fullName && (
+          <p id="fullName-error" className="text-sm text-destructive" role="alert">
+            {errors.fullName}
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="signup-email">Email</Label>
         <Input
-          id="email"
+          id="signup-email"
+          name="email"
           type="email"
           placeholder="parent@example.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setErrors((prev) => ({ ...prev, email: undefined }));
+          }}
+          aria-invalid={!!errors.email}
+          aria-describedby={errors.email ? "signup-email-error" : undefined}
           className="focus-ring"
         />
+        {errors.email && (
+          <p id="signup-email-error" className="text-sm text-destructive" role="alert">
+            {errors.email}
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="signup-password">Password</Label>
         <PasswordInput
-          id="password"
+          id="signup-password"
+          name="password"
           placeholder="••••••••"
           value={password}
           maxLength={128}
-          onChange={(e) => setPassword(e.target.value)}
-          required
+          onChange={(e) => {
+            setPassword(e.target.value);
+            setErrors((prev) => ({ ...prev, password: undefined }));
+          }}
+          aria-invalid={!!errors.password}
+          aria-describedby={errors.password ? "signup-password-error" : undefined}
           className="focus-ring"
         />
+        {errors.password && (
+          <p id="signup-password-error" className="text-sm text-destructive" role="alert">
+            {errors.password}
+          </p>
+        )}
         <PasswordStrengthMeter password={password} />
       </div>
 
@@ -139,13 +179,23 @@ export const SignupForm = () => {
         <Label htmlFor="confirmPassword">Confirm Password</Label>
         <PasswordInput
           id="confirmPassword"
+          name="confirmPassword"
           maxLength={128}
           placeholder="••••••••"
           value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
+          onChange={(e) => {
+            setConfirmPassword(e.target.value);
+            setErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+          }}
+          aria-invalid={!!errors.confirmPassword}
+          aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
           className="focus-ring"
         />
+        {errors.confirmPassword && (
+          <p id="confirmPassword-error" className="text-sm text-destructive" role="alert">
+            {errors.confirmPassword}
+          </p>
+        )}
       </div>
 
       <Button

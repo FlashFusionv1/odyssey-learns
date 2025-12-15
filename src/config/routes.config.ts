@@ -5,8 +5,8 @@ import type { RouteConfig, RouteGroup, AppRoutes } from '@/types/routes';
 
 // Eager-loaded pages (landing, auth, static)
 import Landing from '@/pages/Landing';
-import Index from '@/pages/Index';
-import Login from '@/pages/Login';
+import Auth from '@/pages/Auth';
+import ChildSelector from '@/pages/ChildSelector';
 import ResetPassword from '@/pages/ResetPassword';
 import UpdatePassword from '@/pages/UpdatePassword';
 import About from '@/pages/About';
@@ -56,7 +56,7 @@ const SystemHealth = createLazyRoute(() => import('@/pages/SystemHealth'));
 export const authRoutes: RouteConfig[] = [
   {
     path: ROUTE_PATHS.AUTH.LOGIN,
-    component: Login,
+    component: Auth,
     requireAuth: false,
     meta: {
       title: 'Login - Inner Odyssey',
@@ -100,8 +100,8 @@ export const publicRoutes: RouteConfig[] = [
   },
   {
     path: ROUTE_PATHS.INDEX,
-    component: Index,
-    requireAuth: false,
+    component: ChildSelector,
+    requireAuth: true,
   },
   {
     path: ROUTE_PATHS.PUBLIC.ABOUT,

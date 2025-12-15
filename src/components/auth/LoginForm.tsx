@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { loginSchema } from "@/lib/schemas/auth";
@@ -17,7 +17,6 @@ export const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const { signIn } = useAuth();
-  const navigate = useNavigate();
   const { executeRecaptcha } = useRecaptcha();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,31 +38,24 @@ export const LoginForm = () => {
 
     setLoading(true);
 
-    // Check rate limit before attempting login
-    const rateLimit = await checkServerRateLimit(
-      RATE_LIMITS.LOGIN.endpoint,
-      RATE_LIMITS.LOGIN.maxRequests,
-      RATE_LIMITS.LOGIN.windowMinutes
-    );
-
-    if (!rateLimit.allowed) {
-      toast.error(
-        `Too many login attempts. Please wait ${Math.ceil((rateLimit.retryAfter || 0) / 60)} minutes.`,
-        { duration: 8000 }
+    try {
+      // Check rate limit before attempting login
+      const rateLimit = await checkServerRateLimit(
+        RATE_LIMITS.LOGIN.endpoint,
+        RATE_LIMITS.LOGIN.maxRequests,
+        RATE_LIMITS.LOGIN.windowMinutes
       );
-      setLoading(false);
-      return;
-    }
 
-    const { error } = await signIn(validation.data.email, validation.data.password);
+      if (!rateLimit.allowed) {
+        toast.error(
+          `Too many login attempts. Please wait ${Math.ceil((rateLimit.retryAfter || 0) / 60)} minutes.`,
+          { duration: 8000 }
+        );
+        setLoading(false);
+        return;
+      }
 
-    if (error) {
-      // Generic error message to prevent user enumeration
-      toast.error("Invalid email or password");
-      setLoading(false);
-    } else {
-      toast.success("Welcome back!");
-      // Verify reCAPTCHA before authentication
+      // Execute reCAPTCHA
       const recaptchaToken = await executeRecaptcha('login');
       if (recaptchaToken) {
         try {
@@ -83,15 +75,20 @@ export const LoginForm = () => {
         }
       }
 
-      // Check if user is admin and route accordingly
-      const { supabase } = await import('@/integrations/supabase/client');
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: isAdmin } = await supabase.rpc('is_current_user_admin');
-        navigate(isAdmin ? '/admin' : '/parent-dashboard');
+      const { error } = await signIn(validation.data.email, validation.data.password);
+
+      if (error) {
+        // Generic error message to prevent user enumeration
+        toast.error("Invalid email or password");
       } else {
-        navigate('/parent-dashboard');
+        toast.success("Welcome back!");
+        // Navigation is handled by Auth page via useEffect watching user state
       }
+    } catch (err) {
+      console.error('Login error:', err);
+      toast.error('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -101,6 +98,7 @@ export const LoginForm = () => {
         <Label htmlFor="email">Email</Label>
         <Input
           id="email"
+          name="email"
           type="email"
           placeholder="parent@example.com"
           value={email}
@@ -128,6 +126,7 @@ export const LoginForm = () => {
         </div>
         <PasswordInput
           id="password"
+          name="password"
           placeholder="••••••••"
           value={password}
           maxLength={128}

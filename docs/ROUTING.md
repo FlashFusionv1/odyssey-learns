@@ -35,11 +35,13 @@ src/
 - Custom auth-themed loading spinner
 - Email confirmation flow support
 
-**Example**:
+**Example** (used in App.tsx):
 ```tsx
-import { AuthRoutes } from '@/routes/AuthRoutes';
+import { renderAuthRoutes } from '@/routes';
 
-<Route path="/login" element={<AuthRoutes />} />
+<Routes>
+  {renderAuthRoutes()}
+</Routes>
 ```
 
 ---
@@ -67,11 +69,13 @@ import { AuthRoutes } from '@/routes/AuthRoutes';
 - `/beta-program` - Beta program info
 - `*` - 404 Not Found
 
-**Example**:
+**Example** (used in App.tsx):
 ```tsx
-import { PublicRoutes } from '@/routes/PublicRoutes';
+import { renderPublicRoutes } from '@/routes';
 
-<Route path="*" element={<PublicRoutes />} />
+<Routes>
+  {renderPublicRoutes()}
+</Routes>
 ```
 
 ---
@@ -88,11 +92,13 @@ import { PublicRoutes } from '@/routes/PublicRoutes';
 - `/parent` - Parent dashboard
 - `/parent-setup` - Initial parent setup wizard
 
-**Example**:
+**Example** (used in App.tsx):
 ```tsx
-import { ParentRoutes } from '@/routes/ParentRoutes';
+import { renderParentRoutes } from '@/routes';
 
-<Route path="/parent" element={<ParentRoutes />} />
+<Routes>
+  {renderParentRoutes()}
+</Routes>
 ```
 
 ---
@@ -119,11 +125,13 @@ import { ParentRoutes } from '@/routes/ParentRoutes';
 - `/settings` - Child settings
 - `/rewards` - Reward redemption
 
-**Example**:
+**Example** (used in App.tsx):
 ```tsx
-import { ChildRoutes } from '@/routes/ChildRoutes';
+import { renderChildRoutes } from '@/routes';
 
-<Route path="/lessons/*" element={<ChildRoutes />} />
+<Routes>
+  {renderChildRoutes()}
+</Routes>
 ```
 
 ---
@@ -152,11 +160,13 @@ import { ChildRoutes } from '@/routes/ChildRoutes';
 - `/security-monitoring` - Security dashboard
 - `/system-health` - System health monitoring
 
-**Example**:
+**Example** (used in App.tsx):
 ```tsx
-import { AdminRoutes } from '@/routes/AdminRoutes';
+import { renderAdminRoutes } from '@/routes';
 
-<Route path="/admin" element={<AdminRoutes />} />
+<Routes>
+  {renderAdminRoutes()}
+</Routes>
 ```
 
 ---

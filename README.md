@@ -1,11 +1,23 @@
 # Inner Odyssey - The Learning Adventure
 
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](CHANGELOG.md)
+[![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
+[![Beta](https://img.shields.io/badge/status-Beta-yellow.svg)](docs/BETA_LAUNCH_CHECKLIST.md)
+
 A comprehensive K-12 educational platform combining emotional intelligence training, academic excellence, and real-world life skills in an engaging, gamified learning environment.
 
 ## 📚 Documentation
 
 ### ⚡ Quick Reference
-- **[DEVELOPER_CHEAT_SHEET.md](docs/DEVELOPER_CHEAT_SHEET.md)** - 🎯 **START HERE!** 2-page quick reference for daily tasks
+- **[DEVELOPER_CHEAT_SHEET.md](docs/DEVELOPER_CHEAT_SHEET.md)** - 🎯 **START HERE!** 2-page quick reference
+- **[CLAUDE.md](CLAUDE.md)** - AI agent development guide
+- **[ROADMAP.md](ROADMAP.md)** - Product roadmap to post-MVP
+- **[CHANGELOG.md](CHANGELOG.md)** - Version history and release notes
+
+### AI Agent Documentation
+- **[CLAUDE.md](CLAUDE.md)** - Claude AI development patterns & codebase guidance
+- **[AGENTS.md](AGENTS.md)** - Multi-agent collaboration workflows
+- **[GEMINI.md](GEMINI.md)** - Lovable AI content generation integration
 
 ### Core Documentation
 - **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System architecture, technology stack, data flow
@@ -294,6 +306,6 @@ Inner Odyssey is proprietary software. All rights reserved.
 
 ---
 
-**Last Updated:** 2025-11-15  
-**Version:** 1.2.0 (Beta)  
+**Last Updated:** 2025-12-30
+**Version:** 1.2.0 (Beta)
 **Maintainer:** Inner Odyssey Development Team

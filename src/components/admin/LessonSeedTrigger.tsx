@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { Loader2, PlayCircle, CheckCircle2, AlertCircle } from "lucide-react";
+import { Grade2LessonSeedTrigger } from "./Grade2LessonSeedTrigger";
+import { KindergartenLessonSeedTrigger } from "./KindergartenLessonSeedTrigger";
 
 export const LessonSeedTrigger = () => {
   const [isSeeding, setIsSeeding] = useState(false);
@@ -47,16 +49,20 @@ export const LessonSeedTrigger = () => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <PlayCircle className="h-5 w-5" />
-          Lesson Seeding
-        </CardTitle>
-        <CardDescription>
-          Generate all 624 lessons across grades K-12 (50 lessons per grade covering Reading, Math, Science, Social Studies, and Life Skills)
-        </CardDescription>
-      </CardHeader>
+    <div className="space-y-6">
+      <KindergartenLessonSeedTrigger />
+      <Grade2LessonSeedTrigger />
+      
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <PlayCircle className="h-5 w-5" />
+            Lesson Seeding (All Grades)
+          </CardTitle>
+          <CardDescription>
+            Generate all 624 lessons across grades K-12 (50 lessons per grade covering Reading, Math, Science, Social Studies, and Life Skills)
+          </CardDescription>
+        </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center gap-4">
           <Button
@@ -127,7 +133,8 @@ export const LessonSeedTrigger = () => {
           <p>• Progress is saved per grade, so you can restart if interrupted</p>
           <p>• Each lesson is generated with AI-powered content, quizzes, and age-appropriate material</p>
         </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 };

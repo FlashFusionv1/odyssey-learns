@@ -3,6 +3,12 @@ project_id = "hcsglifjqdmiykrrmncn"
 [functions.health-check]
 verify_jwt = false
 
+[functions.survey-analytics]
+verify_jwt = true
+
+[functions.performance-alerts]
+verify_jwt = true
+
 [functions.generate-lesson-content]
 verify_jwt = true
 
@@ -19,4 +25,10 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.seed-lessons]
+verify_jwt = true
+
+[functions.seed-grade-2-lessons]
+verify_jwt = true
+
+[functions.seed-kindergarten-lessons]
 verify_jwt = true

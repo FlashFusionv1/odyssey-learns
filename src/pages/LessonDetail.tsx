@@ -19,6 +19,8 @@ import { CelebrationModal } from "@/components/celebration/CelebrationModal";
 import { checkAndAwardBadges } from "@/lib/badgeChecker";
 import * as analytics from "@/lib/analytics";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PerformanceQuickView } from "@/components/analytics/PerformanceQuickView";
 
 interface Lesson {
   id: string;
@@ -367,15 +369,22 @@ const LessonDetail = () => {
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-6">
-            {!isInProgress && !isCompleted && (
-              <Button onClick={handleStartLesson} size="lg" className="w-full">
-                Start Lesson
-              </Button>
-            )}
+          <Tabs defaultValue="overview" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="performance">Performance</TabsTrigger>
+            </TabsList>
 
-            {(isInProgress || isCompleted) && (
-              <>
+            <TabsContent value="overview">
+              <CardContent className="space-y-6">
+                {!isInProgress && !isCompleted && (
+                  <Button onClick={handleStartLesson} size="lg" className="w-full">
+                    Start Lesson
+                  </Button>
+                )}
+
+                {(isInProgress || isCompleted) && (
+                  <>
                 <SafeMarkdown 
                   content={lesson.content_markdown}
                   className="prose prose-sm max-w-none dark:prose-invert"
@@ -438,23 +447,40 @@ const LessonDetail = () => {
                 )}
               </>
             )}
-          </CardContent>
+              </CardContent>
+            </TabsContent>
+
+            <TabsContent value="performance">
+              <CardContent className="space-y-6">
+                <PerformanceQuickView lessonId={id!} />
+                
+                <div className="text-center pt-4">
+                  <Button 
+                    variant="outline"
+                    onClick={() => navigate(`/lesson-performance/${id}`)}
+                  >
+                    View Detailed Analytics
+                  </Button>
+                </div>
+              </CardContent>
+            </TabsContent>
+          </Tabs>
         </Card>
 
-        {(isInProgress || isCompleted) && (
-          <>
-            <DigitalNotebook 
-              childId={childId!} 
-              lessonId={id!} 
-              lessonTitle={lesson.title} 
-            />
-            
-            <CollaborativeActivity 
-              childId={childId!} 
-              lessonId={id!} 
-            />
-          </>
-        )}
+      {(isInProgress || isCompleted) && (
+        <>
+          <DigitalNotebook 
+            childId={childId!} 
+            lessonId={id!} 
+            lessonTitle={lesson.title} 
+          />
+          
+          <CollaborativeActivity 
+            childId={childId!} 
+            lessonId={id!} 
+          />
+        </>
+      )}
       </div>
     </AppLayout>
   );

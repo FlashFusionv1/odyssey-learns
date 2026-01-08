@@ -13,9 +13,11 @@ import {
   TableRow 
 } from "@/components/ui/table";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { 
   CheckCircle, XCircle, Clock, AlertTriangle, 
-  Eye, Filter, Download, TrendingUp 
+  Eye, Filter, Download, TrendingUp, ChevronDown, CheckSquare 
 } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -45,6 +47,7 @@ interface LessonReview {
   started_at: string | null;
   completed_at: string | null;
   status_label: string;
+  priority?: string;
 }
 
 export function ContentReviewDashboard() {
@@ -53,6 +56,12 @@ export function ContentReviewDashboard() {
   const [stats, setStats] = useState<ReviewStats | null>(null);
   const [reviews, setReviews] = useState<LessonReview[]>([]);
   const [filter, setFilter] = useState<string>('all');
+  const [priorityFilter, setPriorityFilter] = useState<string>('all');
+  const [selectedReviews, setSelectedReviews] = useState<Set<string>>(new Set());
+  const [bulkActionLoading, setBulkActionLoading] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [gradeFilter, setGradeFilter] = useState<string>('all');
+  const [subjectFilter, setSubjectFilter] = useState<string>('all');
 
   useEffect(() => {
     loadReviewData();
@@ -82,6 +91,20 @@ export function ContentReviewDashboard() {
       toast.error('Failed to load review dashboard');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAutoAssign = async () => {
+    try {
+      const { data, error } = await supabase.rpc('auto_assign_pending_reviews');
+      if (error) throw error;
+      
+      const result = data as { success: boolean; assigned_count: number; message: string };
+      toast.success(`${result.assigned_count} reviews auto-assigned successfully`);
+      loadReviewData();
+    } catch (error) {
+      console.error('Auto-assign failed:', error);
+      toast.error('Failed to auto-assign reviews');
     }
   };
 
@@ -116,9 +139,69 @@ export function ContentReviewDashboard() {
   };
 
   const filteredReviews = reviews.filter(review => {
-    if (filter === 'all') return true;
-    return review.review_status === filter;
+    if (filter !== 'all' && review.review_status !== filter) return false;
+    if (priorityFilter !== 'all' && review.priority !== priorityFilter) return false;
+    return true;
   });
+
+  const toggleReviewSelection = (reviewId: string) => {
+    const newSelection = new Set(selectedReviews);
+    if (newSelection.has(reviewId)) {
+      newSelection.delete(reviewId);
+    } else {
+      newSelection.add(reviewId);
+    }
+    setSelectedReviews(newSelection);
+  };
+
+  const handleBulkApprove = async () => {
+    if (selectedReviews.size === 0) return;
+    
+    setBulkActionLoading(true);
+    try {
+      const updates = Array.from(selectedReviews).map(reviewId =>
+        supabase
+          .from('lesson_reviews')
+          .update({ status: 'approved', completed_at: new Date().toISOString() })
+          .eq('id', reviewId)
+      );
+
+      await Promise.all(updates);
+      toast.success(`Approved ${selectedReviews.size} reviews`);
+      setSelectedReviews(new Set());
+      loadReviewData();
+    } catch (error) {
+      toast.error('Failed to approve reviews');
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
+
+  const handleBulkReject = async () => {
+    if (selectedReviews.size === 0) return;
+    
+    const confirmed = confirm(`Reject ${selectedReviews.size} lessons?`);
+    if (!confirmed) return;
+
+    setBulkActionLoading(true);
+    try {
+      const updates = Array.from(selectedReviews).map(reviewId =>
+        supabase
+          .from('lesson_reviews')
+          .update({ status: 'rejected', completed_at: new Date().toISOString() })
+          .eq('id', reviewId)
+      );
+
+      await Promise.all(updates);
+      toast.success(`Rejected ${selectedReviews.size} reviews`);
+      setSelectedReviews(new Set());
+      loadReviewData();
+    } catch (error) {
+      toast.error('Failed to reject reviews');
+    } finally {
+      setBulkActionLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -192,6 +275,67 @@ export function ContentReviewDashboard() {
         </Card>
       </div>
 
+      {/* Filters */}
+      <div className="flex gap-2 mb-6 flex-wrap">
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="in_review">In Review</SelectItem>
+              <SelectItem value="approved">Approved</SelectItem>
+              <SelectItem value="rejected">Rejected</SelectItem>
+              <SelectItem value="needs_revision">Needs Revision</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Select value={gradeFilter} onValueChange={setGradeFilter}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="All Grades" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Grades</SelectItem>
+              <SelectItem value="0">Kindergarten</SelectItem>
+              {[1,2,3,4,5,6,7,8,9,10,11,12].map(g => (
+                <SelectItem key={g} value={String(g)}>Grade {g}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          
+          <Select value={subjectFilter} onValueChange={setSubjectFilter}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="All Subjects" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Subjects</SelectItem>
+              <SelectItem value="reading">Reading</SelectItem>
+              <SelectItem value="math">Math</SelectItem>
+              <SelectItem value="science">Science</SelectItem>
+              <SelectItem value="social">Social Studies</SelectItem>
+              <SelectItem value="lifeskills">Life Skills</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="All Priorities" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Priorities</SelectItem>
+              <SelectItem value="urgent">Urgent</SelectItem>
+              <SelectItem value="high">High</SelectItem>
+              <SelectItem value="normal">Normal</SelectItem>
+              <SelectItem value="low">Low</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Button onClick={handleAutoAssign} variant="outline">
+            Auto-Assign Reviews
+          </Button>
+      </div>
+
       {/* Review Table */}
       <Card>
         <CardHeader>
@@ -201,16 +345,6 @@ export function ContentReviewDashboard() {
               <CardDescription>
                 Review and approve AI-generated lessons
               </CardDescription>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
-                Filter
-              </Button>
-              <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </Button>
             </div>
           </div>
         </CardHeader>
@@ -237,6 +371,18 @@ export function ContentReviewDashboard() {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-12">
+                        <Checkbox 
+                          checked={selectedReviews.size === filteredReviews.length && filteredReviews.length > 0}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setSelectedReviews(new Set(filteredReviews.map(r => r.review_id)));
+                            } else {
+                              setSelectedReviews(new Set());
+                            }
+                          }}
+                        />
+                      </TableHead>
                       <TableHead>Lesson</TableHead>
                       <TableHead>Subject</TableHead>
                       <TableHead>Grade</TableHead>
@@ -257,6 +403,12 @@ export function ContentReviewDashboard() {
                     ) : (
                       filteredReviews.map((review) => (
                         <TableRow key={review.review_id}>
+                          <TableCell>
+                            <Checkbox
+                              checked={selectedReviews.has(review.review_id)}
+                              onCheckedChange={() => toggleReviewSelection(review.review_id)}
+                            />
+                          </TableCell>
                           <TableCell className="font-medium max-w-[300px] truncate">
                             {review.title}
                           </TableCell>

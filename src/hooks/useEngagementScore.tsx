@@ -35,52 +35,81 @@ export function useEngagementScore(childId: string | null) {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-      // Fetch assignment submissions for score data
-      const submissionsResult = await supabase
-        .from('assignment_submissions')
-        .select('score, time_spent_seconds, submitted_at')
+      // Fetch activity sessions from new table
+      const { data: sessionsData } = await supabase
+        .from('activity_sessions')
+        .select('activity_type, score, time_spent_seconds, completed_at, started_at')
         .eq('child_id', childId)
-        .gte('created_at', thirtyDaysAgo.toISOString());
+        .gte('started_at', thirtyDaysAgo.toISOString());
 
       // Fetch daily quota data for lesson completion
-      const quotaResult = await supabase
+      const { data: quotaData } = await supabase
         .from('daily_lesson_quota')
         .select('platform_lessons_completed, custom_lessons_completed, quota_date')
         .eq('child_id', childId)
         .gte('quota_date', thirtyDaysAgo.toISOString().split('T')[0]);
 
       // Fetch child data for points
-      const childResult = await supabase
+      const { data: childData } = await supabase
         .from('children')
         .select('total_points, quest_bonus_points')
         .eq('id', childId)
         .single();
 
-      const submissions = (submissionsResult.data || []) as Array<{ score: number | null; time_spent_seconds: number | null; submitted_at: string | null }>;
-      const quotas = (quotaResult.data || []) as Array<{ platform_lessons_completed: number | null; custom_lessons_completed: number | null; quota_date: string }>;
-      const childData = childResult.data;
+      const sessions = sessionsData || [];
+      const quotas = quotaData || [];
+      const child = childData;
 
-      // Calculate metrics
-      const totalLessons = quotas.reduce((acc, q) => acc + (q.platform_lessons_completed || 0) + (q.custom_lessons_completed || 0), 0);
-      const lessonsCompleted = Math.min(100, (totalLessons / 30) * 100);
+      // Calculate lessons completed (from quotas + completed sessions)
+      const totalLessonsFromQuotas = quotas.reduce((acc, q) => 
+        acc + (q.platform_lessons_completed || 0) + (q.custom_lessons_completed || 0), 0);
+      const completedSessions = sessions.filter(s => s.completed_at).length;
+      const totalActivities = totalLessonsFromQuotas + completedSessions;
+      const lessonsCompleted = Math.min(100, (totalActivities / 60) * 100); // 60 activities = 100%
       
-      const avgScore = submissions.length
-        ? submissions.reduce((acc, s) => acc + (s.score || 0), 0) / submissions.length
-        : 0;
+      // Calculate quiz performance from session scores
+      const scoredSessions = sessions.filter(s => s.score !== null && s.score !== undefined);
+      const avgScore = scoredSessions.length
+        ? scoredSessions.reduce((acc, s) => acc + (Number(s.score) || 0), 0) / scoredSessions.length
+        : 50; // Default to 50 if no scores
       const quizPerformance = Math.min(100, avgScore);
       
-      const totalPoints = (childData?.total_points || 0) + (childData?.quest_bonus_points || 0);
-      const consistency = Math.min(100, Math.floor(totalPoints / 100) * 10);
+      // Calculate consistency from days active
+      const activeDays = new Set(sessions.map(s => 
+        new Date(s.started_at).toISOString().split('T')[0]
+      )).size;
+      const consistency = Math.min(100, (activeDays / 30) * 100);
       
-      const totalTime = submissions.reduce((acc, s) => acc + (s.time_spent_seconds || 0), 0) / 60;
-      const timeSpent = Math.min(100, (totalTime / 900) * 100);
-      const socialActivity = 50; // Default placeholder
+      // Calculate time spent
+      const totalTimeMinutes = sessions.reduce((acc, s) => 
+        acc + ((s.time_spent_seconds || 0) / 60), 0);
+      const timeSpent = Math.min(100, (totalTimeMinutes / 600) * 100); // 10 hours = 100%
+      
+      // Social activity (placeholder - would integrate with peer connections)
+      const socialActivity = 50;
 
+      // Weighted score calculation
       const score = Math.round(
-        lessonsCompleted * 0.30 + quizPerformance * 0.25 + consistency * 0.20 + timeSpent * 0.15 + socialActivity * 0.10
+        lessonsCompleted * 0.30 + 
+        quizPerformance * 0.25 + 
+        consistency * 0.20 + 
+        timeSpent * 0.15 + 
+        socialActivity * 0.10
       );
 
-      const level: EngagementMetrics['level'] = score >= 80 ? 'excellent' : score >= 60 ? 'high' : score >= 40 ? 'medium' : 'low';
+      const level: EngagementMetrics['level'] = 
+        score >= 80 ? 'excellent' : 
+        score >= 60 ? 'high' : 
+        score >= 40 ? 'medium' : 'low';
+
+      // Calculate trend based on recent vs older activity
+      const midPoint = new Date();
+      midPoint.setDate(midPoint.getDate() - 15);
+      const recentSessions = sessions.filter(s => new Date(s.started_at) >= midPoint).length;
+      const olderSessions = sessions.filter(s => new Date(s.started_at) < midPoint).length;
+      const trend: 'up' | 'down' | 'stable' = 
+        recentSessions > olderSessions * 1.2 ? 'up' :
+        recentSessions < olderSessions * 0.8 ? 'down' : 'stable';
 
       setMetrics({
         score,
@@ -92,9 +121,27 @@ export function useEngagementScore(childId: string | null) {
           timeSpent: Math.round(timeSpent), 
           socialActivity 
         },
-        trend: 'stable',
+        trend,
         lastCalculated: new Date().toISOString(),
       });
+
+      // Build history from sessions grouped by week
+      const weeklyScores: Record<string, number[]> = {};
+      sessions.forEach(s => {
+        const weekStart = getWeekStart(new Date(s.started_at));
+        if (!weeklyScores[weekStart]) weeklyScores[weekStart] = [];
+        weeklyScores[weekStart].push(Number(s.score) || 50);
+      });
+      
+      const historyData = Object.entries(weeklyScores)
+        .map(([date, scores]) => ({
+          date,
+          score: Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
+        }))
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .slice(-8);
+      
+      setHistory(historyData);
     } catch (err) {
       console.error('Error calculating engagement:', err);
     } finally {
@@ -107,4 +154,10 @@ export function useEngagementScore(childId: string | null) {
   }, [calculateEngagementScore]);
 
   return { metrics, history, loading, refresh: calculateEngagementScore };
+}
+
+function getWeekStart(date: Date): string {
+  const d = new Date(date);
+  d.setDate(d.getDate() - d.getDay());
+  return d.toISOString().split('T')[0];
 }

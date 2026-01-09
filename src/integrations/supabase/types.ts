@@ -105,6 +105,63 @@ export type Database = {
           },
         ]
       }
+      activity_sessions: {
+        Row: {
+          activity_id: string | null
+          activity_type: string
+          child_id: string
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          max_score: number | null
+          metadata: Json | null
+          score: number | null
+          started_at: string
+          time_spent_seconds: number | null
+        }
+        Insert: {
+          activity_id?: string | null
+          activity_type: string
+          child_id: string
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          max_score?: number | null
+          metadata?: Json | null
+          score?: number | null
+          started_at?: string
+          time_spent_seconds?: number | null
+        }
+        Update: {
+          activity_id?: string | null
+          activity_type?: string
+          child_id?: string
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          max_score?: number | null
+          metadata?: Json | null
+          score?: number | null
+          started_at?: string
+          time_spent_seconds?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_sessions_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_sessions_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       analytics_events: {
         Row: {
           child_id: string

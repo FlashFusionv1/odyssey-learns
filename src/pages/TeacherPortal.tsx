@@ -6,6 +6,8 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { TeacherDashboard } from '@/components/teacher/TeacherDashboard';
 import { ClassManagement } from '@/components/teacher/ClassManagement';
 import { AssignmentManager } from '@/components/teacher/AssignmentManager';
+import { ClassAnalytics } from '@/components/teacher/ClassAnalytics';
+import { TeacherOnboarding } from '@/components/teacher/TeacherOnboarding';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,6 +19,7 @@ export default function TeacherPortal() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [isTeacher, setIsTeacher] = useState(false);
+  const [needsOnboarding, setNeedsOnboarding] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
 
   useEffect(() => {
@@ -171,23 +174,7 @@ export default function TeacherPortal() {
           </TabsContent>
 
           <TabsContent value="analytics">
-            <Card>
-              <CardHeader>
-                <CardTitle>Class Analytics</CardTitle>
-                <CardDescription>
-                  View detailed analytics and insights for your classes
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12 text-muted-foreground">
-                  <BarChart3 className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <h3 className="text-lg font-medium mb-2">Analytics Coming Soon</h3>
-                  <p className="text-sm">
-                    Detailed analytics and insights will be available as students complete assignments.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <ClassAnalytics />
           </TabsContent>
 
           <TabsContent value="settings">

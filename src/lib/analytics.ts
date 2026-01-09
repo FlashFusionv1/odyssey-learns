@@ -2,30 +2,32 @@ import { supabase } from "@/integrations/supabase/client";
 
 // Session management
 let currentSessionId: string | null = null;
+let sessionStartTime: number | null = null;
 
 /**
  * Start a new activity session for tracking
  */
-export const startSession = async (childId: string): Promise<string | null> => {
+export const startSession = async (
+  childId: string, 
+  activityType: 'lesson' | 'quiz' | 'video' | 'game' | 'reading' | 'practice' = 'lesson',
+  activityId?: string
+): Promise<string | null> => {
   try {
-    // @ts-ignore - Types will regenerate after migration
     const { data, error } = await supabase
-      // @ts-ignore
       .from('activity_sessions')
       .insert({
         child_id: childId,
-        session_start: new Date().toISOString(),
-        pages_visited: 0,
-        lessons_completed: 0
+        activity_type: activityType,
+        activity_id: activityId,
+        started_at: new Date().toISOString(),
+        time_spent_seconds: 0
       })
       .select('id')
-      // @ts-ignore
       .single();
 
     if (error) throw error;
-    // @ts-ignore
-    currentSessionId = data?.id;
-    // @ts-ignore
+    currentSessionId = data?.id || null;
+    sessionStartTime = Date.now();
     return data?.id || null;
   } catch (error) {
     console.error('Failed to start session:', error);
@@ -36,34 +38,29 @@ export const startSession = async (childId: string): Promise<string | null> => {
 /**
  * End the current activity session
  */
-export const endSession = async (sessionId: string): Promise<void> => {
+export const endSession = async (
+  sessionId: string, 
+  score?: number, 
+  maxScore?: number
+): Promise<void> => {
   try {
-    // @ts-ignore - Types will regenerate after migration
-    const { data: session } = await supabase
-      // @ts-ignore
+    const duration = sessionStartTime 
+      ? Math.floor((Date.now() - sessionStartTime) / 1000)
+      : 0;
+    
+    await supabase
       .from('activity_sessions')
-      .select('session_start')
-      .eq('id', sessionId)
-      // @ts-ignore
-      .single();
-
-    if (session) {
-      // @ts-ignore
-      const duration = Math.floor((Date.now() - new Date(session.session_start).getTime()) / 1000);
-      
-      // @ts-ignore - Types will regenerate after migration
-      await supabase
-        // @ts-ignore
-        .from('activity_sessions')
-        .update({
-          session_end: new Date().toISOString(),
-          total_time_seconds: duration
-        })
-        .eq('id', sessionId);
-    }
+      .update({
+        completed_at: new Date().toISOString(),
+        time_spent_seconds: duration,
+        score: score,
+        max_score: maxScore
+      })
+      .eq('id', sessionId);
 
     if (currentSessionId === sessionId) {
       currentSessionId = null;
+      sessionStartTime = null;
     }
   } catch (error) {
     console.error('Failed to end session:', error);

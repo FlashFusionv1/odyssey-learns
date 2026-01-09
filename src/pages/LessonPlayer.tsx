@@ -13,6 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { sanitizeText } from '@/lib/inputSanitization';
 import { SafeMarkdown } from '@/components/learning/SafeMarkdown';
+import { LessonAudioPlayer } from '@/components/learning/LessonAudioPlayer';
 import { ArrowLeft, BookOpen, Clock, Star, CheckCircle2, XCircle } from 'lucide-react';
 import { SubjectBadge } from '@/components/ui/subject-badge';
 
@@ -273,12 +274,26 @@ const LessonPlayer = () => {
         </Card>
 
         {!showResults && (
-          <Card className="p-6">
-              <SafeMarkdown 
-                content={lesson.content_markdown} 
-                className="prose prose-sm max-w-none dark:prose-invert"
-              />
-          </Card>
+          <>
+            {/* Audio Player for Narration */}
+            <LessonAudioPlayer 
+              text={lesson.content_markdown}
+              onComplete={() => {
+                toast({
+                  title: 'Narration Complete',
+                  description: 'Ready to take the quiz?',
+                });
+              }}
+            />
+
+            {/* Lesson Content */}
+            <Card className="p-6">
+                <SafeMarkdown 
+                  content={lesson.content_markdown} 
+                  className="prose prose-sm max-w-none dark:prose-invert"
+                />
+            </Card>
+          </>
         )}
 
         {lesson.quiz_questions && lesson.quiz_questions.length > 0 && (

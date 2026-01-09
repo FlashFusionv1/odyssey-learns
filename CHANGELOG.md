@@ -18,6 +18,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Advanced analytics dashboard
 - AI-powered lesson recommendations
 
+## [0.4.0] - 2026-01-09
+
+### Added - Voice-Based Lesson Narration Feature
+- **Text-to-Speech Narration**: Browser-native narration for all lessons using Web Speech API
+- **Audio Player Component**: Full-featured player with play/pause/stop controls
+- **Playback Controls**: Speed adjustment (0.5x-2.0x), volume control with mute toggle
+- **Voice Selection**: Choose from all available system voices
+- **Progress Indicator**: Visual feedback showing narration progress
+- **User Preferences**: Per-child profile preferences saved to localStorage
+- **Preferences Persistence**: Speed, volume, and voice preferences automatically saved
+- **Responsive Design**: Full player view on desktop, compact mode for mobile
+- **Accessibility Features**: ARIA labels on all controls, keyboard navigation
+- **Documentation**: Comprehensive feature documentation in `docs/features/NARRATION_FEATURE.md`
+
+### Technical Details
+- `src/lib/audio/narrator.ts` - Core narration service using Web Speech API
+- `src/lib/audio/preferences.ts` - User preferences management
+- `src/hooks/useNarration.ts` - React hook for easy component integration
+- `src/components/learning/LessonAudioPlayer.tsx` - Audio player UI component
+- Automatic text preprocessing to remove markdown formatting
+- Intelligent chunking system for long lessons (~200 char segments)
+- Zero external dependencies (browser-native only)
+- Privacy-first design (all processing local, COPPA-compliant)
+- Graceful degradation for unsupported browsers
+
+### Benefits
+- Improves accessibility for K-2 students learning to read
+- Helps students with dyslexia or reading difficulties
+- Supports auditory learners and multi-sensory learning
+- No cost (uses browser-native API)
+- Privacy-friendly (no external API calls)
+
 ## [0.3.0] - 2024-12-XX (In Progress)
 
 ### Added

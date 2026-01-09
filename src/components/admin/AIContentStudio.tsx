@@ -77,14 +77,13 @@ export function AIContentStudio() {
   const loadData = async () => {
     setLoading(true);
     try {
-      // @ts-ignore - Types will regenerate after migration
       const [templatesResult, jobsResult] = await Promise.all([
-        supabase.from('lesson_templates' as any).select('*').eq('is_active', true).order('usage_count', { ascending: false }),
-        supabase.from('batch_generation_jobs' as any).select('*').order('created_at', { ascending: false }).limit(10),
+        supabase.from('lesson_templates').select('*').eq('is_active', true).order('usage_count', { ascending: false }),
+        supabase.from('batch_generation_jobs').select('*').order('created_at', { ascending: false }).limit(10),
       ]);
 
-      if (templatesResult.data) setTemplates(templatesResult.data as LessonTemplate[]);
-      if (jobsResult.data) setBatchJobs(jobsResult.data as BatchJob[]);
+      if (templatesResult.data) setTemplates(templatesResult.data as unknown as LessonTemplate[]);
+      if (jobsResult.data) setBatchJobs(jobsResult.data as unknown as BatchJob[]);
     } catch (err) {
       console.error('Error loading data:', err);
     } finally {
@@ -132,9 +131,8 @@ export function AIContentStudio() {
 
     try {
       // Create batch job record
-      // @ts-ignore - Types will regenerate after migration
       const { data: job, error: jobError } = await supabase
-        .from('batch_generation_jobs' as any)
+        .from('batch_generation_jobs')
         .insert({
           job_type: 'lessons',
           status: 'processing',
@@ -144,11 +142,13 @@ export function AIContentStudio() {
           total_items: totalLessons,
           config: config,
           started_at: new Date().toISOString(),
-        } as any)
+          created_by: (await supabase.auth.getUser()).data.user?.id || '',
+        })
         .select()
         .single();
 
       if (jobError) throw jobError;
+      const jobId = (job as unknown as { id: string }).id;
 
       // Start generation in batches
       let completed = 0;
@@ -182,15 +182,14 @@ export function AIContentStudio() {
       }
 
       // Update job status
-      // @ts-ignore - Types will regenerate after migration
       await supabase
-        .from('batch_generation_jobs' as any)
+        .from('batch_generation_jobs')
         .update({
           status: 'completed',
           completed_items: completed,
           completed_at: new Date().toISOString(),
-        } as any)
-        .eq('id', job.id);
+        })
+        .eq('id', jobId);
 
       toast.success(`Generated ${completed} lessons successfully!`);
       loadData();

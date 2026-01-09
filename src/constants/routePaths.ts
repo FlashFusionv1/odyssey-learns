@@ -46,6 +46,8 @@ export const ROUTE_PATHS = {
     SOCIAL: '/social',
     SETTINGS: '/settings',
     REWARDS: '/rewards',
+    VIDEO_LIBRARY: '/videos',
+    VIDEO_PLAYER: '/video/:id',
   },
   
   // Admin routes
@@ -62,6 +64,7 @@ export const ROUTE_PATHS = {
     STUDENT_PERFORMANCE: '/student-performance-report',
     SECURITY_MONITORING: '/security-monitoring',
     SYSTEM_HEALTH: '/system-health',
+    TEACHER_PORTAL: '/teacher',
   },
   
   // Error pages

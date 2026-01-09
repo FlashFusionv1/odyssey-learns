@@ -49,6 +49,11 @@ const LessonPerformanceAnalytics = createLazyRoute(() => import('@/pages/LessonP
 const StudentPerformanceReport = createLazyRoute(() => import('@/pages/StudentPerformanceReport'));
 const SecurityMonitoring = createLazyRoute(() => import('@/pages/SecurityMonitoring'));
 const SystemHealth = createLazyRoute(() => import('@/pages/SystemHealth'));
+const TeacherPortal = createLazyRoute(() => import('@/pages/TeacherPortal'));
+
+// Video pages
+const VideoLibrary = createLazyRoute(() => import('@/pages/VideoLibrary'));
+const VideoPlayerPage = createLazyRoute(() => import('@/pages/VideoPlayer'));
 
 /**
  * Authentication routes configuration
@@ -312,6 +317,24 @@ export const childRoutes: RouteConfig[] = [
       title: 'Rewards - Inner Odyssey',
     },
   },
+  {
+    path: ROUTE_PATHS.CHILD.VIDEO_LIBRARY,
+    component: VideoLibrary,
+    requireAuth: true,
+    roles: ['child'],
+    meta: {
+      title: 'Video Library - Inner Odyssey',
+    },
+  },
+  {
+    path: ROUTE_PATHS.CHILD.VIDEO_PLAYER,
+    component: VideoPlayerPage,
+    requireAuth: true,
+    roles: ['child'],
+    meta: {
+      title: 'Watch Video - Inner Odyssey',
+    },
+  },
 ];
 
 /**
@@ -424,6 +447,15 @@ export const adminRoutes: RouteConfig[] = [
     roles: ['admin'],
     meta: {
       title: 'System Health - Inner Odyssey',
+    },
+  },
+  {
+    path: ROUTE_PATHS.ADMIN.TEACHER_PORTAL,
+    component: TeacherPortal,
+    requireAuth: true,
+    roles: ['admin', 'teacher'],
+    meta: {
+      title: 'Teacher Portal - Inner Odyssey',
     },
   },
 ];

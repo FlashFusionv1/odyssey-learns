@@ -6,6 +6,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { LessonNarrator } from '@/lib/audio/narrator';
+import { loadNarrationPreferences, saveNarrationPreferences } from '@/lib/audio/preferences';
 
 interface NarrationState {
   isPlaying: boolean;
@@ -32,6 +33,7 @@ interface UseNarrationOptions {
   volume?: number;
   autoStart?: boolean;
   onComplete?: () => void;
+  childId?: string; // For storing per-child preferences
 }
 
 export function useNarration(
@@ -58,12 +60,15 @@ export function useNarration(
       return;
     }
 
-    // Initialize narrator with best voice
+    // Load user preferences
+    const preferences = loadNarrationPreferences(options.childId);
+
+    // Initialize narrator with best voice and preferences
     const initNarrator = async () => {
       const voice = await LessonNarrator.getBestVoice('en-US');
       narratorRef.current = new LessonNarrator({
-        rate: options.rate ?? 1.0,
-        volume: options.volume ?? 1.0,
+        rate: options.rate ?? preferences.rate,
+        volume: options.volume ?? preferences.volume,
         voice,
       });
 
@@ -152,22 +157,34 @@ export function useNarration(
   const setRate = useCallback((rate: number) => {
     if (narratorRef.current) {
       narratorRef.current.setRate(rate);
+      // Save preference
+      if (options.childId) {
+        saveNarrationPreferences({ rate }, options.childId);
+      }
     }
-  }, []);
+  }, [options.childId]);
 
   // Set volume
   const setVolume = useCallback((volume: number) => {
     if (narratorRef.current) {
       narratorRef.current.setVolume(volume);
+      // Save preference
+      if (options.childId) {
+        saveNarrationPreferences({ volume }, options.childId);
+      }
     }
-  }, []);
+  }, [options.childId]);
 
   // Set voice
   const setVoice = useCallback((voice: SpeechSynthesisVoice) => {
     if (narratorRef.current) {
       narratorRef.current.setVoice(voice);
+      // Save preference
+      if (options.childId) {
+        saveNarrationPreferences({ voiceName: voice.name }, options.childId);
+      }
     }
-  }, []);
+  }, [options.childId]);
 
   const controls: NarrationControls = {
     start,

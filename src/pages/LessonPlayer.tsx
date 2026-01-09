@@ -278,6 +278,7 @@ const LessonPlayer = () => {
             {/* Audio Player for Narration */}
             <LessonAudioPlayer 
               text={lesson.content_markdown}
+              childId={childId}
               onComplete={() => {
                 toast({
                   title: 'Narration Complete',

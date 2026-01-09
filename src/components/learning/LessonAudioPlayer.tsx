@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/select';
 import { useNarration, useAvailableVoices } from '@/hooks/useNarration';
 import { useToast } from '@/hooks/use-toast';
+import { loadNarrationPreferences } from '@/lib/audio/preferences';
 import {
   Play,
   Pause,
@@ -35,6 +36,7 @@ interface LessonAudioPlayerProps {
   className?: string;
   onComplete?: () => void;
   compact?: boolean;
+  childId?: string; // For storing per-child preferences
 }
 
 export function LessonAudioPlayer({
@@ -42,13 +44,17 @@ export function LessonAudioPlayer({
   className,
   onComplete,
   compact = false,
+  childId,
 }: LessonAudioPlayerProps) {
   const { toast } = useToast();
-  const [state, controls] = useNarration({ onComplete });
+  const [state, controls] = useNarration({ onComplete, childId });
   const { voices, loading: voicesLoading } = useAvailableVoices();
   
-  const [rate, setRate] = useState(1.0);
-  const [volume, setVolume] = useState(1.0);
+  // Load preferences
+  const preferences = loadNarrationPreferences(childId);
+  
+  const [rate, setRate] = useState(preferences.rate);
+  const [volume, setVolume] = useState(preferences.volume);
   const [muted, setMuted] = useState(false);
   const [selectedVoiceIndex, setSelectedVoiceIndex] = useState<number>(0);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -67,17 +73,30 @@ export function LessonAudioPlayer({
   // Initialize narration when voices are loaded
   useEffect(() => {
     if (voices.length > 0 && !isInitialized) {
-      // Find a good English voice
-      const englishVoiceIndex = voices.findIndex(
-        v => v.lang.startsWith('en') && v.localService
-      );
-      if (englishVoiceIndex !== -1) {
-        setSelectedVoiceIndex(englishVoiceIndex);
-        controls.setVoice(voices[englishVoiceIndex]);
+      // Try to find the saved voice preference
+      let voiceIndex = 0;
+      if (preferences.voiceName) {
+        const savedVoiceIndex = voices.findIndex(
+          v => v.name === preferences.voiceName
+        );
+        if (savedVoiceIndex !== -1) {
+          voiceIndex = savedVoiceIndex;
+        }
+      } else {
+        // Find a good English voice
+        const englishVoiceIndex = voices.findIndex(
+          v => v.lang.startsWith('en') && v.localService
+        );
+        if (englishVoiceIndex !== -1) {
+          voiceIndex = englishVoiceIndex;
+        }
       }
+      
+      setSelectedVoiceIndex(voiceIndex);
+      controls.setVoice(voices[voiceIndex]);
       setIsInitialized(true);
     }
-  }, [voices, isInitialized, controls]);
+  }, [voices, isInitialized, controls, preferences.voiceName]);
 
   // Handle play/pause toggle
   const handlePlayPause = async () => {

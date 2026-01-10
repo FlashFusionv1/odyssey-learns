@@ -49,6 +49,8 @@ export const ROUTE_PATHS = {
     PROGRESS: '/progress',
     VIDEO_LIBRARY: '/videos',
     VIDEO_PLAYER: '/video/:id',
+    KIDS_ROOM: '/my-room',
+    INTERACTIVE: '/play',
   },
   
   // Admin routes

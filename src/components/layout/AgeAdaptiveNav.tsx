@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, BookOpen, Award, TrendingUp, Users, Heart, Sparkles } from "lucide-react";
+import { Home, BookOpen, Award, TrendingUp, Users, Heart, Sparkles, HomeIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
@@ -15,10 +15,10 @@ const navItems: NavItem[] = [
   { icon: Home, label: "Home", path: "/dashboard" },
   { icon: BookOpen, label: "Lessons", path: "/lessons" },
   { icon: Award, label: "Badges", path: "/badges" },
-  { icon: Heart, label: "Feelings", path: "/dashboard", maxGrade: 5 }, // K-5 only
+  { icon: HomeIcon, label: "My Room", path: "/my-room" },
   { icon: TrendingUp, label: "Rewards", path: "/rewards" },
   { icon: Users, label: "Social", path: "/social", minGrade: 3 }, // Grade 3+
-  { icon: Sparkles, label: "Challenges", path: "/dashboard", minGrade: 6 }, // Grade 6+
+  { icon: Sparkles, label: "Play", path: "/play", minGrade: 0 },
 ];
 
 interface AgeAdaptiveNavProps {

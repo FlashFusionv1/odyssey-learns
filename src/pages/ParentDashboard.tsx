@@ -21,6 +21,7 @@ import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { BonusLessonManager } from "@/components/parent/BonusLessonManager";
 import { PendingShareApprovals } from "@/components/parent/PendingShareApprovals";
 import { EngagementScoreCard } from "@/components/parent/EngagementScoreCard";
+import { PeerConnectionApprovals } from "@/components/parent/PeerConnectionApprovals";
 import { logEmotionLogView } from "@/lib/auditLogger";
 
 const ParentDashboard = () => {
@@ -147,6 +148,9 @@ const ParentDashboard = () => {
             </Button>
           </div>
         </div>
+
+        {/* Peer Connection Approvals - COPPA Compliance */}
+        <PeerConnectionApprovals />
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

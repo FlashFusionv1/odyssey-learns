@@ -14,11 +14,15 @@ import { Settings as SettingsIcon, Volume2, Zap, User, LogOut } from "lucide-rea
 import { BackButton } from "@/components/ui/back-button";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { PWASettingsCard } from "@/components/pwa/PWASettingsCard";
+import { usePWA } from "@/hooks/usePWA";
+import { wasRecovered } from "@/lib/healthCheck";
 
 const Settings = () => {
   const { childId, isValidating } = useValidatedChild();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const { isStandalone } = usePWA();
   const [child, setChild] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -31,6 +35,11 @@ const Settings = () => {
   useEffect(() => {
     if (!isValidating && childId) {
       loadSettings();
+    }
+    
+    // Show recovery toast if we just recovered
+    if (wasRecovered()) {
+      toast.success("App recovered successfully! You're now running the latest version.");
     }
   }, [childId, isValidating]);
 
@@ -204,6 +213,11 @@ const Settings = () => {
             Sign Out
           </Button>
         </Card>
+
+        {/* PWA Settings - Only show when installed or in development */}
+        {(isStandalone || import.meta.env.DEV) && (
+          <PWASettingsCard />
+        )}
 
         {/* Save Button */}
         <div className="flex gap-4">

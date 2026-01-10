@@ -14,13 +14,15 @@ Inner Odyssey is a K-12 educational platform in **Beta Testing Phase** with a ro
 
 | Metric | Current | Target |
 |--------|---------|--------|
-| Features Implemented | 110/152 (72%) | 90% by Q2 |
-| Test Coverage | ~60% | 80% by Q2 |
+| Features Implemented | 122/160 (76%) | 90% by Q2 |
+| Test Coverage | ~61% | 80% by Q2 |
 | Lighthouse Score | 92 | 95+ |
 | Security Vulnerabilities | 0 Critical | Maintain 0 |
 | COPPA Compliance | ✅ Complete | Maintain |
-| Database Tables | 55+ | Optimized |
+| Database Tables | 66+ | Optimized |
 | Edge Functions | 19 | As needed |
+| Video Lessons | 15 seeded | 100+ by Q2 |
+| Teacher Portal | 85% complete | 100% by Q1 |
 
 ---
 
@@ -249,6 +251,10 @@ Q1 2026          Q2 2026          Q3 2026          Q4 2026
 | Security audit fixes | P0 | ✅ Complete | Security |
 | Documentation completion | P1 | ✅ Complete | Product |
 | Beta survey analysis | P1 | 📋 Planned | Product |
+| Video content seeding | P1 | ✅ Complete (15 videos) | Content |
+| Engagement scoring | P1 | ✅ Complete | Engineering |
+| Teacher portal completion | P0 | ✅ 85% Complete | Engineering |
+| Teacher role assignment UI | P1 | 🔄 In progress | Engineering |
 
 **Success Criteria:**
 - Zero critical bugs
@@ -263,11 +269,12 @@ Q1 2026          Q2 2026          Q3 2026          Q4 2026
 | Initiative | Priority | Target | Notes |
 |------------|----------|--------|-------|
 | 500+ platform lessons | P0 | 500 | All grades, subjects |
-| Video lesson support | P1 | MVP | Streaming + embedding |
-| Teacher dashboard | P0 | MVP | Classroom management |
+| Video lesson library (100+) | P1 | 100 | Expand from 15 to 100+ |
+| Teacher roster import | P1 | MVP | CSV/SIS integration |
 | PWA offline mode | P1 | Full | Critical content cached |
 | Enhanced analytics | P2 | MVP | Deeper insights |
 | Content quality automation | P2 | MVP | AI-assisted review |
+| Leaderboard UI | P2 | MVP | Display component |
 
 **Success Criteria:**
 - 500 lessons published

@@ -14,17 +14,18 @@
 |----------|-------------|-------------|---------|-------|
 | Authentication | 12 | 0 | 2 | 14 |
 | User Management | 10 | 1 | 3 | 14 |
-| Learning Content | 15 | 2 | 5 | 22 |
-| Gamification | 14 | 1 | 4 | 19 |
-| Parent Features | 12 | 2 | 4 | 18 |
-| Child Features | 10 | 1 | 3 | 14 |
+| Learning Content | 17 | 1 | 4 | 22 |
+| Gamification | 15 | 0 | 4 | 19 |
+| Parent Features | 14 | 1 | 3 | 18 |
+| Child Features | 11 | 0 | 3 | 14 |
 | Admin Features | 8 | 1 | 3 | 12 |
 | Social Features | 6 | 0 | 4 | 10 |
-| Analytics | 8 | 1 | 3 | 12 |
+| Analytics | 9 | 0 | 3 | 12 |
 | Security | 15 | 0 | 2 | 17 |
-| **TOTAL** | **110** | **9** | **33** | **152** |
+| Teacher Features | 5 | 1 | 2 | 8 |
+| **TOTAL** | **122** | **5** | **33** | **160** |
 
-**Completion Rate:** 72% Implemented, 6% In Progress, 22% Planned
+**Completion Rate:** 76% Implemented, 3% In Progress, 21% Planned
 
 ---
 
@@ -100,7 +101,7 @@
 | Content moderation | ✅ | AI + human review |
 | Differentiated content | 🔄 | Basic scaffolding |
 | Standards alignment | 🔄 | Common Core partial |
-| Video lessons | 📋 | Future content type |
+| Video lessons | ✅ | 15 videos seeded, player complete |
 | Interactive simulations | 📋 | Future content type |
 | Offline lessons | 📋 | PWA caching |
 | Audio narration | 📋 | Accessibility feature |
@@ -123,7 +124,7 @@
 | Daily quests | ✅ | Personalized 3-activity |
 | Quest completion | ✅ | Bonus points |
 | Level system | ✅ | XP-based progression |
-| Leaderboards | 🔄 | Basic implementation |
+| Leaderboards | ✅ | Database view + query implemented |
 | Rewards store | ✅ | Parent-defined |
 | Reward redemption | ✅ | Approval workflow |
 | Challenge mode | ✅ | Harder content option |
@@ -218,7 +219,7 @@
 | Points history | ✅ | Earning trends |
 | Weekly summaries | ✅ | Automated reports |
 | Beta analytics | ✅ | Usage patterns |
-| Engagement scoring | 🔄 | Algorithm tuning |
+| Engagement scoring | ✅ | Multi-factor algorithm, dashboard card |
 | Predictive analytics | 📋 | AI-powered insights |
 | Cohort analysis | 📋 | Group comparisons |
 | Export capabilities | ✅ | CSV/JSON |
@@ -368,6 +369,7 @@ Authentication ──► User Management ──► Learning Content
 | generate-custom-lesson | ✅ | ✅ | ✅ |
 | generate-weekly-reports | ✅ | ✅ | ✅ |
 | track-lesson-analytics | ✅ | ✅ | ✅ |
+| track-video-analytics | ✅ | ✅ | ✅ |
 | verify-recaptcha | ✅ | ✅ | ✅ |
 | health-check | ✅ | ✅ | ✅ |
 | seed-kindergarten-lessons | ✅ | ✅ | ✅ |
@@ -392,11 +394,28 @@ Authentication ──► User Management ──► Learning Content
 | Auth | ✅ | ✅ | ✅ | 75% |
 | Learning | ✅ | 🔄 | ✅ | 60% |
 | Gamification | ✅ | 🔄 | ✅ | 55% |
-| Parent | ✅ | 🔄 | ✅ | 50% |
+| Parent | ✅ | ✅ | ✅ | 55% |
 | Admin | 🔄 | 🔄 | ✅ | 40% |
 | Security | ✅ | ✅ | ✅ | 80% |
+| Teacher | 🔄 | 🔄 | 📋 | 30% |
+| Video | ✅ | 🔄 | 📋 | 40% |
 
-**Overall Estimated Coverage:** 60%
+**Overall Estimated Coverage:** 61%
+
+---
+
+## Teacher Features (New Section)
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Teacher dashboard | ✅ | Overview with metrics |
+| Class management | ✅ | Create, edit, delete classes |
+| Assignment creation | ✅ | Link lessons to classes |
+| Class analytics | ✅ | Charts with Recharts |
+| Teacher onboarding | ✅ | Step-by-step flow |
+| Role assignment | 🔄 | Manual DB assignment needed |
+| Roster import | 📋 | CSV/SIS integration |
+| Parent communication | 📋 | Direct messaging |
 
 ---
 

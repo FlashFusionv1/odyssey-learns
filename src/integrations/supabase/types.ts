@@ -574,6 +574,48 @@ export type Database = {
           },
         ]
       }
+      child_room: {
+        Row: {
+          child_id: string | null
+          created_at: string | null
+          id: string
+          owned_decoration_ids: string[] | null
+          placed_decorations: Json | null
+          room_name: string | null
+        }
+        Insert: {
+          child_id?: string | null
+          created_at?: string | null
+          id?: string
+          owned_decoration_ids?: string[] | null
+          placed_decorations?: Json | null
+          room_name?: string | null
+        }
+        Update: {
+          child_id?: string | null
+          created_at?: string | null
+          id?: string
+          owned_decoration_ids?: string[] | null
+          placed_decorations?: Json | null
+          room_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "child_room_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: true
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_room_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: true
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       children: {
         Row: {
           avatar_config: Json | null
@@ -3020,6 +3062,36 @@ export type Database = {
           reason?: string | null
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      room_decorations: {
+        Row: {
+          category: string
+          created_at: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          points_cost: number | null
+          svg_data: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          points_cost?: number | null
+          svg_data: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          points_cost?: number | null
+          svg_data?: string
         }
         Relationships: []
       }

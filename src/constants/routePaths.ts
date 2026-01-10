@@ -46,6 +46,7 @@ export const ROUTE_PATHS = {
     SOCIAL: '/social',
     SETTINGS: '/settings',
     REWARDS: '/rewards',
+    PROGRESS: '/progress',
     VIDEO_LIBRARY: '/videos',
     VIDEO_PLAYER: '/video/:id',
   },

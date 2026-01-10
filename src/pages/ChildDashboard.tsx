@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Award, TrendingUp, Settings } from "lucide-react";
+import { BookOpen, Award, TrendingUp, Settings, BarChart3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -217,6 +217,14 @@ const ChildDashboard = () => {
             variant="success"
             className="elevated-card hover-scale"
           />
+        </div>
+
+        {/* View Progress Link */}
+        <div className="flex justify-center">
+          <Button variant="outline" onClick={() => navigate('/progress')} className="gap-2">
+            <BarChart3 className="w-4 h-4" />
+            View My Progress
+          </Button>
         </div>
 
         {/* Daily Quest - Age-Adaptive UI */}

@@ -9,12 +9,19 @@
 - **[README_COMPLETE](./README_COMPLETE.md) ⭐** - Comprehensive documentation
 - [CHANGELOG](../CHANGELOG.md) - Version history and changes
 
+### Project Status (New)
+- **[PROJECT_STATUS_AUDIT](./PROJECT_STATUS_AUDIT.md) ⭐** - Complete feature audit (78% complete)
+- **[DELIVERABLES_INVENTORY](./DELIVERABLES_INVENTORY.md) ⭐** - All deliverables catalog
+- **[CURRENT_STATE_QUICK_REF](./CURRENT_STATE_QUICK_REF.md) ⭐** - Quick reference card
+- [FUNCTIONALITY_MATRIX](./FUNCTIONALITY_MATRIX.md) - Feature status matrix
+
 ### Architecture & Design
 - **[ARCHITECTURE](./ARCHITECTURE.md) ⭐** - Complete system architecture
 - [CODEBASE_AUDIT](./CODEBASE_AUDIT.md) - Detailed code analysis
 - [agents.md](./agents.md) - Custom agents and modules documentation
 
 ### Planning & Roadmaps
+- **[ROADMAP_EXECUTIVE](./ROADMAP_EXECUTIVE.md) ⭐** - Executive roadmap & compliance
 - **[MVP_TO_V1_ROADMAP](./MVP_TO_V1_ROADMAP.md) ⭐** - Complete product roadmap
 - [IMPROVEMENT_PLAN](./IMPROVEMENT_PLAN.md) - Quality improvements
 - [REFACTOR_PLAN](./REFACTOR_PLAN.md) - Code refactoring strategy

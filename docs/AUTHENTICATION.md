@@ -2,7 +2,22 @@
 
 ## Overview
 
-Inner Odyssey uses Supabase Auth with email/password authentication and optional Google OAuth. The system implements a zero-trust security model with graceful degradation for reCAPTCHA.
+Inner Odyssey uses Supabase Auth with multiple authentication methods: email/password, magic link (passwordless), and optional Google OAuth. The system implements a zero-trust security model with graceful degradation for reCAPTCHA.
+
+## Best Practices Implemented (2025)
+
+| Feature | Implementation |
+|---------|----------------|
+| **Password Strength** | zxcvbn library for real-time analysis with crack time estimates |
+| **Common Password Check** | Block top 100 most common passwords |
+| **Email Normalization** | Lowercase + trim for consistent storage |
+| **Magic Link Login** | Passwordless option via email OTP |
+| **Remember Me** | 30-day session persistence option |
+| **Rate Limiting** | Server-side enforcement via database RPC |
+| **Helpful Error Messages** | Context-aware feedback without revealing sensitive info |
+| **Password Match Indicator** | Real-time visual feedback during signup |
+| **Resend Countdown** | 60-second cooldown on password reset emails |
+| **Token Expiry Handling** | Graceful expired link detection |
 
 ## Architecture
 
@@ -314,7 +329,18 @@ npx playwright test e2e/auth-flows.spec.ts
 - [ ] Admin redirect works
 - [ ] Parent redirect works
 
+## Components
+
+| Component | Purpose |
+|-----------|---------|
+| `LoginForm` | Email/password login with remember me |
+| `SignupForm` | Account creation with terms acceptance |
+| `MagicLinkForm` | Passwordless email login |
+| `PasswordStrengthMeter` | zxcvbn-powered strength analysis |
+| `ResetPassword` | Request password reset email |
+| `UpdatePassword` | Set new password after reset |
+
 ---
 
-**Last Updated:** 2025-12-17
+**Last Updated:** 2026-01-10
 **Maintainers:** Inner Odyssey Development Team

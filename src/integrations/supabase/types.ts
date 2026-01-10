@@ -4239,12 +4239,13 @@ export type Database = {
           created_at: string | null
           daily_quest_id: string | null
           daily_screen_time_limit_minutes: number | null
+          deleted_at: string | null
+          deletion_reason: string | null
+          deletion_scheduled_at: string | null
           grade_level: number | null
           id: string | null
-          is_deleted: boolean | null
           name: string | null
           parent_id: string | null
-          pin_status: string | null
           quest_bonus_points: number | null
           quest_completed_at: string | null
           screen_time_enabled: boolean | null
@@ -4257,12 +4258,13 @@ export type Database = {
           created_at?: string | null
           daily_quest_id?: string | null
           daily_screen_time_limit_minutes?: number | null
+          deleted_at?: string | null
+          deletion_reason?: string | null
+          deletion_scheduled_at?: string | null
           grade_level?: number | null
           id?: string | null
-          is_deleted?: never
           name?: string | null
           parent_id?: string | null
-          pin_status?: never
           quest_bonus_points?: number | null
           quest_completed_at?: string | null
           screen_time_enabled?: boolean | null
@@ -4275,12 +4277,13 @@ export type Database = {
           created_at?: string | null
           daily_quest_id?: string | null
           daily_screen_time_limit_minutes?: number | null
+          deleted_at?: string | null
+          deletion_reason?: string | null
+          deletion_scheduled_at?: string | null
           grade_level?: number | null
           id?: string | null
-          is_deleted?: never
           name?: string | null
           parent_id?: string | null
-          pin_status?: never
           quest_bonus_points?: number | null
           quest_completed_at?: string | null
           screen_time_enabled?: boolean | null
@@ -4346,6 +4349,55 @@ export type Database = {
     }
     Functions: {
       add_admin_role: { Args: { _email: string }; Returns: undefined }
+      audit_admin_child_access: {
+        Args: { access_reason: string; target_child_id: string }
+        Returns: {
+          avatar_config: Json | null
+          challenge_mode_enabled: boolean | null
+          created_at: string | null
+          daily_quest_id: string | null
+          daily_screen_time_limit_minutes: number | null
+          deleted_at: string | null
+          deletion_reason: string | null
+          deletion_scheduled_at: string | null
+          grade_level: number | null
+          id: string | null
+          name: string | null
+          parent_id: string | null
+          quest_bonus_points: number | null
+          quest_completed_at: string | null
+          screen_time_enabled: boolean | null
+          total_points: number | null
+          weekly_report_enabled: boolean | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "children_safe"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      audit_admin_profile_access: {
+        Args: { access_reason: string; target_user_id: string }
+        Returns: {
+          age_verified: boolean | null
+          avatar_url: string | null
+          birth_year: number | null
+          coppa_consent_version: string | null
+          coppa_consented_at: string | null
+          created_at: string | null
+          full_name: string
+          id: string
+          onboarding_completed: boolean | null
+          onboarding_step: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       auto_assign_pending_reviews: { Args: never; Returns: Json }
       award_creator_points: {
         Args: {

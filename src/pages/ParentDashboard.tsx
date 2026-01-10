@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { ParentLayout } from "@/components/layout/ParentLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,45 @@ import { BonusLessonManager } from "@/components/parent/BonusLessonManager";
 import { PendingShareApprovals } from "@/components/parent/PendingShareApprovals";
 import { EngagementScoreCard } from "@/components/parent/EngagementScoreCard";
 import { PeerConnectionApprovals } from "@/components/parent/PeerConnectionApprovals";
+import { HelpButton, FeatureSpotlight } from "@/components/onboarding";
 import { logEmotionLogView } from "@/lib/auditLogger";
+
+/**
+ * Feature tour steps for parent dashboard
+ * Highlights key parent features after onboarding
+ */
+const PARENT_FEATURE_TOUR_STEPS = [
+  {
+    targetSelector: '[data-tour="children-overview"]',
+    title: 'Children Overview',
+    description: 'View and manage all your children\'s profiles from here.',
+    placement: 'bottom' as const,
+  },
+  {
+    targetSelector: '[data-tour="quick-stats"]',
+    title: 'Quick Stats',
+    description: 'See your family\'s learning progress at a glance.',
+    placement: 'bottom' as const,
+  },
+  {
+    targetSelector: '[data-tour="engagement-tab"]',
+    title: 'Engagement Tracking',
+    description: 'Monitor your children\'s engagement scores and trends.',
+    placement: 'bottom' as const,
+  },
+  {
+    targetSelector: '[data-tour="approvals-tab"]',
+    title: 'Approvals',
+    description: 'Review and approve collaboration and sharing requests.',
+    placement: 'bottom' as const,
+  },
+  {
+    targetSelector: '[data-tour="notifications"]',
+    title: 'Notifications',
+    description: 'Stay updated on your children\'s achievements and activities.',
+    placement: 'left' as const,
+  },
+];
 
 const ParentDashboard = () => {
   const { user } = useAuth();
@@ -32,7 +70,16 @@ const ParentDashboard = () => {
   const [dailyQuotas, setDailyQuotas] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showFeatureTour, setShowFeatureTour] = useState(false);
   const navigate = useNavigate();
+
+  const handleRestartTutorial = useCallback(() => {
+    setShowOnboarding(true);
+  }, []);
+
+  const handleStartFeatureTour = useCallback(() => {
+    setShowFeatureTour(true);
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -140,7 +187,7 @@ const ParentDashboard = () => {
               Manage your children's learning journey
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3" data-tour="notifications">
             <NotificationBell parentId={user.id} />
             <Button onClick={() => navigate('/parent-setup')} className="gap-2 hover-scale">
               <Plus className="w-4 h-4" />
@@ -149,11 +196,26 @@ const ParentDashboard = () => {
           </div>
         </div>
 
+        {/* Feature Tour Spotlight */}
+        <FeatureSpotlight
+          steps={PARENT_FEATURE_TOUR_STEPS}
+          isActive={showFeatureTour}
+          onComplete={() => setShowFeatureTour(false)}
+          onSkip={() => setShowFeatureTour(false)}
+        />
+        
+        {/* Help Button */}
+        <HelpButton
+          variant="parent"
+          onRestartTutorial={handleRestartTutorial}
+          onStartFeatureTour={handleStartFeatureTour}
+        />
+
         {/* Peer Connection Approvals - COPPA Compliance */}
         <PeerConnectionApprovals />
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6" data-tour="quick-stats">
           <StatCard
             title="Total Children"
             value={children.length}
@@ -182,8 +244,8 @@ const ParentDashboard = () => {
         {/* Tabbed Content */}
         <Tabs defaultValue="children" className="space-y-6">
           <TabsList className="grid w-full grid-cols-7 max-w-5xl">
-            <TabsTrigger value="children">Children</TabsTrigger>
-            <TabsTrigger value="engagement">
+            <TabsTrigger value="children" data-tour="children-overview">Children</TabsTrigger>
+            <TabsTrigger value="engagement" data-tour="engagement-tab">
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-4 h-4" />
                 <span className="hidden sm:inline">Engagement</span>
@@ -201,7 +263,7 @@ const ParentDashboard = () => {
                 Rewards
               </div>
             </TabsTrigger>
-            <TabsTrigger value="approvals">
+            <TabsTrigger value="approvals" data-tour="approvals-tab">
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4" />
                 Approvals

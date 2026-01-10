@@ -16,6 +16,7 @@ import { checkAndAwardBadges } from "@/lib/badgeChecker";
 import { DailyQuest } from "@/components/quests/DailyQuest";
 import { CustomLessonGenerator } from "@/components/learning/CustomLessonGenerator";
 import { LessonTokenDisplay } from "@/components/gamification/LessonTokenDisplay";
+import { Leaderboard } from "@/components/gamification/Leaderboard";
 import { ShareLessonModal } from "@/components/learning/ShareLessonModal";
 import { LessonCard, LessonCardCompact } from "@/components/learning/LessonCard";
 import { StatCard } from "@/components/ui/stat-card";
@@ -48,6 +49,12 @@ const CHILD_FEATURE_TOUR_STEPS = [
     targetSelector: '[data-tour="emotion-checkin"]',
     title: 'How Are You Feeling?',
     description: 'Tell us how you feel - it helps us pick the best activities.',
+    placement: 'top' as const,
+  },
+  {
+    targetSelector: '[data-tour="leaderboard"]',
+    title: 'See How You Rank',
+    description: 'Check the leaderboard to see your progress compared to others!',
     placement: 'top' as const,
   },
 ];
@@ -273,7 +280,7 @@ const ChildDashboard = () => {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6" data-tour="stats-overview">
           <StatCard
             title="Lessons Completed"
             value={stats.completed}
@@ -300,7 +307,7 @@ const ChildDashboard = () => {
         </div>
 
         {/* View Progress Link */}
-        <div className="flex justify-center">
+        <div className="flex justify-center" data-tour="progress-button">
           <Button variant="outline" onClick={() => navigate('/progress')} className="gap-2">
             <BarChart3 className="w-4 h-4" />
             View My Progress
@@ -311,26 +318,31 @@ const ChildDashboard = () => {
         <div data-tour="daily-quest">
           <DailyQuest />
         </div>
-        <DailyQuest />
 
         {/* Lesson Tokens Display */}
-        {child && <LessonTokenDisplay childId={child.id} />}
+        {child && (
+          <div data-tour="lesson-tokens">
+            <LessonTokenDisplay childId={child.id} />
+          </div>
+        )}
 
         {/* Custom Lesson Generator */}
         {child && (
-          <CustomLessonGenerator
-            childId={child.id}
-            gradeLevel={child.grade_level}
-            onLessonCreated={(lesson) => {
-              setCelebration({
-                type: 'lesson',
-                title: '✨ Lesson Created!',
-                message: `Your custom lesson "${lesson.title}" is ready to explore!`,
-                points: 0,
-              });
-              loadDashboardData(); // Refresh to show new lesson
-            }}
-          />
+          <div data-tour="custom-lesson">
+            <CustomLessonGenerator
+              childId={child.id}
+              gradeLevel={child.grade_level}
+              onLessonCreated={(lesson) => {
+                setCelebration({
+                  type: 'lesson',
+                  title: '✨ Lesson Created!',
+                  message: `Your custom lesson "${lesson.title}" is ready to explore!`,
+                  points: 0,
+                });
+                loadDashboardData(); // Refresh to show new lesson
+              }}
+            />
+          </div>
         )}
 
         {/* My Custom Lessons */}
@@ -365,28 +377,43 @@ const ChildDashboard = () => {
         )}
 
         {/* Emotional Check-In */}
-        <EmotionCheckIn 
-          childId={childId} 
-          gradeLevel={child?.grade_level || 5}
-          onComplete={async () => {
-            // Check for new badges after emotion check-in
-            const newBadges = await checkAndAwardBadges(childId);
-            if (newBadges.length > 0) {
-              setCelebration({
-                type: 'badge',
-                title: '🏆 New Badge Earned!',
-                message: `You've unlocked ${newBadges.length} new badge${newBadges.length > 1 ? 's' : ''}!`,
-                points: 0,
-              });
-            }
-          }}
-        />
+        <div data-tour="emotion-checkin">
+          <EmotionCheckIn 
+            childId={childId} 
+            gradeLevel={child?.grade_level || 5}
+            onComplete={async () => {
+              // Check for new badges after emotion check-in
+              const newBadges = await checkAndAwardBadges(childId);
+              if (newBadges.length > 0) {
+                setCelebration({
+                  type: 'badge',
+                  title: '🏆 New Badge Earned!',
+                  message: `You've unlocked ${newBadges.length} new badge${newBadges.length > 1 ? 's' : ''}!`,
+                  points: 0,
+                });
+              }
+            }}
+          />
+        </div>
 
         {/* Badge Showcase */}
-        <BadgeShowcase childId={childId} compact />
+        <div data-tour="badges">
+          <BadgeShowcase childId={childId} compact />
+        </div>
+
+        {/* Leaderboard - Age Adaptive */}
+        {child && (
+          <div data-tour="leaderboard">
+            <Leaderboard
+              childId={childId}
+              gradeLevel={child.grade_level}
+              compact
+            />
+          </div>
+        )}
 
         {/* Available Lessons */}
-        <div>
+        <div data-tour="lessons">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">Start Learning</h2>
             <Button variant="ghost" onClick={() => navigate('/lessons')}>

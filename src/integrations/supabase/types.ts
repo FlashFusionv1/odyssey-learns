@@ -1509,6 +1509,150 @@ export type Database = {
         }
         Relationships: []
       }
+      learning_patterns: {
+        Row: {
+          child_id: string
+          confidence_score: number | null
+          data: Json | null
+          detected_at: string | null
+          id: string
+          pattern_type: string
+          subject: string | null
+          topic: string | null
+        }
+        Insert: {
+          child_id: string
+          confidence_score?: number | null
+          data?: Json | null
+          detected_at?: string | null
+          id?: string
+          pattern_type: string
+          subject?: string | null
+          topic?: string | null
+        }
+        Update: {
+          child_id?: string
+          confidence_score?: number | null
+          data?: Json | null
+          detected_at?: string | null
+          id?: string
+          pattern_type?: string
+          subject?: string | null
+          topic?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_patterns_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "learning_patterns_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      learning_profiles: {
+        Row: {
+          average_quiz_score: number | null
+          average_session_minutes: number | null
+          avoided_subjects: string[] | null
+          best_time_of_day: string | null
+          child_id: string
+          created_at: string | null
+          current_streak: number | null
+          data_points_analyzed: number | null
+          help_seeking_frequency: string | null
+          id: string
+          improvement_trend: string | null
+          last_analyzed_at: string | null
+          learning_speed: string | null
+          optimal_session_length: number | null
+          overall_completion_rate: number | null
+          preferred_difficulty: string | null
+          preferred_subjects: string[] | null
+          profile_version: number | null
+          skill_acquisition_rate: number | null
+          strengths: Json | null
+          total_lessons_completed: number | null
+          updated_at: string | null
+          weaknesses: Json | null
+          weekly_lesson_velocity: number | null
+        }
+        Insert: {
+          average_quiz_score?: number | null
+          average_session_minutes?: number | null
+          avoided_subjects?: string[] | null
+          best_time_of_day?: string | null
+          child_id: string
+          created_at?: string | null
+          current_streak?: number | null
+          data_points_analyzed?: number | null
+          help_seeking_frequency?: string | null
+          id?: string
+          improvement_trend?: string | null
+          last_analyzed_at?: string | null
+          learning_speed?: string | null
+          optimal_session_length?: number | null
+          overall_completion_rate?: number | null
+          preferred_difficulty?: string | null
+          preferred_subjects?: string[] | null
+          profile_version?: number | null
+          skill_acquisition_rate?: number | null
+          strengths?: Json | null
+          total_lessons_completed?: number | null
+          updated_at?: string | null
+          weaknesses?: Json | null
+          weekly_lesson_velocity?: number | null
+        }
+        Update: {
+          average_quiz_score?: number | null
+          average_session_minutes?: number | null
+          avoided_subjects?: string[] | null
+          best_time_of_day?: string | null
+          child_id?: string
+          created_at?: string | null
+          current_streak?: number | null
+          data_points_analyzed?: number | null
+          help_seeking_frequency?: string | null
+          id?: string
+          improvement_trend?: string | null
+          last_analyzed_at?: string | null
+          learning_speed?: string | null
+          optimal_session_length?: number | null
+          overall_completion_rate?: number | null
+          preferred_difficulty?: string | null
+          preferred_subjects?: string[] | null
+          profile_version?: number | null
+          skill_acquisition_rate?: number | null
+          strengths?: Json | null
+          total_lessons_completed?: number | null
+          updated_at?: string | null
+          weaknesses?: Json | null
+          weekly_lesson_velocity?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_profiles_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: true
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "learning_profiles_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: true
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lesson_analytics: {
         Row: {
           avg_time_seconds: number | null
@@ -1833,6 +1977,95 @@ export type Database = {
             columns: ["review_id"]
             isOneToOne: false
             referencedRelation: "lesson_reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lesson_recommendations: {
+        Row: {
+          actual_score: number | null
+          actual_time_minutes: number | null
+          child_id: string
+          completed_at: string | null
+          created_at: string | null
+          dismissed_at: string | null
+          expires_at: string | null
+          id: string
+          lesson_id: string
+          predicted_difficulty: string | null
+          predicted_engagement: string | null
+          predicted_score: number | null
+          predicted_time_minutes: number | null
+          priority: number | null
+          reason: string
+          reason_explanation: string | null
+          was_helpful: boolean | null
+        }
+        Insert: {
+          actual_score?: number | null
+          actual_time_minutes?: number | null
+          child_id: string
+          completed_at?: string | null
+          created_at?: string | null
+          dismissed_at?: string | null
+          expires_at?: string | null
+          id?: string
+          lesson_id: string
+          predicted_difficulty?: string | null
+          predicted_engagement?: string | null
+          predicted_score?: number | null
+          predicted_time_minutes?: number | null
+          priority?: number | null
+          reason: string
+          reason_explanation?: string | null
+          was_helpful?: boolean | null
+        }
+        Update: {
+          actual_score?: number | null
+          actual_time_minutes?: number | null
+          child_id?: string
+          completed_at?: string | null
+          created_at?: string | null
+          dismissed_at?: string | null
+          expires_at?: string | null
+          id?: string
+          lesson_id?: string
+          predicted_difficulty?: string | null
+          predicted_engagement?: string | null
+          predicted_score?: number | null
+          predicted_time_minutes?: number | null
+          priority?: number | null
+          reason?: string
+          reason_explanation?: string | null
+          was_helpful?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_recommendations_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_recommendations_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_recommendations_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_review_dashboard"
+            referencedColumns: ["lesson_id"]
+          },
+          {
+            foreignKeyName: "lesson_recommendations_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
             referencedColumns: ["id"]
           },
         ]
@@ -2389,6 +2622,66 @@ export type Database = {
           },
         ]
       }
+      profile_analysis_history: {
+        Row: {
+          child_id: string
+          confidence_level: number | null
+          created_at: string | null
+          data_points_analyzed: number | null
+          error_message: string | null
+          id: string
+          model_used: string
+          patterns_detected: number | null
+          processing_time_ms: number | null
+          profile_snapshot: Json
+          recommendations_generated: number | null
+          status: string | null
+        }
+        Insert: {
+          child_id: string
+          confidence_level?: number | null
+          created_at?: string | null
+          data_points_analyzed?: number | null
+          error_message?: string | null
+          id?: string
+          model_used: string
+          patterns_detected?: number | null
+          processing_time_ms?: number | null
+          profile_snapshot: Json
+          recommendations_generated?: number | null
+          status?: string | null
+        }
+        Update: {
+          child_id?: string
+          confidence_level?: number | null
+          created_at?: string | null
+          data_points_analyzed?: number | null
+          error_message?: string | null
+          id?: string
+          model_used?: string
+          patterns_detected?: number | null
+          processing_time_ms?: number | null
+          profile_snapshot?: Json
+          recommendations_generated?: number | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_analysis_history_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_analysis_history_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           age_verified: boolean | null
@@ -2457,6 +2750,64 @@ export type Database = {
           violation_type?: string
         }
         Relationships: []
+      }
+      recommendation_feedback: {
+        Row: {
+          child_id: string
+          created_at: string | null
+          difficulty_rating: number | null
+          dismissal_reason: string | null
+          enjoyment_rating: number | null
+          feedback_type: string
+          id: string
+          recommendation_id: string
+          was_helpful: boolean | null
+        }
+        Insert: {
+          child_id: string
+          created_at?: string | null
+          difficulty_rating?: number | null
+          dismissal_reason?: string | null
+          enjoyment_rating?: number | null
+          feedback_type: string
+          id?: string
+          recommendation_id: string
+          was_helpful?: boolean | null
+        }
+        Update: {
+          child_id?: string
+          created_at?: string | null
+          difficulty_rating?: number | null
+          dismissal_reason?: string | null
+          enjoyment_rating?: number | null
+          feedback_type?: string
+          id?: string
+          recommendation_id?: string
+          was_helpful?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recommendation_feedback_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recommendation_feedback_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recommendation_feedback_recommendation_id_fkey"
+            columns: ["recommendation_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_recommendations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       review_history: {
         Row: {
@@ -2948,6 +3299,78 @@ export type Database = {
             columns: ["lesson_id"]
             isOneToOne: false
             referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      skill_mastery: {
+        Row: {
+          avg_session_minutes: number | null
+          child_id: string
+          created_at: string | null
+          current_level: string | null
+          id: string
+          improvement_rate: number | null
+          last_practiced_at: string | null
+          mastery_percentage: number | null
+          practice_count: number | null
+          projected_mastery_date: string | null
+          skill_category: string | null
+          skill_name: string
+          subject: string
+          success_rate: number | null
+          total_time_spent_minutes: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avg_session_minutes?: number | null
+          child_id: string
+          created_at?: string | null
+          current_level?: string | null
+          id?: string
+          improvement_rate?: number | null
+          last_practiced_at?: string | null
+          mastery_percentage?: number | null
+          practice_count?: number | null
+          projected_mastery_date?: string | null
+          skill_category?: string | null
+          skill_name: string
+          subject: string
+          success_rate?: number | null
+          total_time_spent_minutes?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avg_session_minutes?: number | null
+          child_id?: string
+          created_at?: string | null
+          current_level?: string | null
+          id?: string
+          improvement_rate?: number | null
+          last_practiced_at?: string | null
+          mastery_percentage?: number | null
+          practice_count?: number | null
+          projected_mastery_date?: string | null
+          skill_category?: string | null
+          skill_name?: string
+          subject?: string
+          success_rate?: number | null
+          total_time_spent_minutes?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "skill_mastery_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "skill_mastery_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -3618,6 +4041,22 @@ export type Database = {
         Returns: string
       }
       generate_class_code: { Args: never; Returns: string }
+      get_active_recommendations: {
+        Args: { p_child_id: string; p_limit?: number }
+        Returns: {
+          created_at: string
+          id: string
+          lesson_id: string
+          lesson_subject: string
+          lesson_title: string
+          predicted_difficulty: string
+          predicted_score: number
+          predicted_time_minutes: number
+          priority: number
+          reason: string
+          reason_explanation: string
+        }[]
+      }
       get_lesson_performance_overview: {
         Args: { p_lesson_id: string }
         Returns: {

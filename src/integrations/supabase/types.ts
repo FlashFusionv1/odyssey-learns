@@ -4392,22 +4392,35 @@ export type Database = {
         Returns: string
       }
       generate_class_code: { Args: never; Returns: string }
-      get_active_recommendations: {
-        Args: { p_child_id: string; p_limit?: number }
-        Returns: {
-          created_at: string
-          id: string
-          lesson_id: string
-          lesson_subject: string
-          lesson_title: string
-          predicted_difficulty: string
-          predicted_score: number
-          predicted_time_minutes: number
-          priority: number
-          reason: string
-          reason_explanation: string
-        }[]
-      }
+      get_active_recommendations:
+        | {
+            Args: { p_child_id: string }
+            Returns: {
+              confidence_score: number
+              id: string
+              lesson_id: string
+              priority: number
+              reason: string
+              subject: string
+              title: string
+            }[]
+          }
+        | {
+            Args: { p_child_id: string; p_limit?: number }
+            Returns: {
+              created_at: string
+              id: string
+              lesson_id: string
+              lesson_subject: string
+              lesson_title: string
+              predicted_difficulty: string
+              predicted_score: number
+              predicted_time_minutes: number
+              priority: number
+              reason: string
+              reason_explanation: string
+            }[]
+          }
       get_lesson_performance_overview: {
         Args: { p_lesson_id: string }
         Returns: {

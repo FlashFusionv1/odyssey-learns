@@ -112,11 +112,17 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          // React core
+          // React core - MUST be first and together
           if (id.includes('node_modules/react/') || 
               id.includes('node_modules/react-dom/') || 
               id.includes('node_modules/react-router')) {
             return 'react-vendor';
+          }
+          // UI utilities - CVA, clsx, tailwind-merge MUST stay together
+          if (id.includes('class-variance-authority') || 
+              id.includes('node_modules/clsx/') ||
+              id.includes('tailwind-merge')) {
+            return 'ui-utils';
           }
           // Radix UI - all in one chunk to avoid export issues
           if (id.includes('node_modules/@radix-ui/')) {
@@ -144,6 +150,7 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('framer-motion')) {
             return 'animation';
           }
+          // Let all other modules (including src/components/ui/*) stay in the main bundle
         },
       },
     },

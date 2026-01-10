@@ -14,7 +14,7 @@ import { EmotionCheckIn } from "@/components/emotional/EmotionCheckIn";
 import { BadgeShowcase } from "@/components/badges/BadgeShowcase";
 import { checkAndAwardBadges } from "@/lib/badgeChecker";
 import { DailyQuest } from "@/components/quests/DailyQuest";
-import { CustomLessonGenerator } from "@/components/learning/CustomLessonGenerator";
+import { AILessonGenerator } from "@/components/learning/AILessonGenerator";
 import { LessonTokenDisplay } from "@/components/gamification/LessonTokenDisplay";
 import { Leaderboard } from "@/components/gamification/Leaderboard";
 import { ShareLessonModal } from "@/components/learning/ShareLessonModal";
@@ -326,10 +326,10 @@ const ChildDashboard = () => {
           </div>
         )}
 
-        {/* Custom Lesson Generator */}
+        {/* AI Lesson Generator */}
         {child && (
           <div data-tour="custom-lesson">
-            <CustomLessonGenerator
+            <AILessonGenerator
               childId={child.id}
               gradeLevel={child.grade_level}
               onLessonCreated={(lesson) => {
@@ -339,7 +339,7 @@ const ChildDashboard = () => {
                   message: `Your custom lesson "${lesson.title}" is ready to explore!`,
                   points: 0,
                 });
-                loadDashboardData(); // Refresh to show new lesson
+                loadDashboardData();
               }}
             />
           </div>

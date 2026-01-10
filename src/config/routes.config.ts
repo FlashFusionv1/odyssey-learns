@@ -36,6 +36,7 @@ const Badges = createLazyRoute(() => import('@/pages/Badges'));
 const Social = createLazyRoute(() => import('@/pages/Social'));
 const Settings = createLazyRoute(() => import('@/pages/Settings'));
 const Rewards = createLazyRoute(() => import('@/pages/Rewards'));
+const LearningProgress = createLazyRoute(() => import('@/pages/LearningProgress'));
 
 // Admin pages
 const BetaAnalytics = createLazyRoute(() => import('@/pages/BetaAnalytics'));
@@ -315,6 +316,15 @@ export const childRoutes: RouteConfig[] = [
     roles: ['child'],
     meta: {
       title: 'Rewards - Inner Odyssey',
+    },
+  },
+  {
+    path: ROUTE_PATHS.CHILD.PROGRESS,
+    component: LearningProgress,
+    requireAuth: true,
+    roles: ['child'],
+    meta: {
+      title: 'My Progress - Inner Odyssey',
     },
   },
   {

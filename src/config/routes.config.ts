@@ -38,6 +38,7 @@ const Settings = createLazyRoute(() => import('@/pages/Settings'));
 const Rewards = createLazyRoute(() => import('@/pages/Rewards'));
 const LearningProgress = createLazyRoute(() => import('@/pages/LearningProgress'));
 const KidsRoom = createLazyRoute(() => import('@/pages/KidsRoom'));
+const Play = createLazyRoute(() => import('@/pages/Play'));
 
 // Admin pages
 const BetaAnalytics = createLazyRoute(() => import('@/pages/BetaAnalytics'));
@@ -353,6 +354,15 @@ export const childRoutes: RouteConfig[] = [
     roles: ['child'],
     meta: {
       title: 'My Room - Inner Odyssey',
+    },
+  },
+  {
+    path: '/play',
+    component: Play,
+    requireAuth: true,
+    roles: ['child'],
+    meta: {
+      title: 'Play Zone - Inner Odyssey',
     },
   },
 ];

@@ -4005,6 +4005,8 @@ export type Database = {
       }
       video_lessons: {
         Row: {
+          age_max: number | null
+          age_min: number | null
           captions_url: string | null
           chapter_markers: Json | null
           created_at: string | null
@@ -4015,7 +4017,10 @@ export type Database = {
           grade_level: number
           id: string
           is_active: boolean | null
+          learning_objectives: string[] | null
           lesson_id: string | null
+          points_value: number | null
+          quiz_questions: Json | null
           quiz_timestamps: Json | null
           subject: string
           thumbnail_url: string | null
@@ -4028,6 +4033,8 @@ export type Database = {
           view_count: number | null
         }
         Insert: {
+          age_max?: number | null
+          age_min?: number | null
           captions_url?: string | null
           chapter_markers?: Json | null
           created_at?: string | null
@@ -4038,7 +4045,10 @@ export type Database = {
           grade_level: number
           id?: string
           is_active?: boolean | null
+          learning_objectives?: string[] | null
           lesson_id?: string | null
+          points_value?: number | null
+          quiz_questions?: Json | null
           quiz_timestamps?: Json | null
           subject: string
           thumbnail_url?: string | null
@@ -4051,6 +4061,8 @@ export type Database = {
           view_count?: number | null
         }
         Update: {
+          age_max?: number | null
+          age_min?: number | null
           captions_url?: string | null
           chapter_markers?: Json | null
           created_at?: string | null
@@ -4061,7 +4073,10 @@ export type Database = {
           grade_level?: number
           id?: string
           is_active?: boolean | null
+          learning_objectives?: string[] | null
           lesson_id?: string | null
+          points_value?: number | null
+          quiz_questions?: Json | null
           quiz_timestamps?: Json | null
           subject?: string
           thumbnail_url?: string | null
@@ -4090,6 +4105,61 @@ export type Database = {
           },
         ]
       }
+      video_quiz_responses: {
+        Row: {
+          answered_at: string | null
+          child_id: string
+          id: string
+          is_correct: boolean
+          question_index: number
+          selected_answer: number
+          time_to_answer_seconds: number | null
+          video_id: string
+        }
+        Insert: {
+          answered_at?: string | null
+          child_id: string
+          id?: string
+          is_correct: boolean
+          question_index: number
+          selected_answer: number
+          time_to_answer_seconds?: number | null
+          video_id: string
+        }
+        Update: {
+          answered_at?: string | null
+          child_id?: string
+          id?: string
+          is_correct?: boolean
+          question_index?: number
+          selected_answer?: number
+          time_to_answer_seconds?: number | null
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_quiz_responses_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_quiz_responses_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_quiz_responses_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "video_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       video_watch_progress: {
         Row: {
           child_id: string
@@ -4099,6 +4169,8 @@ export type Database = {
           id: string
           interaction_events: Json | null
           last_watched_at: string | null
+          quiz_answers: Json | null
+          quiz_score: number | null
           total_watch_time_seconds: number | null
           updated_at: string | null
           video_id: string
@@ -4112,6 +4184,8 @@ export type Database = {
           id?: string
           interaction_events?: Json | null
           last_watched_at?: string | null
+          quiz_answers?: Json | null
+          quiz_score?: number | null
           total_watch_time_seconds?: number | null
           updated_at?: string | null
           video_id: string
@@ -4125,6 +4199,8 @@ export type Database = {
           id?: string
           interaction_events?: Json | null
           last_watched_at?: string | null
+          quiz_answers?: Json | null
+          quiz_score?: number | null
           total_watch_time_seconds?: number | null
           updated_at?: string | null
           video_id?: string

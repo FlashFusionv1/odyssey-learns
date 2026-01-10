@@ -36,6 +36,11 @@
 - ✅ Take notes on lessons
 - ✅ Watch video lessons
 - ✅ Connect with peers (parent approved)
+- ✅ View detailed learning progress analytics
+- ✅ Interactive onboarding tutorial (age-adaptive)
+- ✅ Feature discovery spotlights
+- ✅ Access help and tutorials via floating button
+- ✅ Age-adaptive leaderboard (opt-in)
 
 ### For Teachers
 
@@ -185,15 +190,17 @@ npm run typecheck    # TypeScript check
 
 ```
 src/
-├── components/      # 100+ React components
+├── components/      # 110+ React components
 │   ├── auth/       # Authentication
 │   ├── learning/   # Learning features
 │   ├── parent/     # Parent dashboard
 │   ├── teacher/    # Teacher portal
-│   ├── gamification/ # Points, badges
+│   ├── gamification/ # Points, badges, leaderboard
+│   ├── onboarding/ # Tutorials, spotlights, help
+│   ├── progress/   # Analytics charts and grids
 │   └── ui/         # shadcn components
-├── hooks/          # 14+ custom hooks
-├── pages/          # 42 page components
+├── hooks/          # 17+ custom hooks
+├── pages/          # 43 page components
 ├── lib/            # Utilities
 └── integrations/   # Supabase client
 

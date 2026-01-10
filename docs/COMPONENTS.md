@@ -452,6 +452,37 @@ interface RequestShareButtonProps {
 
 ## 4. GAMIFICATION COMPONENTS
 
+### Leaderboard
+**Path:** `src/components/gamification/Leaderboard.tsx`  
+**Purpose:** Age-adaptive competitive/collaborative ranking
+
+**Props:**
+```typescript
+interface LeaderboardProps {
+  childId: string;
+  gradeLevel: number;
+}
+```
+
+**Age-Adaptive Behavior:**
+- **K-2:** Personal progress celebration (no competitive board)
+- **Grades 3-5:** Opt-in class leaderboard with avatar privacy
+- **Grades 6-8:** Multiple categories (Top Learners, Most Improved, Most Helpful, Streak)
+- **Grades 9-12:** Full leaderboard with privacy toggle
+
+**Features:**
+- Privacy controls (hide leaderboard option)
+- Multiple ranking categories
+- Avatar-only display for younger grades
+- Celebration of personal growth over competition for K-2
+
+**Usage:**
+```tsx
+<Leaderboard childId={childId} gradeLevel={child.grade_level} />
+```
+
+---
+
 ### BadgeShowcase
 **Path:** `src/components/badges/BadgeShowcase.tsx`  
 **Purpose:** Display earned badges
@@ -569,7 +600,215 @@ interface LessonTokenDisplayProps {
 
 ---
 
-## 5. SOCIAL COMPONENTS
+## 5. ONBOARDING COMPONENTS
+
+### ChildOnboardingTutorial
+**Path:** `src/components/onboarding/ChildOnboardingTutorial.tsx`  
+**Purpose:** Age-adaptive interactive tutorial for children
+
+**Props:**
+```typescript
+interface ChildOnboardingTutorialProps {
+  gradeLevel: number;
+  isOpen: boolean;
+  onComplete: () => void;
+  onSkip: () => void;
+}
+```
+
+**Age-Adaptive Content:**
+- **K-2:** Simple language, large visuals, encouraging mascot
+- **Grades 3-5:** Balanced text and images, achievement focus
+- **Grades 6-8:** More detailed explanations, feature discovery
+- **Grades 9-12:** Concise, efficiency-focused, quick tips
+
+**Features:**
+- Multi-step wizard with progress indicators
+- Age-appropriate animations
+- Skip option for returning users
+- Persistent state to prevent re-showing
+
+---
+
+### FeatureSpotlight
+**Path:** `src/components/onboarding/FeatureSpotlight.tsx`  
+**Purpose:** Highlight UI elements with contextual guidance
+
+**Props:**
+```typescript
+interface FeatureSpotlightProps {
+  steps: SpotlightStep[];
+  isActive: boolean;
+  onComplete: () => void;
+  onSkip: () => void;
+}
+```
+
+**Features:**
+- DOM element targeting via `data-tour` attributes
+- Spotlight overlay with tooltip
+- Next/Previous navigation
+- Progress indicator
+- Auto-positioning
+
+**Usage:**
+```tsx
+<FeatureSpotlight
+  steps={CHILD_FEATURE_TOUR_STEPS}
+  isActive={showTour}
+  onComplete={() => setShowTour(false)}
+  onSkip={() => setShowTour(false)}
+/>
+```
+
+---
+
+### OnboardingProvider
+**Path:** `src/components/onboarding/OnboardingProvider.tsx`  
+**Purpose:** Context provider for onboarding state
+
+**Features:**
+- Manages tutorial completion state
+- Tracks feature tour progress
+- Supports parent and child flows
+- Persists to Supabase (parents) or localStorage (children)
+
+**Usage:**
+```tsx
+<OnboardingProvider>
+  <App />
+</OnboardingProvider>
+```
+
+---
+
+### HelpButton
+**Path:** `src/components/onboarding/HelpButton.tsx`  
+**Purpose:** Floating help access button
+
+**Props:**
+```typescript
+interface HelpButtonProps {
+  onRestartTutorial: () => void;
+  onStartFeatureTour: () => void;
+  onOpenFeedback?: () => void;
+  variant?: 'parent' | 'child';
+  gradeLevel?: number;
+}
+```
+
+**Features:**
+- Dropdown menu with help options
+- Restart tutorial action
+- Feature tour trigger
+- Help center link (parents)
+- Feedback widget access
+- "What's New" section
+
+**Age-Adaptive Sizing:**
+- K-2: Extra large button (56px) for easier tapping
+- 3-12: Standard size (48px)
+
+---
+
+## 6. PROGRESS & ANALYTICS COMPONENTS
+
+### SubjectProgressChart
+**Path:** `src/components/progress/SubjectProgressChart.tsx`  
+**Purpose:** Pie chart of learning by subject
+
+**Props:**
+```typescript
+interface SubjectProgressChartProps {
+  data: SubjectData[];
+}
+```
+
+**Features:**
+- Interactive pie chart (Recharts)
+- Subject color coding
+- Percentage labels
+- Responsive sizing
+
+---
+
+### ActivityTrendChart
+**Path:** `src/components/progress/ActivityTrendChart.tsx`  
+**Purpose:** Daily activity trend area chart
+
+**Props:**
+```typescript
+interface ActivityTrendChartProps {
+  data: DailyActivity[];
+}
+```
+
+**Features:**
+- 7/14/30 day views
+- Area chart with gradient fill
+- Tooltip with daily details
+- Responsive design
+
+---
+
+### SkillMasteryGrid
+**Path:** `src/components/progress/SkillMasteryGrid.tsx`  
+**Purpose:** Visual grid of skill mastery progress
+
+**Props:**
+```typescript
+interface SkillMasteryGridProps {
+  skills: SkillData[];
+}
+```
+
+**Features:**
+- Card grid layout
+- Progress ring per skill
+- Mastery level indicators
+- Subject icons
+
+---
+
+### AchievementTimeline
+**Path:** `src/components/progress/AchievementTimeline.tsx`  
+**Purpose:** Chronological achievement display
+
+**Props:**
+```typescript
+interface AchievementTimelineProps {
+  achievements: Achievement[];
+}
+```
+
+**Features:**
+- Vertical timeline layout
+- Badge icons with dates
+- Recent achievements first
+- Expandable details
+
+---
+
+### EngagementOverview
+**Path:** `src/components/progress/EngagementOverview.tsx`  
+**Purpose:** Key engagement metrics summary
+
+**Props:**
+```typescript
+interface EngagementOverviewProps {
+  stats: EngagementStats;
+}
+```
+
+**Features:**
+- Stat cards (streak, points, lessons, badges)
+- Progress rings
+- Trend indicators
+- Responsive grid
+
+---
+
+## 7. SOCIAL COMPONENTS
 
 ### PeerConnections
 **Path:** `src/components/social/PeerConnections.tsx`  

@@ -15,8 +15,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - API documentation
 - Mobile app (React Native)
 - Internationalization (i18n)
-- Advanced analytics dashboard
-- AI-powered lesson recommendations
+
+## [0.5.0] - 2026-01-10
+
+### Added - Interactive Onboarding & Learning Analytics
+
+#### Learning Progress Dashboard
+- **Comprehensive Analytics Page**: New `/progress` route with detailed learning analytics
+- **Subject Progress Chart**: Pie chart visualization of learning by subject area
+- **Activity Trend Chart**: Area chart showing daily learning activity over time
+- **Skill Mastery Grid**: Visual cards displaying skill mastery with progress indicators
+- **Achievement Timeline**: Timeline view of recent badge unlocks and milestones
+- **Engagement Overview**: Key metrics including streak, points, lessons, and badges
+
+#### Interactive Onboarding System
+- **Child Onboarding Tutorial**: Age-adaptive tutorial with tailored content for K-2, 3-5, 6-8, and 9-12 age tiers
+- **Feature Spotlight Component**: Contextual feature discovery with spotlight effects and tooltips
+- **Onboarding Provider**: React Context for managing onboarding state across the app
+- **HelpButton Component**: Floating help button with tutorials, feature tours, and feedback access
+- **Progress Persistence**: Tutorial progress saved to Supabase for parents, localStorage for children
+
+#### Data-Tour Integration
+- Added `data-tour` attributes to ChildDashboard elements (stats, progress, quests, tokens, lessons, badges)
+- Added `data-tour` attributes to ParentDashboard elements (notifications, stats, children overview, tabs)
+- Feature tour steps defined for both parent and child flows
+
+#### Age-Adaptive Leaderboard
+- **K-2**: Personal progress celebration (no competitive leaderboard)
+- **Grades 3-5**: Opt-in class leaderboard with avatar privacy
+- **Grades 6-8**: Multiple category rankings (Top Learners, Most Improved, Most Helpful, Streak)
+- **Grades 9-12**: Full leaderboard with privacy toggle option
+
+### Technical Details
+- `src/hooks/useChildProgressAnalytics.tsx` - Analytics data fetching and computation
+- `src/hooks/useOnboarding.tsx` - Onboarding state management hook
+- `src/components/progress/SubjectProgressChart.tsx` - Subject breakdown pie chart
+- `src/components/progress/ActivityTrendChart.tsx` - Daily activity area chart
+- `src/components/progress/SkillMasteryGrid.tsx` - Skill mastery card grid
+- `src/components/progress/AchievementTimeline.tsx` - Achievement timeline component
+- `src/components/progress/EngagementOverview.tsx` - Engagement metrics overview
+- `src/components/onboarding/ChildOnboardingTutorial.tsx` - Age-adaptive tutorial
+- `src/components/onboarding/FeatureSpotlight.tsx` - Spotlight overlay component
+- `src/components/onboarding/OnboardingProvider.tsx` - Context provider
+- `src/components/onboarding/HelpButton.tsx` - Floating help menu
+- `src/components/gamification/Leaderboard.tsx` - Age-adaptive leaderboard
+- `src/pages/LearningProgress.tsx` - Progress dashboard page
+
+### Routes Added
+- `/child/progress` - Learning progress analytics dashboard
 
 ## [0.4.0] - 2026-01-09
 

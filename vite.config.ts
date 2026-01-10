@@ -48,7 +48,15 @@ export default defineConfig(({ mode }) => ({
         ]
       },
       workbox: {
+        // Clean old caches on activation
+        cleanupOutdatedCaches: true,
+        // Skip waiting to activate new SW immediately
+        skipWaiting: true,
+        // Claim all clients immediately
+        clientsClaim: true,
         globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg,gif,mp3}"],
+        // Don't cache source maps or dev files
+        globIgnores: ["**/node_modules/**/*", "**/*.map"],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,

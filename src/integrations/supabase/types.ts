@@ -574,6 +574,52 @@ export type Database = {
           },
         ]
       }
+      child_power_ups: {
+        Row: {
+          acquired_at: string | null
+          child_id: string | null
+          id: string
+          power_up_id: string | null
+          quantity: number | null
+        }
+        Insert: {
+          acquired_at?: string | null
+          child_id?: string | null
+          id?: string
+          power_up_id?: string | null
+          quantity?: number | null
+        }
+        Update: {
+          acquired_at?: string | null
+          child_id?: string | null
+          id?: string
+          power_up_id?: string | null
+          quantity?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "child_power_ups_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_power_ups_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_power_ups_power_up_id_fkey"
+            columns: ["power_up_id"]
+            isOneToOne: false
+            referencedRelation: "power_ups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       child_room: {
         Row: {
           child_id: string | null
@@ -1524,6 +1570,127 @@ export type Database = {
           created_at?: string | null
           key?: string
           result?: Json
+        }
+        Relationships: []
+      }
+      interactive_completions: {
+        Row: {
+          child_id: string | null
+          completed_at: string | null
+          content_id: string | null
+          feedback: string | null
+          id: string
+          progress_data: Json | null
+          rating: number | null
+          score: number | null
+          started_at: string | null
+          time_spent_seconds: number | null
+        }
+        Insert: {
+          child_id?: string | null
+          completed_at?: string | null
+          content_id?: string | null
+          feedback?: string | null
+          id?: string
+          progress_data?: Json | null
+          rating?: number | null
+          score?: number | null
+          started_at?: string | null
+          time_spent_seconds?: number | null
+        }
+        Update: {
+          child_id?: string | null
+          completed_at?: string | null
+          content_id?: string | null
+          feedback?: string | null
+          id?: string
+          progress_data?: Json | null
+          rating?: number | null
+          score?: number | null
+          started_at?: string | null
+          time_spent_seconds?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interactive_completions_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interactive_completions_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interactive_completions_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "interactive_content"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interactive_content: {
+        Row: {
+          avg_rating: number | null
+          content_data: Json
+          content_type: string
+          created_at: string | null
+          description: string | null
+          estimated_minutes: number | null
+          grade_level_max: number
+          grade_level_min: number
+          id: string
+          is_active: boolean | null
+          is_premium: boolean | null
+          play_count: number | null
+          points_value: number | null
+          subject: string | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          avg_rating?: number | null
+          content_data?: Json
+          content_type: string
+          created_at?: string | null
+          description?: string | null
+          estimated_minutes?: number | null
+          grade_level_max?: number
+          grade_level_min?: number
+          id?: string
+          is_active?: boolean | null
+          is_premium?: boolean | null
+          play_count?: number | null
+          points_value?: number | null
+          subject?: string | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          avg_rating?: number | null
+          content_data?: Json
+          content_type?: string
+          created_at?: string | null
+          description?: string | null
+          estimated_minutes?: number | null
+          grade_level_max?: number
+          grade_level_min?: number
+          id?: string
+          is_active?: boolean | null
+          is_premium?: boolean | null
+          play_count?: number | null
+          points_value?: number | null
+          subject?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -2663,6 +2830,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      power_ups: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          effect_type: string
+          effect_value: Json | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          points_cost: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          effect_type: string
+          effect_value?: Json | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          points_cost?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          effect_type?: string
+          effect_value?: Json | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          points_cost?: number | null
+        }
+        Relationships: []
       }
       profile_analysis_history: {
         Row: {

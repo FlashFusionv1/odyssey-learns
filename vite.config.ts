@@ -6,6 +6,10 @@ import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  // Inject build timestamp for PWA version checking
+  define: {
+    __PWA_BUILD_TIMESTAMP__: JSON.stringify(Date.now()),
+  },
   server: {
     host: "::",
     port: 8080,

@@ -5,6 +5,7 @@ import "./index.css";
 import { ErrorBoundary } from "./components/error/ErrorBoundary";
 import { setupGlobalErrorHandlers } from "./lib/errorHandler";
 import { initializePerformanceMonitoring } from "./lib/performance";
+import "./lib/clearCache"; // Expose emergency cache clear
 
 // Initialize global error handlers and performance monitoring
 setupGlobalErrorHandlers();

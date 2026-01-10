@@ -1,7 +1,15 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import DOMPurify from "dompurify";
 import type { Decoration } from "@/hooks/useChildRoom";
+
+// Sanitize SVG content to prevent XSS attacks
+const sanitizeSvg = (svgData: string): string => {
+  return DOMPurify.sanitize(svgData, {
+    USE_PROFILES: { svg: true, svgFilters: true },
+  });
+};
 
 interface DecorationShopProps {
   decorations: Decoration[];
@@ -74,7 +82,7 @@ function DecorationCard({
     >
       <div
         className="w-16 h-16 mx-auto mb-2"
-        dangerouslySetInnerHTML={{ __html: decoration.svg_data }}
+        dangerouslySetInnerHTML={{ __html: sanitizeSvg(decoration.svg_data) }}
       />
       <h4 className="font-medium text-sm mb-1">{decoration.name}</h4>
       <p className="text-lg font-bold text-accent mb-2">

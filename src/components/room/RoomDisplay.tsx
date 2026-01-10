@@ -1,5 +1,13 @@
 import { Card } from "@/components/ui/card";
+import DOMPurify from "dompurify";
 import type { Decoration } from "@/hooks/useChildRoom";
+
+// Sanitize SVG content to prevent XSS attacks
+const sanitizeSvg = (svgData: string): string => {
+  return DOMPurify.sanitize(svgData, {
+    USE_PROFILES: { svg: true, svgFilters: true },
+  });
+};
 
 interface RoomDisplayProps {
   decorations: Decoration[];
@@ -22,7 +30,7 @@ export function RoomDisplay({ decorations }: RoomDisplayProps) {
               >
                 <div
                   className="w-20 h-20"
-                  dangerouslySetInnerHTML={{ __html: deco.svg_data }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeSvg(deco.svg_data) }}
                 />
                 <span className="text-xs text-muted-foreground">
                   {deco.name}

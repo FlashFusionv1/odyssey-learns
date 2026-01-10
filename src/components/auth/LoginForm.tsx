@@ -8,18 +8,26 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { loginSchema } from "@/lib/schemas/auth";
 import { useRecaptcha } from "@/hooks/useRecaptcha";
 import { checkServerRateLimit, RATE_LIMITS } from "@/lib/rateLimiter";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { LogIn, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [attemptCount, setAttemptCount] = useState(0);
   const { signIn } = useAuth();
   const { executeRecaptcha } = useRecaptcha();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
+    setLoginError(null);
     
     const validation = loginSchema.safeParse({ email, password });
     
@@ -43,10 +51,8 @@ export const LoginForm = () => {
       );
 
       if (!rateLimit.allowed) {
-        toast.error(
-          `Too many login attempts. Please wait ${Math.ceil((rateLimit.retryAfter || 0) / 60)} minutes.`,
-          { duration: 8000 }
-        );
+        const waitMinutes = Math.ceil((rateLimit.retryAfter || 0) / 60);
+        setLoginError(`Too many login attempts. Please wait ${waitMinutes} minute${waitMinutes !== 1 ? 's' : ''} before trying again.`);
         setLoading(false);
         return;
       }
@@ -71,20 +77,51 @@ export const LoginForm = () => {
       const { error } = await signIn(validation.data.email, validation.data.password);
 
       if (error) {
-        toast.error("Invalid email or password");
+        setAttemptCount(prev => prev + 1);
+        
+        // Provide helpful error messages without revealing too much
+        if (error.message?.toLowerCase().includes("invalid")) {
+          setLoginError("Invalid email or password. Please check your credentials and try again.");
+        } else if (error.message?.toLowerCase().includes("email not confirmed")) {
+          setLoginError("Please verify your email address before signing in. Check your inbox for the confirmation link.");
+        } else if (error.message?.toLowerCase().includes("disabled")) {
+          setLoginError("This account has been disabled. Please contact support for assistance.");
+        } else {
+          setLoginError("Unable to sign in. Please check your credentials and try again.");
+        }
+
+        // Show additional help after multiple failures
+        if (attemptCount >= 2) {
+          toast.info("Having trouble? Try resetting your password or use the magic link option.", {
+            duration: 8000
+          });
+        }
       } else {
+        // Store remember me preference
+        if (rememberMe) {
+          localStorage.setItem('rememberMe', 'true');
+        } else {
+          localStorage.removeItem('rememberMe');
+        }
         toast.success("Welcome back!");
       }
     } catch (err) {
       console.error("Login error:", err);
-      toast.error("An unexpected error occurred. Please try again.");
+      setLoginError("An unexpected error occurred. Please try again later.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 w-full max-w-md" noValidate>
+    <form onSubmit={handleSubmit} className="space-y-5 w-full max-w-md" noValidate>
+      {loginError && (
+        <Alert variant="destructive" className="animate-in slide-in-from-top-2">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{loginError}</AlertDescription>
+        </Alert>
+      )}
+
       <FormField
         id="login-email"
         label="Email"
@@ -94,6 +131,7 @@ export const LoginForm = () => {
         onChange={(value) => {
           setEmail(value);
           setErrors((prev) => ({ ...prev, email: undefined }));
+          setLoginError(null);
         }}
         error={errors.email}
         autoComplete="email"
@@ -108,6 +146,7 @@ export const LoginForm = () => {
         onChange={(value) => {
           setPassword(value);
           setErrors((prev) => ({ ...prev, password: undefined }));
+          setLoginError(null);
         }}
         error={errors.password}
         maxLength={128}
@@ -122,8 +161,29 @@ export const LoginForm = () => {
         }
       />
 
+      <div className="flex items-center space-x-2">
+        <Checkbox 
+          id="remember-me" 
+          checked={rememberMe}
+          onCheckedChange={(checked) => setRememberMe(checked === true)}
+        />
+        <Label 
+          htmlFor="remember-me" 
+          className="text-sm font-normal text-muted-foreground cursor-pointer"
+        >
+          Remember me for 30 days
+        </Label>
+      </div>
+
       <Button type="submit" className="w-full hover-scale" disabled={loading}>
-        {loading ? <LoadingSpinner size="sm" /> : "Sign In"}
+        {loading ? (
+          <LoadingSpinner size="sm" />
+        ) : (
+          <>
+            <LogIn className="h-4 w-4 mr-2" />
+            Sign In
+          </>
+        )}
       </Button>
     </form>
   );

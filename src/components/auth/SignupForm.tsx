@@ -8,23 +8,19 @@ import { toast } from "sonner";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { useRecaptcha } from "@/hooks/useRecaptcha";
 import { checkServerRateLimit, RATE_LIMITS } from "@/lib/rateLimiter";
-import { z } from "zod";
-
-const signupFormSchema = z.object({
-  fullName: z.string().trim().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
-  email: z.string().trim().email("Invalid email address").max(255, "Email must be less than 255 characters"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string()
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+import { signupSchema, getPasswordStrength } from "@/lib/schemas/auth";
+import { UserPlus, AlertCircle, CheckCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Link } from "react-router-dom";
 
 type FormErrors = {
   fullName?: string;
   email?: string;
   password?: string;
   confirmPassword?: string;
+  terms?: string;
 };
 
 export const SignupForm = () => {
@@ -32,21 +28,37 @@ export const SignupForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [signupError, setSignupError] = useState<string | null>(null);
   const { signUp } = useAuth();
   const navigate = useNavigate();
   const { executeRecaptcha } = useRecaptcha();
 
   const clearFieldError = (field: keyof FormErrors) => {
     setErrors((prev) => ({ ...prev, [field]: undefined }));
+    setSignupError(null);
   };
+
+  // Check if password matches confirmation in real-time
+  const passwordsMatch = password && confirmPassword && password === confirmPassword;
+  const passwordsDontMatch = confirmPassword && password !== confirmPassword;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
+    setSignupError(null);
 
-    const result = signupFormSchema.safeParse({ fullName, email, password, confirmPassword });
+    // Check terms acceptance first
+    if (!acceptTerms) {
+      setErrors({ terms: "You must accept the Terms of Service and Privacy Policy" });
+      return;
+    }
+
+    // Validate with Zod schema
+    const validationData = { fullName, email, password };
+    const result = signupSchema.safeParse(validationData);
     
     if (!result.success) {
       const fieldErrors: FormErrors = {};
@@ -55,6 +67,19 @@ export const SignupForm = () => {
         fieldErrors[field] = err.message;
       });
       setErrors(fieldErrors);
+      return;
+    }
+
+    // Check password confirmation
+    if (password !== confirmPassword) {
+      setErrors({ confirmPassword: "Passwords don't match" });
+      return;
+    }
+
+    // Check password strength (require at least "Fair")
+    const strength = getPasswordStrength(password);
+    if (strength.score < 2) {
+      setErrors({ password: "Please choose a stronger password" });
       return;
     }
 
@@ -68,10 +93,8 @@ export const SignupForm = () => {
       );
 
       if (!rateLimit.allowed) {
-        toast.error(
-          `Too many signup attempts. Please wait ${Math.ceil((rateLimit.retryAfter || 0) / 60)} minutes.`,
-          { duration: 8000 }
-        );
+        const waitMinutes = Math.ceil((rateLimit.retryAfter || 0) / 60);
+        setSignupError(`Too many signup attempts. Please wait ${waitMinutes} minute${waitMinutes !== 1 ? 's' : ''}.`);
         setLoading(false);
         return;
       }
@@ -93,28 +116,41 @@ export const SignupForm = () => {
         console.warn("reCAPTCHA verification skipped:", verifyError);
       }
 
-      const { error } = await signUp(result.data.email, result.data.password, result.data.fullName);
+      const { error } = await signUp(result.data.email, password, result.data.fullName);
 
       if (error) {
         if (error.message?.includes("already registered")) {
-          toast.error("An account with this email already exists. Please login instead.");
+          setSignupError("An account with this email already exists. Please sign in instead.");
+        } else if (error.message?.toLowerCase().includes("password")) {
+          setErrors({ password: error.message });
+        } else if (error.message?.toLowerCase().includes("email")) {
+          setErrors({ email: error.message });
         } else {
-          toast.error(error.message || "Failed to create account");
+          setSignupError(error.message || "Failed to create account. Please try again.");
         }
       } else {
-        toast.success("Account created successfully!");
+        toast.success("Account created successfully! Welcome to Inner Odyssey.", {
+          duration: 5000
+        });
         navigate("/parent-setup");
       }
     } catch (err) {
       console.error("Signup error:", err);
-      toast.error("An unexpected error occurred. Please try again.");
+      setSignupError("An unexpected error occurred. Please try again later.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 w-full max-w-md" noValidate>
+    <form onSubmit={handleSubmit} className="space-y-5 w-full max-w-md" noValidate>
+      {signupError && (
+        <Alert variant="destructive" className="animate-in slide-in-from-top-2">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{signupError}</AlertDescription>
+        </Alert>
+      )}
+
       <FormField
         id="signup-fullName"
         label="Full Name"
@@ -160,23 +196,75 @@ export const SignupForm = () => {
         <PasswordStrengthMeter password={password} />
       </FormField>
 
-      <FormField
-        id="signup-confirmPassword"
-        label="Confirm Password"
-        type="password"
-        placeholder="••••••••"
-        value={confirmPassword}
-        onChange={(value) => {
-          setConfirmPassword(value);
-          clearFieldError("confirmPassword");
-        }}
-        error={errors.confirmPassword}
-        maxLength={128}
-        autoComplete="new-password"
-      />
+      <div className="space-y-2">
+        <FormField
+          id="signup-confirmPassword"
+          label="Confirm Password"
+          type="password"
+          placeholder="••••••••"
+          value={confirmPassword}
+          onChange={(value) => {
+            setConfirmPassword(value);
+            clearFieldError("confirmPassword");
+          }}
+          error={errors.confirmPassword}
+          maxLength={128}
+          autoComplete="new-password"
+        />
+        {passwordsMatch && (
+          <p className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
+            <CheckCircle className="h-3 w-3" />
+            Passwords match
+          </p>
+        )}
+        {passwordsDontMatch && !errors.confirmPassword && (
+          <p className="text-xs text-orange-600 dark:text-orange-400">
+            Passwords don't match yet
+          </p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-start space-x-2">
+          <Checkbox 
+            id="accept-terms" 
+            checked={acceptTerms}
+            onCheckedChange={(checked) => {
+              setAcceptTerms(checked === true);
+              clearFieldError("terms");
+            }}
+            className="mt-0.5"
+          />
+          <Label 
+            htmlFor="accept-terms" 
+            className="text-sm font-normal text-muted-foreground cursor-pointer leading-tight"
+          >
+            I agree to the{" "}
+            <Link to="/terms" className="text-primary hover:underline" target="_blank">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link to="/privacy" className="text-primary hover:underline" target="_blank">
+              Privacy Policy
+            </Link>
+          </Label>
+        </div>
+        {errors.terms && (
+          <p className="text-sm text-destructive" role="alert">
+            {errors.terms}
+          </p>
+        )}
+      </div>
 
       <Button type="submit" className="w-full hover-scale" disabled={loading}>
-        {loading ? <LoadingSpinner size="sm" /> : "Create Account"}
+        {loading ? (
+          <LoadingSpinner size="sm" />
+        ) : (
+          <>
+            <UserPlus className="h-4 w-4 mr-2" />
+            Create Account
+          </>
+        )}
       </Button>
     </form>
   );

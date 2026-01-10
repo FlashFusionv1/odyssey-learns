@@ -2146,10 +2146,14 @@ export type Database = {
       }
       parent_notifications: {
         Row: {
+          action_data: Json | null
+          action_taken_at: string | null
           action_url: string | null
           child_id: string | null
           created_at: string | null
+          expires_at: string | null
           id: string
+          is_actionable: boolean | null
           is_read: boolean | null
           message: string
           metadata: Json | null
@@ -2158,10 +2162,14 @@ export type Database = {
           title: string
         }
         Insert: {
+          action_data?: Json | null
+          action_taken_at?: string | null
           action_url?: string | null
           child_id?: string | null
           created_at?: string | null
+          expires_at?: string | null
           id?: string
+          is_actionable?: boolean | null
           is_read?: boolean | null
           message: string
           metadata?: Json | null
@@ -2170,10 +2178,14 @@ export type Database = {
           title: string
         }
         Update: {
+          action_data?: Json | null
+          action_taken_at?: string | null
           action_url?: string | null
           child_id?: string | null
           created_at?: string | null
+          expires_at?: string | null
           id?: string
+          is_actionable?: boolean | null
           is_read?: boolean | null
           message?: string
           metadata?: Json | null
@@ -2314,7 +2326,11 @@ export type Database = {
           accepted_at: string | null
           child_id: string
           id: string
+          parent_approved: boolean | null
+          parent_approved_at: string | null
+          parent_approved_by: string | null
           peer_id: string
+          rejection_reason: string | null
           requested_at: string | null
           status: string
         }
@@ -2322,7 +2338,11 @@ export type Database = {
           accepted_at?: string | null
           child_id: string
           id?: string
+          parent_approved?: boolean | null
+          parent_approved_at?: string | null
+          parent_approved_by?: string | null
           peer_id: string
+          rejection_reason?: string | null
           requested_at?: string | null
           status?: string
         }
@@ -2330,7 +2350,11 @@ export type Database = {
           accepted_at?: string | null
           child_id?: string
           id?: string
+          parent_approved?: boolean | null
+          parent_approved_at?: string | null
+          parent_approved_by?: string | null
           peer_id?: string
+          rejection_reason?: string | null
           requested_at?: string | null
           status?: string
         }

@@ -45,6 +45,15 @@ const SUBJECTS = [
   { value: 'Social Studies', label: 'Social Studies' },
   { value: 'Emotional Intelligence', label: 'Emotional Intelligence' },
   { value: 'Life Skills', label: 'Life Skills' },
+  { value: 'Algebra', label: 'Algebra' },
+  { value: 'Geometry', label: 'Geometry' },
+  { value: 'Algebra II', label: 'Algebra II' },
+  { value: 'Pre-Calculus', label: 'Pre-Calculus' },
+  { value: 'Biology', label: 'Biology' },
+  { value: 'Chemistry', label: 'Chemistry' },
+  { value: 'Physics', label: 'Physics' },
+  { value: 'US History', label: 'US History' },
+  { value: 'College Prep', label: 'College Prep' },
 ];
 
 const GRADE_LEVELS = [
@@ -58,6 +67,10 @@ const GRADE_LEVELS = [
   { value: '6', label: 'Grade 6' },
   { value: '7', label: 'Grade 7' },
   { value: '8', label: 'Grade 8' },
+  { value: '9', label: 'Grade 9' },
+  { value: '10', label: 'Grade 10' },
+  { value: '11', label: 'Grade 11' },
+  { value: '12', label: 'Grade 12' },
 ];
 
 export default function VideoLibrary() {

@@ -4340,34 +4340,6 @@ export type Database = {
     }
     Functions: {
       add_admin_role: { Args: { _email: string }; Returns: undefined }
-      audit_admin_child_access: {
-        Args: { access_reason: string; target_child_id: string }
-        Returns: {
-          avatar_config: Json | null
-          challenge_mode_enabled: boolean | null
-          created_at: string | null
-          daily_quest_id: string | null
-          daily_screen_time_limit_minutes: number | null
-          deleted_at: string | null
-          deletion_reason: string | null
-          deletion_scheduled_at: string | null
-          grade_level: number | null
-          id: string | null
-          name: string | null
-          parent_id: string | null
-          quest_bonus_points: number | null
-          quest_completed_at: string | null
-          screen_time_enabled: boolean | null
-          total_points: number | null
-          weekly_report_enabled: boolean | null
-        }[]
-        SetofOptions: {
-          from: "*"
-          to: "children_safe"
-          isOneToOne: false
-          isSetofReturn: true
-        }
-      }
       audit_admin_profile_access: {
         Args: { access_reason: string; target_user_id: string }
         Returns: {

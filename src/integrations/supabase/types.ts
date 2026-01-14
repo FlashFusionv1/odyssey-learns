@@ -1426,44 +1426,35 @@ export type Database = {
       emotion_logs: {
         Row: {
           child_id: string
-          coping_strategy: string | null
           coping_strategy_encrypted: string | null
           created_at: string | null
           emotion_type: string
           id: string
           intensity: number
           logged_at: string | null
-          reflection_notes: string | null
           reflection_notes_encrypted: string | null
-          trigger: string | null
           trigger_encrypted: string | null
         }
         Insert: {
           child_id: string
-          coping_strategy?: string | null
           coping_strategy_encrypted?: string | null
           created_at?: string | null
           emotion_type: string
           id?: string
           intensity: number
           logged_at?: string | null
-          reflection_notes?: string | null
           reflection_notes_encrypted?: string | null
-          trigger?: string | null
           trigger_encrypted?: string | null
         }
         Update: {
           child_id?: string
-          coping_strategy?: string | null
           coping_strategy_encrypted?: string | null
           created_at?: string | null
           emotion_type?: string
           id?: string
           intensity?: number
           logged_at?: string | null
-          reflection_notes?: string | null
           reflection_notes_encrypted?: string | null
-          trigger?: string | null
           trigger_encrypted?: string | null
         }
         Relationships: [

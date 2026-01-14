@@ -55,16 +55,13 @@ export const EmotionCheckIn = ({ childId, gradeLevel, onComplete }: EmotionCheck
         reflection || null
       );
 
+      // Insert with ONLY encrypted fields - plaintext columns have been dropped
       const { error } = await supabase.from('emotion_logs').insert({
         child_id: childId,
         emotion_type: selectedEmotion,
         intensity,
-        // Store ONLY encrypted versions of sensitive data - no plaintext
+        // Encrypted sensitive data only
         ...encryptedData,
-        // Explicitly set plaintext fields to null for security
-        trigger: null,
-        coping_strategy: null,
-        reflection_notes: null,
       });
 
       if (error) throw error;

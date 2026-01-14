@@ -1,17 +1,22 @@
 import { Route } from 'react-router-dom';
-import { Suspense } from 'react';
+import { Suspense, memo } from 'react';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { authRoutes } from '@/config/routes.config';
 import { RouteErrorBoundary } from '@/components/error/RouteErrorBoundary';
 
-const AuthLoader = () => (
+/**
+ * Memoized auth loading component
+ */
+const AuthLoader = memo(() => (
   <div className="flex items-center justify-center min-h-screen bg-background">
     <div className="text-center space-y-4">
       <LoadingSpinner size="lg" />
       <p className="text-muted-foreground text-sm">Loading authentication...</p>
     </div>
   </div>
-);
+));
+
+AuthLoader.displayName = 'AuthLoader';
 
 /**
  * Authentication routes

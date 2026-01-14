@@ -6,6 +6,10 @@ import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  // Inject build timestamp for PWA version checking
+  define: {
+    __PWA_BUILD_TIMESTAMP__: JSON.stringify(Date.now()),
+  },
   server: {
     host: "::",
     port: 8080,
@@ -48,7 +52,15 @@ export default defineConfig(({ mode }) => ({
         ]
       },
       workbox: {
+        // Clean old caches on activation
+        cleanupOutdatedCaches: true,
+        // Skip waiting to activate new SW immediately
+        skipWaiting: true,
+        // Claim all clients immediately
+        clientsClaim: true,
         globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg,gif,mp3}"],
+        // Don't cache source maps or dev files
+        globIgnores: ["**/node_modules/**/*", "**/*.map"],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
@@ -99,20 +111,46 @@ export default defineConfig(({ mode }) => ({
     },
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Vendor chunks
-          "react-vendor": ["react", "react-dom", "react-router-dom"],
-          "ui-vendor": [
-            "@radix-ui/react-dialog",
-            "@radix-ui/react-dropdown-menu",
-            "@radix-ui/react-tabs",
-            "@radix-ui/react-toast",
-            "@radix-ui/react-tooltip",
-          ],
-          "form-vendor": ["react-hook-form", "@hookform/resolvers", "zod"],
-          "chart-vendor": ["recharts"],
-          "supabase": ["@supabase/supabase-js"],
-          "query": ["@tanstack/react-query"],
+        manualChunks(id) {
+          // React core - MUST be first and together
+          if (id.includes('node_modules/react/') || 
+              id.includes('node_modules/react-dom/') || 
+              id.includes('node_modules/react-router')) {
+            return 'react-vendor';
+          }
+          // UI utilities - CVA, clsx, tailwind-merge MUST stay together
+          if (id.includes('class-variance-authority') || 
+              id.includes('node_modules/clsx/') ||
+              id.includes('tailwind-merge')) {
+            return 'ui-utils';
+          }
+          // Radix UI - all in one chunk to avoid export issues
+          if (id.includes('node_modules/@radix-ui/')) {
+            return 'radix-ui';
+          }
+          // Forms
+          if (id.includes('react-hook-form') || 
+              id.includes('@hookform') || 
+              id.includes('node_modules/zod/')) {
+            return 'form-vendor';
+          }
+          // Charts
+          if (id.includes('recharts') || id.includes('d3-')) {
+            return 'chart-vendor';
+          }
+          // Supabase
+          if (id.includes('@supabase/')) {
+            return 'supabase';
+          }
+          // Query
+          if (id.includes('@tanstack/react-query')) {
+            return 'query';
+          }
+          // Animation
+          if (id.includes('framer-motion')) {
+            return 'animation';
+          }
+          // Let all other modules (including src/components/ui/*) stay in the main bundle
         },
       },
     },

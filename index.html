@@ -14,6 +14,7 @@
     
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#FF6B9D" />
+    <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Inner Odyssey" />
@@ -44,6 +45,107 @@
 
   <body>
     <div id="root"></div>
+    
+    <!-- PWA Startup Recovery Script - Runs BEFORE React -->
+    <script>
+      (function() {
+        var HEALTH_KEY = 'pwa_health_timestamp';
+        var RECOVERY_KEY = 'pwa_recovery_attempts';
+        var MAX_RECOVERY_ATTEMPTS = 3;
+        var STALE_THRESHOLD = 10000; // 10 seconds
+        var WHITE_SCREEN_TIMEOUT = 8000; // 8 seconds
+        
+        // Check if we should trigger recovery
+        function shouldRecover() {
+          try {
+            var lastHealth = localStorage.getItem(HEALTH_KEY);
+            var recoveryAttempts = parseInt(localStorage.getItem(RECOVERY_KEY) || '0');
+            
+            // Don't try more than MAX_RECOVERY_ATTEMPTS times
+            if (recoveryAttempts >= MAX_RECOVERY_ATTEMPTS) {
+              console.log('[PWA Recovery] Max attempts reached, skipping');
+              localStorage.removeItem(RECOVERY_KEY);
+              return false;
+            }
+            
+            // If health timestamp exists and is stale, likely crashed
+            if (lastHealth) {
+              var staleTime = Date.now() - parseInt(lastHealth);
+              if (staleTime > STALE_THRESHOLD) {
+                console.log('[PWA Recovery] Stale health detected:', staleTime + 'ms');
+                return true;
+              }
+            }
+          } catch (e) {
+            console.warn('[PWA Recovery] Check failed:', e);
+          }
+          return false;
+        }
+        
+        // Emergency cache clear
+        function emergencyClear() {
+          try {
+            console.log('[PWA Recovery] Initiating emergency clear...');
+            
+            // Increment recovery attempts
+            var attempts = parseInt(localStorage.getItem(RECOVERY_KEY) || '0') + 1;
+            localStorage.setItem(RECOVERY_KEY, attempts.toString());
+            
+            // Clear service workers
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(function(regs) {
+                regs.forEach(function(r) { 
+                  r.unregister();
+                  console.log('[PWA Recovery] Unregistered SW');
+                });
+              });
+            }
+            
+            // Clear caches
+            if ('caches' in window) {
+              caches.keys().then(function(names) {
+                names.forEach(function(name) { 
+                  caches.delete(name);
+                  console.log('[PWA Recovery] Cleared cache:', name);
+                });
+              });
+            }
+            
+            // Force reload after a short delay
+            setTimeout(function() {
+              window.location.href = window.location.origin + '?recovery=' + Date.now();
+            }, 500);
+          } catch (e) {
+            console.error('[PWA Recovery] Emergency clear failed:', e);
+          }
+        }
+        
+        // Check for white screen after timeout
+        function setupWhiteScreenDetection() {
+          setTimeout(function() {
+            var root = document.getElementById('root');
+            if (root && root.children.length === 0) {
+              console.log('[PWA Recovery] White screen detected after ' + WHITE_SCREEN_TIMEOUT + 'ms');
+              emergencyClear();
+            }
+          }, WHITE_SCREEN_TIMEOUT);
+        }
+        
+        // Run recovery check
+        if (shouldRecover()) {
+          emergencyClear();
+        } else {
+          // Set initial health timestamp (React will update this via heartbeat)
+          try {
+            localStorage.setItem(HEALTH_KEY, Date.now().toString());
+          } catch (e) {}
+          
+          // Setup white screen detection as backup
+          setupWhiteScreenDetection();
+        }
+      })();
+    </script>
+    
     <script type="module" src="/src/main.tsx"></script>
     <script src="https://www.google.com/recaptcha/api.js?render=6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" defer></script>
   </body>

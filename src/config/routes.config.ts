@@ -36,6 +36,9 @@ const Badges = createLazyRoute(() => import('@/pages/Badges'));
 const Social = createLazyRoute(() => import('@/pages/Social'));
 const Settings = createLazyRoute(() => import('@/pages/Settings'));
 const Rewards = createLazyRoute(() => import('@/pages/Rewards'));
+const LearningProgress = createLazyRoute(() => import('@/pages/LearningProgress'));
+const KidsRoom = createLazyRoute(() => import('@/pages/KidsRoom'));
+const Play = createLazyRoute(() => import('@/pages/Play'));
 
 // Admin pages
 const BetaAnalytics = createLazyRoute(() => import('@/pages/BetaAnalytics'));
@@ -49,6 +52,11 @@ const LessonPerformanceAnalytics = createLazyRoute(() => import('@/pages/LessonP
 const StudentPerformanceReport = createLazyRoute(() => import('@/pages/StudentPerformanceReport'));
 const SecurityMonitoring = createLazyRoute(() => import('@/pages/SecurityMonitoring'));
 const SystemHealth = createLazyRoute(() => import('@/pages/SystemHealth'));
+const TeacherPortal = createLazyRoute(() => import('@/pages/TeacherPortal'));
+
+// Video pages
+const VideoLibrary = createLazyRoute(() => import('@/pages/VideoLibrary'));
+const VideoPlayerPage = createLazyRoute(() => import('@/pages/VideoPlayer'));
 
 /**
  * Authentication routes configuration
@@ -312,6 +320,51 @@ export const childRoutes: RouteConfig[] = [
       title: 'Rewards - Inner Odyssey',
     },
   },
+  {
+    path: ROUTE_PATHS.CHILD.PROGRESS,
+    component: LearningProgress,
+    requireAuth: true,
+    roles: ['child'],
+    meta: {
+      title: 'My Progress - Inner Odyssey',
+    },
+  },
+  {
+    path: ROUTE_PATHS.CHILD.VIDEO_LIBRARY,
+    component: VideoLibrary,
+    requireAuth: true,
+    roles: ['child'],
+    meta: {
+      title: 'Video Library - Inner Odyssey',
+    },
+  },
+  {
+    path: ROUTE_PATHS.CHILD.VIDEO_PLAYER,
+    component: VideoPlayerPage,
+    requireAuth: true,
+    roles: ['child'],
+    meta: {
+      title: 'Watch Video - Inner Odyssey',
+    },
+  },
+  {
+    path: '/my-room',
+    component: KidsRoom,
+    requireAuth: true,
+    roles: ['child'],
+    meta: {
+      title: 'My Room - Inner Odyssey',
+    },
+  },
+  {
+    path: '/play',
+    component: Play,
+    requireAuth: true,
+    roles: ['child'],
+    meta: {
+      title: 'Play Zone - Inner Odyssey',
+    },
+  },
 ];
 
 /**
@@ -424,6 +477,15 @@ export const adminRoutes: RouteConfig[] = [
     roles: ['admin'],
     meta: {
       title: 'System Health - Inner Odyssey',
+    },
+  },
+  {
+    path: ROUTE_PATHS.ADMIN.TEACHER_PORTAL,
+    component: TeacherPortal,
+    requireAuth: true,
+    roles: ['admin', 'teacher'],
+    meta: {
+      title: 'Teacher Portal - Inner Odyssey',
     },
   },
 ];

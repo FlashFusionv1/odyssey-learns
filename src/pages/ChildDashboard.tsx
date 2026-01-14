@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { BookOpen, Award, TrendingUp, Settings } from "lucide-react";
+import { BookOpen, Award, TrendingUp, Settings, BarChart3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -14,11 +14,50 @@ import { EmotionCheckIn } from "@/components/emotional/EmotionCheckIn";
 import { BadgeShowcase } from "@/components/badges/BadgeShowcase";
 import { checkAndAwardBadges } from "@/lib/badgeChecker";
 import { DailyQuest } from "@/components/quests/DailyQuest";
-import { CustomLessonGenerator } from "@/components/learning/CustomLessonGenerator";
+import { AILessonGenerator } from "@/components/learning/AILessonGenerator";
 import { LessonTokenDisplay } from "@/components/gamification/LessonTokenDisplay";
+import { Leaderboard } from "@/components/gamification/Leaderboard";
 import { ShareLessonModal } from "@/components/learning/ShareLessonModal";
 import { LessonCard, LessonCardCompact } from "@/components/learning/LessonCard";
 import { StatCard } from "@/components/ui/stat-card";
+import { ChildOnboardingTutorial, HelpButton, FeatureSpotlight } from "@/components/onboarding";
+
+/**
+ * Feature tour steps for child dashboard
+ * Highlights key features after onboarding
+ */
+const CHILD_FEATURE_TOUR_STEPS = [
+  {
+    targetSelector: '[data-tour="daily-quest"]',
+    title: 'Daily Quest',
+    description: 'Complete your daily quest to earn bonus points!',
+    placement: 'bottom' as const,
+  },
+  {
+    targetSelector: '[data-tour="lesson-tokens"]',
+    title: 'Lesson Tokens',
+    description: 'These show how many lessons you can do today.',
+    placement: 'bottom' as const,
+  },
+  {
+    targetSelector: '[data-tour="custom-lesson"]',
+    title: 'Create Your Own Lesson',
+    description: 'Ask for a lesson about anything you want to learn!',
+    placement: 'top' as const,
+  },
+  {
+    targetSelector: '[data-tour="emotion-checkin"]',
+    title: 'How Are You Feeling?',
+    description: 'Tell us how you feel - it helps us pick the best activities.',
+    placement: 'top' as const,
+  },
+  {
+    targetSelector: '[data-tour="leaderboard"]',
+    title: 'See How You Rank',
+    description: 'Check the leaderboard to see your progress compared to others!',
+    placement: 'top' as const,
+  },
+];
 
 const ChildDashboard = () => {
   const { childId, isValidating } = useValidatedChild();
@@ -32,7 +71,28 @@ const ChildDashboard = () => {
   const [myLessons, setMyLessons] = useState<any[]>([]);
   const [shareModalOpen, setShareModalOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<any>(null);
+  const [showChildOnboarding, setShowChildOnboarding] = useState(false);
+  const [showFeatureTour, setShowFeatureTour] = useState(false);
   const navigate = useNavigate();
+
+  // Check child onboarding status on mount
+  useEffect(() => {
+    if (childId) {
+      const storageKey = `child_onboarding_${childId}`;
+      const storedData = localStorage.getItem(storageKey);
+      if (!storedData) {
+        setShowChildOnboarding(true);
+      }
+    }
+  }, [childId]);
+
+  const handleOnboardingComplete = useCallback(() => {
+    if (childId) {
+      const storageKey = `child_onboarding_${childId}`;
+      localStorage.setItem(storageKey, JSON.stringify({ isCompleted: true }));
+      setShowChildOnboarding(false);
+    }
+  }, [childId]);
 
   useEffect(() => {
     if (!isValidating && childId) {
@@ -149,6 +209,33 @@ const ChildDashboard = () => {
 
   return (
     <AppLayout childName={child?.name} points={child?.total_points || 0}>
+      {/* Child Onboarding Tutorial */}
+      {child && (
+        <ChildOnboardingTutorial
+          open={showChildOnboarding}
+          onComplete={handleOnboardingComplete}
+          onSkip={handleOnboardingComplete}
+          gradeLevel={child.grade_level}
+          childName={child.name}
+        />
+      )}
+      
+      {/* Feature Tour Spotlight */}
+      <FeatureSpotlight
+        steps={CHILD_FEATURE_TOUR_STEPS}
+        isActive={showFeatureTour}
+        onComplete={() => setShowFeatureTour(false)}
+        onSkip={() => setShowFeatureTour(false)}
+      />
+      
+      {/* Help Button */}
+      <HelpButton
+        variant="child"
+        gradeLevel={child?.grade_level}
+        onRestartTutorial={() => setShowChildOnboarding(true)}
+        onStartFeatureTour={() => setShowFeatureTour(true)}
+      />
+      
       {celebration && (
         <CelebrationModal
           open={true}
@@ -193,7 +280,7 @@ const ChildDashboard = () => {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6" data-tour="stats-overview">
           <StatCard
             title="Lessons Completed"
             value={stats.completed}
@@ -219,27 +306,43 @@ const ChildDashboard = () => {
           />
         </div>
 
+        {/* View Progress Link */}
+        <div className="flex justify-center" data-tour="progress-button">
+          <Button variant="outline" onClick={() => navigate('/progress')} className="gap-2">
+            <BarChart3 className="w-4 h-4" />
+            View My Progress
+          </Button>
+        </div>
+
         {/* Daily Quest - Age-Adaptive UI */}
-        <DailyQuest />
+        <div data-tour="daily-quest">
+          <DailyQuest />
+        </div>
 
         {/* Lesson Tokens Display */}
-        {child && <LessonTokenDisplay childId={child.id} />}
-
-        {/* Custom Lesson Generator */}
         {child && (
-          <CustomLessonGenerator
-            childId={child.id}
-            gradeLevel={child.grade_level}
-            onLessonCreated={(lesson) => {
-              setCelebration({
-                type: 'lesson',
-                title: '✨ Lesson Created!',
-                message: `Your custom lesson "${lesson.title}" is ready to explore!`,
-                points: 0,
-              });
-              loadDashboardData(); // Refresh to show new lesson
-            }}
-          />
+          <div data-tour="lesson-tokens">
+            <LessonTokenDisplay childId={child.id} />
+          </div>
+        )}
+
+        {/* AI Lesson Generator */}
+        {child && (
+          <div data-tour="custom-lesson">
+            <AILessonGenerator
+              childId={child.id}
+              gradeLevel={child.grade_level}
+              onLessonCreated={(lesson) => {
+                setCelebration({
+                  type: 'lesson',
+                  title: '✨ Lesson Created!',
+                  message: `Your custom lesson "${lesson.title}" is ready to explore!`,
+                  points: 0,
+                });
+                loadDashboardData();
+              }}
+            />
+          </div>
         )}
 
         {/* My Custom Lessons */}
@@ -274,28 +377,43 @@ const ChildDashboard = () => {
         )}
 
         {/* Emotional Check-In */}
-        <EmotionCheckIn 
-          childId={childId} 
-          gradeLevel={child?.grade_level || 5}
-          onComplete={async () => {
-            // Check for new badges after emotion check-in
-            const newBadges = await checkAndAwardBadges(childId);
-            if (newBadges.length > 0) {
-              setCelebration({
-                type: 'badge',
-                title: '🏆 New Badge Earned!',
-                message: `You've unlocked ${newBadges.length} new badge${newBadges.length > 1 ? 's' : ''}!`,
-                points: 0,
-              });
-            }
-          }}
-        />
+        <div data-tour="emotion-checkin">
+          <EmotionCheckIn 
+            childId={childId} 
+            gradeLevel={child?.grade_level || 5}
+            onComplete={async () => {
+              // Check for new badges after emotion check-in
+              const newBadges = await checkAndAwardBadges(childId);
+              if (newBadges.length > 0) {
+                setCelebration({
+                  type: 'badge',
+                  title: '🏆 New Badge Earned!',
+                  message: `You've unlocked ${newBadges.length} new badge${newBadges.length > 1 ? 's' : ''}!`,
+                  points: 0,
+                });
+              }
+            }}
+          />
+        </div>
 
         {/* Badge Showcase */}
-        <BadgeShowcase childId={childId} compact />
+        <div data-tour="badges">
+          <BadgeShowcase childId={childId} compact />
+        </div>
+
+        {/* Leaderboard - Age Adaptive */}
+        {child && (
+          <div data-tour="leaderboard">
+            <Leaderboard
+              childId={childId}
+              gradeLevel={child.grade_level}
+              compact
+            />
+          </div>
+        )}
 
         {/* Available Lessons */}
-        <div>
+        <div data-tour="lessons">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">Start Learning</h2>
             <Button variant="ghost" onClick={() => navigate('/lessons')}>

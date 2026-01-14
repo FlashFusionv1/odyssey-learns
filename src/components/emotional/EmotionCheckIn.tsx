@@ -59,11 +59,12 @@ export const EmotionCheckIn = ({ childId, gradeLevel, onComplete }: EmotionCheck
         child_id: childId,
         emotion_type: selectedEmotion,
         intensity,
-        // Store encrypted versions of sensitive data
+        // Store ONLY encrypted versions of sensitive data - no plaintext
         ...encryptedData,
-        // Keep plaintext for backward compatibility (will be removed later)
-        trigger: trigger || null,
-        reflection_notes: reflection || null,
+        // Explicitly set plaintext fields to null for security
+        trigger: null,
+        coping_strategy: null,
+        reflection_notes: null,
       });
 
       if (error) throw error;

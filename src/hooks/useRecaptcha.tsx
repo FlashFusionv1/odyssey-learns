@@ -1,11 +1,25 @@
 import { useCallback } from "react";
 
 // Use production reCAPTCHA key from environment variable
-const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"; // Fallback to test key for dev
+// Test key fallback only allowed in development
+const RECAPTCHA_TEST_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI";
 
-// Warn if production key not configured
-if (!import.meta.env.VITE_RECAPTCHA_SITE_KEY) {
-  console.warn('⚠️ Production reCAPTCHA key not configured. Using test key. Set VITE_RECAPTCHA_SITE_KEY in environment variables.');
+// Enforce production key requirement
+if (import.meta.env.PROD && !import.meta.env.VITE_RECAPTCHA_SITE_KEY) {
+  throw new Error(
+    "VITE_RECAPTCHA_SITE_KEY is required in production. " +
+    "Please configure your reCAPTCHA site key in environment variables."
+  );
+}
+
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || RECAPTCHA_TEST_KEY;
+
+// Warn in development if using test key
+if (import.meta.env.DEV && !import.meta.env.VITE_RECAPTCHA_SITE_KEY) {
+  console.warn(
+    "⚠️ Development mode: Using reCAPTCHA test key. " +
+    "Set VITE_RECAPTCHA_SITE_KEY for production testing."
+  );
 }
 
 export const useRecaptcha = () => {

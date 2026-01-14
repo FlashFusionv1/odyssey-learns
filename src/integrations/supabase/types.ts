@@ -105,6 +105,63 @@ export type Database = {
           },
         ]
       }
+      activity_sessions: {
+        Row: {
+          activity_id: string | null
+          activity_type: string
+          child_id: string
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          max_score: number | null
+          metadata: Json | null
+          score: number | null
+          started_at: string
+          time_spent_seconds: number | null
+        }
+        Insert: {
+          activity_id?: string | null
+          activity_type: string
+          child_id: string
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          max_score?: number | null
+          metadata?: Json | null
+          score?: number | null
+          started_at?: string
+          time_spent_seconds?: number | null
+        }
+        Update: {
+          activity_id?: string | null
+          activity_type?: string
+          child_id?: string
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          max_score?: number | null
+          metadata?: Json | null
+          score?: number | null
+          started_at?: string
+          time_spent_seconds?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_sessions_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_sessions_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       analytics_events: {
         Row: {
           child_id: string
@@ -177,6 +234,92 @@ export type Database = {
         }
         Relationships: []
       }
+      assignment_submissions: {
+        Row: {
+          assignment_id: string
+          attempts: number | null
+          child_id: string
+          created_at: string | null
+          graded_at: string | null
+          graded_by: string | null
+          id: string
+          is_late: boolean | null
+          points_earned: number | null
+          quiz_answers: Json | null
+          score: number | null
+          status: string | null
+          submitted_at: string | null
+          teacher_feedback: string | null
+          time_spent_seconds: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          assignment_id: string
+          attempts?: number | null
+          child_id: string
+          created_at?: string | null
+          graded_at?: string | null
+          graded_by?: string | null
+          id?: string
+          is_late?: boolean | null
+          points_earned?: number | null
+          quiz_answers?: Json | null
+          score?: number | null
+          status?: string | null
+          submitted_at?: string | null
+          teacher_feedback?: string | null
+          time_spent_seconds?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          assignment_id?: string
+          attempts?: number | null
+          child_id?: string
+          created_at?: string | null
+          graded_at?: string | null
+          graded_by?: string | null
+          id?: string
+          is_late?: boolean | null
+          points_earned?: number | null
+          quiz_answers?: Json | null
+          score?: number | null
+          status?: string | null
+          submitted_at?: string | null
+          teacher_feedback?: string | null
+          time_spent_seconds?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignment_submissions_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "class_assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignment_submissions_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignment_submissions_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignment_submissions_graded_by_fkey"
+            columns: ["graded_by"]
+            isOneToOne: false
+            referencedRelation: "teacher_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       avatar_items: {
         Row: {
           created_at: string | null
@@ -204,6 +347,60 @@ export type Database = {
           item_svg_data?: string
           item_type?: string
           points_cost?: number | null
+        }
+        Relationships: []
+      }
+      batch_generation_jobs: {
+        Row: {
+          completed_at: string | null
+          completed_items: number | null
+          config: Json
+          created_at: string | null
+          created_by: string
+          difficulty_levels: string[] | null
+          error_log: Json | null
+          failed_items: number | null
+          grade_levels: number[]
+          id: string
+          job_type: string
+          started_at: string | null
+          status: string
+          subjects: string[]
+          total_items: number
+        }
+        Insert: {
+          completed_at?: string | null
+          completed_items?: number | null
+          config?: Json
+          created_at?: string | null
+          created_by: string
+          difficulty_levels?: string[] | null
+          error_log?: Json | null
+          failed_items?: number | null
+          grade_levels: number[]
+          id?: string
+          job_type?: string
+          started_at?: string | null
+          status?: string
+          subjects: string[]
+          total_items?: number
+        }
+        Update: {
+          completed_at?: string | null
+          completed_items?: number | null
+          config?: Json
+          created_at?: string | null
+          created_by?: string
+          difficulty_levels?: string[] | null
+          error_log?: Json | null
+          failed_items?: number | null
+          grade_levels?: number[]
+          id?: string
+          job_type?: string
+          started_at?: string | null
+          status?: string
+          subjects?: string[]
+          total_items?: number
         }
         Relationships: []
       }
@@ -377,6 +574,94 @@ export type Database = {
           },
         ]
       }
+      child_power_ups: {
+        Row: {
+          acquired_at: string | null
+          child_id: string | null
+          id: string
+          power_up_id: string | null
+          quantity: number | null
+        }
+        Insert: {
+          acquired_at?: string | null
+          child_id?: string | null
+          id?: string
+          power_up_id?: string | null
+          quantity?: number | null
+        }
+        Update: {
+          acquired_at?: string | null
+          child_id?: string | null
+          id?: string
+          power_up_id?: string | null
+          quantity?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "child_power_ups_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_power_ups_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_power_ups_power_up_id_fkey"
+            columns: ["power_up_id"]
+            isOneToOne: false
+            referencedRelation: "power_ups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      child_room: {
+        Row: {
+          child_id: string | null
+          created_at: string | null
+          id: string
+          owned_decoration_ids: string[] | null
+          placed_decorations: Json | null
+          room_name: string | null
+        }
+        Insert: {
+          child_id?: string | null
+          created_at?: string | null
+          id?: string
+          owned_decoration_ids?: string[] | null
+          placed_decorations?: Json | null
+          room_name?: string | null
+        }
+        Update: {
+          child_id?: string | null
+          created_at?: string | null
+          id?: string
+          owned_decoration_ids?: string[] | null
+          placed_decorations?: Json | null
+          room_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "child_room_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: true
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_room_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: true
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       children: {
         Row: {
           avatar_config: Json | null
@@ -458,6 +743,272 @@ export type Database = {
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      class_analytics: {
+        Row: {
+          active_students: number | null
+          analytics_date: string
+          assignments_completed: number | null
+          avg_score: number | null
+          avg_time_spent_minutes: number | null
+          class_id: string
+          created_at: string | null
+          engagement_score: number | null
+          id: string
+          lessons_completed: number | null
+          struggling_areas: string[] | null
+          top_performing_subjects: string[] | null
+        }
+        Insert: {
+          active_students?: number | null
+          analytics_date?: string
+          assignments_completed?: number | null
+          avg_score?: number | null
+          avg_time_spent_minutes?: number | null
+          class_id: string
+          created_at?: string | null
+          engagement_score?: number | null
+          id?: string
+          lessons_completed?: number | null
+          struggling_areas?: string[] | null
+          top_performing_subjects?: string[] | null
+        }
+        Update: {
+          active_students?: number | null
+          analytics_date?: string
+          assignments_completed?: number | null
+          avg_score?: number | null
+          avg_time_spent_minutes?: number | null
+          class_id?: string
+          created_at?: string | null
+          engagement_score?: number | null
+          id?: string
+          lessons_completed?: number | null
+          struggling_areas?: string[] | null
+          top_performing_subjects?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_analytics_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      class_assignments: {
+        Row: {
+          allow_late_submission: boolean | null
+          assignment_type: string | null
+          available_from: string | null
+          class_id: string
+          created_at: string | null
+          description: string | null
+          due_date: string | null
+          id: string
+          is_graded: boolean | null
+          late_penalty_percent: number | null
+          lesson_id: string | null
+          points_possible: number | null
+          settings: Json | null
+          status: string | null
+          teacher_id: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          allow_late_submission?: boolean | null
+          assignment_type?: string | null
+          available_from?: string | null
+          class_id: string
+          created_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          is_graded?: boolean | null
+          late_penalty_percent?: number | null
+          lesson_id?: string | null
+          points_possible?: number | null
+          settings?: Json | null
+          status?: string | null
+          teacher_id: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          allow_late_submission?: boolean | null
+          assignment_type?: string | null
+          available_from?: string | null
+          class_id?: string
+          created_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          is_graded?: boolean | null
+          late_penalty_percent?: number | null
+          lesson_id?: string | null
+          points_possible?: number | null
+          settings?: Json | null
+          status?: string | null
+          teacher_id?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_assignments_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_assignments_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_review_dashboard"
+            referencedColumns: ["lesson_id"]
+          },
+          {
+            foreignKeyName: "class_assignments_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_assignments_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "teacher_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      class_roster: {
+        Row: {
+          child_id: string
+          class_id: string
+          enrolled_at: string | null
+          enrolled_by: string | null
+          enrollment_status: string | null
+          id: string
+          notes: string | null
+          withdrawn_at: string | null
+        }
+        Insert: {
+          child_id: string
+          class_id: string
+          enrolled_at?: string | null
+          enrolled_by?: string | null
+          enrollment_status?: string | null
+          id?: string
+          notes?: string | null
+          withdrawn_at?: string | null
+        }
+        Update: {
+          child_id?: string
+          class_id?: string
+          enrolled_at?: string | null
+          enrolled_by?: string | null
+          enrollment_status?: string | null
+          id?: string
+          notes?: string | null
+          withdrawn_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_roster_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_roster_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_roster_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      classes: {
+        Row: {
+          academic_year: string | null
+          class_code: string | null
+          created_at: string | null
+          description: string | null
+          grade_level: number
+          id: string
+          is_active: boolean | null
+          max_students: number | null
+          name: string
+          school_id: string | null
+          semester: string | null
+          settings: Json | null
+          subject: string
+          teacher_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          academic_year?: string | null
+          class_code?: string | null
+          created_at?: string | null
+          description?: string | null
+          grade_level: number
+          id?: string
+          is_active?: boolean | null
+          max_students?: number | null
+          name: string
+          school_id?: string | null
+          semester?: string | null
+          settings?: Json | null
+          subject: string
+          teacher_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          academic_year?: string | null
+          class_code?: string | null
+          created_at?: string | null
+          description?: string | null
+          grade_level?: number
+          id?: string
+          is_active?: boolean | null
+          max_students?: number | null
+          name?: string
+          school_id?: string | null
+          semester?: string | null
+          settings?: Json | null
+          subject?: string
+          teacher_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classes_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classes_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "teacher_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -649,6 +1200,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      curriculum_standards: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          framework: string | null
+          grade_level: number
+          id: string
+          standard_code: string
+          standard_name: string
+          subject: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          framework?: string | null
+          grade_level: number
+          id?: string
+          standard_code: string
+          standard_name: string
+          subject: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          framework?: string | null
+          grade_level?: number
+          id?: string
+          standard_code?: string
+          standard_name?: string
+          subject?: string
+        }
+        Relationships: []
       }
       daily_lesson_quota: {
         Row: {
@@ -986,6 +1573,127 @@ export type Database = {
         }
         Relationships: []
       }
+      interactive_completions: {
+        Row: {
+          child_id: string | null
+          completed_at: string | null
+          content_id: string | null
+          feedback: string | null
+          id: string
+          progress_data: Json | null
+          rating: number | null
+          score: number | null
+          started_at: string | null
+          time_spent_seconds: number | null
+        }
+        Insert: {
+          child_id?: string | null
+          completed_at?: string | null
+          content_id?: string | null
+          feedback?: string | null
+          id?: string
+          progress_data?: Json | null
+          rating?: number | null
+          score?: number | null
+          started_at?: string | null
+          time_spent_seconds?: number | null
+        }
+        Update: {
+          child_id?: string | null
+          completed_at?: string | null
+          content_id?: string | null
+          feedback?: string | null
+          id?: string
+          progress_data?: Json | null
+          rating?: number | null
+          score?: number | null
+          started_at?: string | null
+          time_spent_seconds?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interactive_completions_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interactive_completions_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interactive_completions_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "interactive_content"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interactive_content: {
+        Row: {
+          avg_rating: number | null
+          content_data: Json
+          content_type: string
+          created_at: string | null
+          description: string | null
+          estimated_minutes: number | null
+          grade_level_max: number
+          grade_level_min: number
+          id: string
+          is_active: boolean | null
+          is_premium: boolean | null
+          play_count: number | null
+          points_value: number | null
+          subject: string | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          avg_rating?: number | null
+          content_data?: Json
+          content_type: string
+          created_at?: string | null
+          description?: string | null
+          estimated_minutes?: number | null
+          grade_level_max?: number
+          grade_level_min?: number
+          id?: string
+          is_active?: boolean | null
+          is_premium?: boolean | null
+          play_count?: number | null
+          points_value?: number | null
+          subject?: string | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          avg_rating?: number | null
+          content_data?: Json
+          content_type?: string
+          created_at?: string | null
+          description?: string | null
+          estimated_minutes?: number | null
+          grade_level_max?: number
+          grade_level_min?: number
+          id?: string
+          is_active?: boolean | null
+          is_premium?: boolean | null
+          play_count?: number | null
+          points_value?: number | null
+          subject?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       ip_blocklist: {
         Row: {
           blocked_at: string | null
@@ -1009,6 +1717,150 @@ export type Database = {
           reason?: string
         }
         Relationships: []
+      }
+      learning_patterns: {
+        Row: {
+          child_id: string
+          confidence_score: number | null
+          data: Json | null
+          detected_at: string | null
+          id: string
+          pattern_type: string
+          subject: string | null
+          topic: string | null
+        }
+        Insert: {
+          child_id: string
+          confidence_score?: number | null
+          data?: Json | null
+          detected_at?: string | null
+          id?: string
+          pattern_type: string
+          subject?: string | null
+          topic?: string | null
+        }
+        Update: {
+          child_id?: string
+          confidence_score?: number | null
+          data?: Json | null
+          detected_at?: string | null
+          id?: string
+          pattern_type?: string
+          subject?: string | null
+          topic?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_patterns_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "learning_patterns_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      learning_profiles: {
+        Row: {
+          average_quiz_score: number | null
+          average_session_minutes: number | null
+          avoided_subjects: string[] | null
+          best_time_of_day: string | null
+          child_id: string
+          created_at: string | null
+          current_streak: number | null
+          data_points_analyzed: number | null
+          help_seeking_frequency: string | null
+          id: string
+          improvement_trend: string | null
+          last_analyzed_at: string | null
+          learning_speed: string | null
+          optimal_session_length: number | null
+          overall_completion_rate: number | null
+          preferred_difficulty: string | null
+          preferred_subjects: string[] | null
+          profile_version: number | null
+          skill_acquisition_rate: number | null
+          strengths: Json | null
+          total_lessons_completed: number | null
+          updated_at: string | null
+          weaknesses: Json | null
+          weekly_lesson_velocity: number | null
+        }
+        Insert: {
+          average_quiz_score?: number | null
+          average_session_minutes?: number | null
+          avoided_subjects?: string[] | null
+          best_time_of_day?: string | null
+          child_id: string
+          created_at?: string | null
+          current_streak?: number | null
+          data_points_analyzed?: number | null
+          help_seeking_frequency?: string | null
+          id?: string
+          improvement_trend?: string | null
+          last_analyzed_at?: string | null
+          learning_speed?: string | null
+          optimal_session_length?: number | null
+          overall_completion_rate?: number | null
+          preferred_difficulty?: string | null
+          preferred_subjects?: string[] | null
+          profile_version?: number | null
+          skill_acquisition_rate?: number | null
+          strengths?: Json | null
+          total_lessons_completed?: number | null
+          updated_at?: string | null
+          weaknesses?: Json | null
+          weekly_lesson_velocity?: number | null
+        }
+        Update: {
+          average_quiz_score?: number | null
+          average_session_minutes?: number | null
+          avoided_subjects?: string[] | null
+          best_time_of_day?: string | null
+          child_id?: string
+          created_at?: string | null
+          current_streak?: number | null
+          data_points_analyzed?: number | null
+          help_seeking_frequency?: string | null
+          id?: string
+          improvement_trend?: string | null
+          last_analyzed_at?: string | null
+          learning_speed?: string | null
+          optimal_session_length?: number | null
+          overall_completion_rate?: number | null
+          preferred_difficulty?: string | null
+          preferred_subjects?: string[] | null
+          profile_version?: number | null
+          skill_acquisition_rate?: number | null
+          strengths?: Json | null
+          total_lessons_completed?: number | null
+          updated_at?: string | null
+          weaknesses?: Json | null
+          weekly_lesson_velocity?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_profiles_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: true
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "learning_profiles_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: true
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       lesson_analytics: {
         Row: {
@@ -1338,6 +2190,95 @@ export type Database = {
           },
         ]
       }
+      lesson_recommendations: {
+        Row: {
+          actual_score: number | null
+          actual_time_minutes: number | null
+          child_id: string
+          completed_at: string | null
+          created_at: string | null
+          dismissed_at: string | null
+          expires_at: string | null
+          id: string
+          lesson_id: string
+          predicted_difficulty: string | null
+          predicted_engagement: string | null
+          predicted_score: number | null
+          predicted_time_minutes: number | null
+          priority: number | null
+          reason: string
+          reason_explanation: string | null
+          was_helpful: boolean | null
+        }
+        Insert: {
+          actual_score?: number | null
+          actual_time_minutes?: number | null
+          child_id: string
+          completed_at?: string | null
+          created_at?: string | null
+          dismissed_at?: string | null
+          expires_at?: string | null
+          id?: string
+          lesson_id: string
+          predicted_difficulty?: string | null
+          predicted_engagement?: string | null
+          predicted_score?: number | null
+          predicted_time_minutes?: number | null
+          priority?: number | null
+          reason: string
+          reason_explanation?: string | null
+          was_helpful?: boolean | null
+        }
+        Update: {
+          actual_score?: number | null
+          actual_time_minutes?: number | null
+          child_id?: string
+          completed_at?: string | null
+          created_at?: string | null
+          dismissed_at?: string | null
+          expires_at?: string | null
+          id?: string
+          lesson_id?: string
+          predicted_difficulty?: string | null
+          predicted_engagement?: string | null
+          predicted_score?: number | null
+          predicted_time_minutes?: number | null
+          priority?: number | null
+          reason?: string
+          reason_explanation?: string | null
+          was_helpful?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_recommendations_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_recommendations_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_recommendations_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_review_dashboard"
+            referencedColumns: ["lesson_id"]
+          },
+          {
+            foreignKeyName: "lesson_recommendations_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lesson_reviews: {
         Row: {
           age_appropriate_score: number | null
@@ -1430,6 +2371,63 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      lesson_templates: {
+        Row: {
+          content_structure: Json
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          difficulty: string
+          estimated_minutes: number | null
+          grade_level_max: number
+          grade_level_min: number
+          id: string
+          is_active: boolean | null
+          learning_objectives: string[] | null
+          name: string
+          standards_alignment: string[] | null
+          subject: string
+          updated_at: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          content_structure?: Json
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          difficulty?: string
+          estimated_minutes?: number | null
+          grade_level_max?: number
+          grade_level_min?: number
+          id?: string
+          is_active?: boolean | null
+          learning_objectives?: string[] | null
+          name: string
+          standards_alignment?: string[] | null
+          subject: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          content_structure?: Json
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          difficulty?: string
+          estimated_minutes?: number | null
+          grade_level_max?: number
+          grade_level_min?: number
+          id?: string
+          is_active?: boolean | null
+          learning_objectives?: string[] | null
+          name?: string
+          standards_alignment?: string[] | null
+          subject?: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Relationships: []
       }
       lesson_tokens: {
         Row: {
@@ -1590,10 +2588,14 @@ export type Database = {
       }
       parent_notifications: {
         Row: {
+          action_data: Json | null
+          action_taken_at: string | null
           action_url: string | null
           child_id: string | null
           created_at: string | null
+          expires_at: string | null
           id: string
+          is_actionable: boolean | null
           is_read: boolean | null
           message: string
           metadata: Json | null
@@ -1602,10 +2604,14 @@ export type Database = {
           title: string
         }
         Insert: {
+          action_data?: Json | null
+          action_taken_at?: string | null
           action_url?: string | null
           child_id?: string | null
           created_at?: string | null
+          expires_at?: string | null
           id?: string
+          is_actionable?: boolean | null
           is_read?: boolean | null
           message: string
           metadata?: Json | null
@@ -1614,10 +2620,14 @@ export type Database = {
           title: string
         }
         Update: {
+          action_data?: Json | null
+          action_taken_at?: string | null
           action_url?: string | null
           child_id?: string | null
           created_at?: string | null
+          expires_at?: string | null
           id?: string
+          is_actionable?: boolean | null
           is_read?: boolean | null
           message?: string
           metadata?: Json | null
@@ -1758,7 +2768,11 @@ export type Database = {
           accepted_at: string | null
           child_id: string
           id: string
+          parent_approved: boolean | null
+          parent_approved_at: string | null
+          parent_approved_by: string | null
           peer_id: string
+          rejection_reason: string | null
           requested_at: string | null
           status: string
         }
@@ -1766,7 +2780,11 @@ export type Database = {
           accepted_at?: string | null
           child_id: string
           id?: string
+          parent_approved?: boolean | null
+          parent_approved_at?: string | null
+          parent_approved_by?: string | null
           peer_id: string
+          rejection_reason?: string | null
           requested_at?: string | null
           status?: string
         }
@@ -1774,7 +2792,11 @@ export type Database = {
           accepted_at?: string | null
           child_id?: string
           id?: string
+          parent_approved?: boolean | null
+          parent_approved_at?: string | null
+          parent_approved_by?: string | null
           peer_id?: string
+          rejection_reason?: string | null
           requested_at?: string | null
           status?: string
         }
@@ -1803,6 +2825,102 @@ export type Database = {
           {
             foreignKeyName: "peer_connections_peer_id_fkey"
             columns: ["peer_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      power_ups: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          effect_type: string
+          effect_value: Json | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          points_cost: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          effect_type: string
+          effect_value?: Json | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          points_cost?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          effect_type?: string
+          effect_value?: Json | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          points_cost?: number | null
+        }
+        Relationships: []
+      }
+      profile_analysis_history: {
+        Row: {
+          child_id: string
+          confidence_level: number | null
+          created_at: string | null
+          data_points_analyzed: number | null
+          error_message: string | null
+          id: string
+          model_used: string
+          patterns_detected: number | null
+          processing_time_ms: number | null
+          profile_snapshot: Json
+          recommendations_generated: number | null
+          status: string | null
+        }
+        Insert: {
+          child_id: string
+          confidence_level?: number | null
+          created_at?: string | null
+          data_points_analyzed?: number | null
+          error_message?: string | null
+          id?: string
+          model_used: string
+          patterns_detected?: number | null
+          processing_time_ms?: number | null
+          profile_snapshot: Json
+          recommendations_generated?: number | null
+          status?: string | null
+        }
+        Update: {
+          child_id?: string
+          confidence_level?: number | null
+          created_at?: string | null
+          data_points_analyzed?: number | null
+          error_message?: string | null
+          id?: string
+          model_used?: string
+          patterns_detected?: number | null
+          processing_time_ms?: number | null
+          profile_snapshot?: Json
+          recommendations_generated?: number | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_analysis_history_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_analysis_history_child_id_fkey"
+            columns: ["child_id"]
             isOneToOne: false
             referencedRelation: "children_safe"
             referencedColumns: ["id"]
@@ -1877,6 +2995,64 @@ export type Database = {
           violation_type?: string
         }
         Relationships: []
+      }
+      recommendation_feedback: {
+        Row: {
+          child_id: string
+          created_at: string | null
+          difficulty_rating: number | null
+          dismissal_reason: string | null
+          enjoyment_rating: number | null
+          feedback_type: string
+          id: string
+          recommendation_id: string
+          was_helpful: boolean | null
+        }
+        Insert: {
+          child_id: string
+          created_at?: string | null
+          difficulty_rating?: number | null
+          dismissal_reason?: string | null
+          enjoyment_rating?: number | null
+          feedback_type: string
+          id?: string
+          recommendation_id: string
+          was_helpful?: boolean | null
+        }
+        Update: {
+          child_id?: string
+          created_at?: string | null
+          difficulty_rating?: number | null
+          dismissal_reason?: string | null
+          enjoyment_rating?: number | null
+          feedback_type?: string
+          id?: string
+          recommendation_id?: string
+          was_helpful?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recommendation_feedback_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recommendation_feedback_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recommendation_feedback_recommendation_id_fkey"
+            columns: ["recommendation_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_recommendations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       review_history: {
         Row: {
@@ -2089,6 +3265,87 @@ export type Database = {
           reason?: string | null
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      room_decorations: {
+        Row: {
+          category: string
+          created_at: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          points_cost: number | null
+          svg_data: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          points_cost?: number | null
+          svg_data: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          points_cost?: number | null
+          svg_data?: string
+        }
+        Relationships: []
+      }
+      schools: {
+        Row: {
+          address: string | null
+          city: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          country: string | null
+          created_at: string | null
+          district: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          settings: Json | null
+          state: string | null
+          updated_at: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string | null
+          district?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          settings?: Json | null
+          state?: string | null
+          updated_at?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string | null
+          district?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          settings?: Json | null
+          state?: string | null
+          updated_at?: string | null
+          zip_code?: string | null
         }
         Relationships: []
       }
@@ -2321,6 +3578,78 @@ export type Database = {
           },
         ]
       }
+      skill_mastery: {
+        Row: {
+          avg_session_minutes: number | null
+          child_id: string
+          created_at: string | null
+          current_level: string | null
+          id: string
+          improvement_rate: number | null
+          last_practiced_at: string | null
+          mastery_percentage: number | null
+          practice_count: number | null
+          projected_mastery_date: string | null
+          skill_category: string | null
+          skill_name: string
+          subject: string
+          success_rate: number | null
+          total_time_spent_minutes: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          avg_session_minutes?: number | null
+          child_id: string
+          created_at?: string | null
+          current_level?: string | null
+          id?: string
+          improvement_rate?: number | null
+          last_practiced_at?: string | null
+          mastery_percentage?: number | null
+          practice_count?: number | null
+          projected_mastery_date?: string | null
+          skill_category?: string | null
+          skill_name: string
+          subject: string
+          success_rate?: number | null
+          total_time_spent_minutes?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          avg_session_minutes?: number | null
+          child_id?: string
+          created_at?: string | null
+          current_level?: string | null
+          id?: string
+          improvement_rate?: number | null
+          last_practiced_at?: string | null
+          mastery_percentage?: number | null
+          practice_count?: number | null
+          projected_mastery_date?: string | null
+          skill_category?: string | null
+          skill_name?: string
+          subject?: string
+          success_rate?: number | null
+          total_time_spent_minutes?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "skill_mastery_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "skill_mastery_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       student_lesson_performance: {
         Row: {
           attempts: number | null
@@ -2391,6 +3720,71 @@ export type Database = {
             columns: ["lesson_id"]
             isOneToOne: false
             referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teacher_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          department: string | null
+          email: string
+          employee_id: string | null
+          full_name: string
+          grade_levels: number[] | null
+          id: string
+          is_verified: boolean | null
+          school_id: string | null
+          settings: Json | null
+          subjects: string[] | null
+          updated_at: string | null
+          user_id: string
+          verification_date: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          department?: string | null
+          email: string
+          employee_id?: string | null
+          full_name: string
+          grade_levels?: number[] | null
+          id?: string
+          is_verified?: boolean | null
+          school_id?: string | null
+          settings?: Json | null
+          subjects?: string[] | null
+          updated_at?: string | null
+          user_id: string
+          verification_date?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          department?: string | null
+          email?: string
+          employee_id?: string | null
+          full_name?: string
+          grade_levels?: number[] | null
+          id?: string
+          is_verified?: boolean | null
+          school_id?: string | null
+          settings?: Json | null
+          subjects?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+          verification_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teacher_profiles_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
             referencedColumns: ["id"]
           },
         ]
@@ -2556,6 +3950,286 @@ export type Database = {
         }
         Relationships: []
       }
+      video_analytics: {
+        Row: {
+          analytics_date: string
+          avg_completion_rate: number | null
+          avg_watch_time_seconds: number | null
+          created_at: string | null
+          drop_off_points: Json | null
+          engagement_score: number | null
+          id: string
+          popular_segments: Json | null
+          total_completions: number | null
+          total_views: number | null
+          unique_viewers: number | null
+          video_id: string
+        }
+        Insert: {
+          analytics_date?: string
+          avg_completion_rate?: number | null
+          avg_watch_time_seconds?: number | null
+          created_at?: string | null
+          drop_off_points?: Json | null
+          engagement_score?: number | null
+          id?: string
+          popular_segments?: Json | null
+          total_completions?: number | null
+          total_views?: number | null
+          unique_viewers?: number | null
+          video_id: string
+        }
+        Update: {
+          analytics_date?: string
+          avg_completion_rate?: number | null
+          avg_watch_time_seconds?: number | null
+          created_at?: string | null
+          drop_off_points?: Json | null
+          engagement_score?: number | null
+          id?: string
+          popular_segments?: Json | null
+          total_completions?: number | null
+          total_views?: number | null
+          unique_viewers?: number | null
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_analytics_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "video_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_lessons: {
+        Row: {
+          age_max: number | null
+          age_min: number | null
+          captions_url: string | null
+          chapter_markers: Json | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          difficulty: string | null
+          duration_seconds: number | null
+          grade_level: number
+          id: string
+          is_active: boolean | null
+          learning_objectives: string[] | null
+          lesson_id: string | null
+          points_value: number | null
+          quiz_questions: Json | null
+          quiz_timestamps: Json | null
+          subject: string
+          thumbnail_url: string | null
+          title: string
+          transcript: string | null
+          updated_at: string | null
+          video_id: string | null
+          video_provider: string | null
+          video_url: string
+          view_count: number | null
+        }
+        Insert: {
+          age_max?: number | null
+          age_min?: number | null
+          captions_url?: string | null
+          chapter_markers?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          difficulty?: string | null
+          duration_seconds?: number | null
+          grade_level: number
+          id?: string
+          is_active?: boolean | null
+          learning_objectives?: string[] | null
+          lesson_id?: string | null
+          points_value?: number | null
+          quiz_questions?: Json | null
+          quiz_timestamps?: Json | null
+          subject: string
+          thumbnail_url?: string | null
+          title: string
+          transcript?: string | null
+          updated_at?: string | null
+          video_id?: string | null
+          video_provider?: string | null
+          video_url: string
+          view_count?: number | null
+        }
+        Update: {
+          age_max?: number | null
+          age_min?: number | null
+          captions_url?: string | null
+          chapter_markers?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          difficulty?: string | null
+          duration_seconds?: number | null
+          grade_level?: number
+          id?: string
+          is_active?: boolean | null
+          learning_objectives?: string[] | null
+          lesson_id?: string | null
+          points_value?: number | null
+          quiz_questions?: Json | null
+          quiz_timestamps?: Json | null
+          subject?: string
+          thumbnail_url?: string | null
+          title?: string
+          transcript?: string | null
+          updated_at?: string | null
+          video_id?: string | null
+          video_provider?: string | null
+          video_url?: string
+          view_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_lessons_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_review_dashboard"
+            referencedColumns: ["lesson_id"]
+          },
+          {
+            foreignKeyName: "video_lessons_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_quiz_responses: {
+        Row: {
+          answered_at: string | null
+          child_id: string
+          id: string
+          is_correct: boolean
+          question_index: number
+          selected_answer: number
+          time_to_answer_seconds: number | null
+          video_id: string
+        }
+        Insert: {
+          answered_at?: string | null
+          child_id: string
+          id?: string
+          is_correct: boolean
+          question_index: number
+          selected_answer: number
+          time_to_answer_seconds?: number | null
+          video_id: string
+        }
+        Update: {
+          answered_at?: string | null
+          child_id?: string
+          id?: string
+          is_correct?: boolean
+          question_index?: number
+          selected_answer?: number
+          time_to_answer_seconds?: number | null
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_quiz_responses_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_quiz_responses_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_quiz_responses_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "video_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      video_watch_progress: {
+        Row: {
+          child_id: string
+          completed_at: string | null
+          completion_percentage: number | null
+          created_at: string | null
+          id: string
+          interaction_events: Json | null
+          last_watched_at: string | null
+          quiz_answers: Json | null
+          quiz_score: number | null
+          total_watch_time_seconds: number | null
+          updated_at: string | null
+          video_id: string
+          watch_position_seconds: number | null
+        }
+        Insert: {
+          child_id: string
+          completed_at?: string | null
+          completion_percentage?: number | null
+          created_at?: string | null
+          id?: string
+          interaction_events?: Json | null
+          last_watched_at?: string | null
+          quiz_answers?: Json | null
+          quiz_score?: number | null
+          total_watch_time_seconds?: number | null
+          updated_at?: string | null
+          video_id: string
+          watch_position_seconds?: number | null
+        }
+        Update: {
+          child_id?: string
+          completed_at?: string | null
+          completion_percentage?: number | null
+          created_at?: string | null
+          id?: string
+          interaction_events?: Json | null
+          last_watched_at?: string | null
+          quiz_answers?: Json | null
+          quiz_score?: number | null
+          total_watch_time_seconds?: number | null
+          updated_at?: string | null
+          video_id?: string
+          watch_position_seconds?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_watch_progress_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_watch_progress_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_watch_progress_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "video_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       children_safe: {
@@ -2565,12 +4239,13 @@ export type Database = {
           created_at: string | null
           daily_quest_id: string | null
           daily_screen_time_limit_minutes: number | null
+          deleted_at: string | null
+          deletion_reason: string | null
+          deletion_scheduled_at: string | null
           grade_level: number | null
           id: string | null
-          is_deleted: boolean | null
           name: string | null
           parent_id: string | null
-          pin_status: string | null
           quest_bonus_points: number | null
           quest_completed_at: string | null
           screen_time_enabled: boolean | null
@@ -2583,12 +4258,13 @@ export type Database = {
           created_at?: string | null
           daily_quest_id?: string | null
           daily_screen_time_limit_minutes?: number | null
+          deleted_at?: string | null
+          deletion_reason?: string | null
+          deletion_scheduled_at?: string | null
           grade_level?: number | null
           id?: string | null
-          is_deleted?: never
           name?: string | null
           parent_id?: string | null
-          pin_status?: never
           quest_bonus_points?: number | null
           quest_completed_at?: string | null
           screen_time_enabled?: boolean | null
@@ -2601,12 +4277,13 @@ export type Database = {
           created_at?: string | null
           daily_quest_id?: string | null
           daily_screen_time_limit_minutes?: number | null
+          deleted_at?: string | null
+          deletion_reason?: string | null
+          deletion_scheduled_at?: string | null
           grade_level?: number | null
           id?: string | null
-          is_deleted?: never
           name?: string | null
           parent_id?: string | null
-          pin_status?: never
           quest_bonus_points?: number | null
           quest_completed_at?: string | null
           screen_time_enabled?: boolean | null
@@ -2672,6 +4349,55 @@ export type Database = {
     }
     Functions: {
       add_admin_role: { Args: { _email: string }; Returns: undefined }
+      audit_admin_child_access: {
+        Args: { access_reason: string; target_child_id: string }
+        Returns: {
+          avatar_config: Json | null
+          challenge_mode_enabled: boolean | null
+          created_at: string | null
+          daily_quest_id: string | null
+          daily_screen_time_limit_minutes: number | null
+          deleted_at: string | null
+          deletion_reason: string | null
+          deletion_scheduled_at: string | null
+          grade_level: number | null
+          id: string | null
+          name: string | null
+          parent_id: string | null
+          quest_bonus_points: number | null
+          quest_completed_at: string | null
+          screen_time_enabled: boolean | null
+          total_points: number | null
+          weekly_report_enabled: boolean | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "children_safe"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      audit_admin_profile_access: {
+        Args: { access_reason: string; target_user_id: string }
+        Returns: {
+          age_verified: boolean | null
+          avatar_url: string | null
+          birth_year: number | null
+          coppa_consent_version: string | null
+          coppa_consented_at: string | null
+          created_at: string | null
+          full_name: string
+          id: string
+          onboarding_completed: boolean | null
+          onboarding_step: number | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       auto_assign_pending_reviews: { Args: never; Returns: Json }
       award_creator_points: {
         Args: {
@@ -2717,6 +4443,36 @@ export type Database = {
         Args: { encryption_key: string; plaintext: string }
         Returns: string
       }
+      generate_class_code: { Args: never; Returns: string }
+      get_active_recommendations:
+        | {
+            Args: { p_child_id: string }
+            Returns: {
+              confidence_score: number
+              id: string
+              lesson_id: string
+              priority: number
+              reason: string
+              subject: string
+              title: string
+            }[]
+          }
+        | {
+            Args: { p_child_id: string; p_limit?: number }
+            Returns: {
+              created_at: string
+              id: string
+              lesson_id: string
+              lesson_subject: string
+              lesson_title: string
+              predicted_difficulty: string
+              predicted_score: number
+              predicted_time_minutes: number
+              priority: number
+              reason: string
+              reason_explanation: string
+            }[]
+          }
       get_lesson_performance_overview: {
         Args: { p_lesson_id: string }
         Returns: {
@@ -2794,7 +4550,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "parent" | "child" | "admin" | "moderator"
+      app_role: "parent" | "child" | "admin" | "moderator" | "teacher"
       review_status:
         | "pending"
         | "in_review"
@@ -2928,7 +4684,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["parent", "child", "admin", "moderator"],
+      app_role: ["parent", "child", "admin", "moderator", "teacher"],
       review_status: [
         "pending",
         "in_review",

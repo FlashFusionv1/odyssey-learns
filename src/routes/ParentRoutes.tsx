@@ -1,21 +1,25 @@
 import { Route } from 'react-router-dom';
-import { Suspense, lazy } from 'react';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { Suspense, lazy, memo } from 'react';
 import { parentRoutes } from '@/config/routes.config';
 import { RouteErrorBoundary } from '@/components/error/RouteErrorBoundary';
 import { RequireAuth } from '@/components/auth/RequireAuth';
+import { DashboardSkeleton } from '@/components/ui/skeleton-loaders';
 
-// Lazy load child selector
-const ChildSelector = lazy(() => import('@/pages/ChildSelector'));
-
-const ParentLoader = () => (
-  <div className="flex items-center justify-center min-h-screen bg-background">
-    <div className="text-center space-y-4">
-      <LoadingSpinner size="lg" />
-      <p className="text-muted-foreground text-sm">Loading parent dashboard...</p>
-    </div>
-  </div>
+// Lazy load child selector with retry
+const ChildSelector = lazy(() => 
+  import('@/pages/ChildSelector').catch(() => {
+    // Retry once on failure
+    return new Promise(resolve => setTimeout(resolve, 1000))
+      .then(() => import('@/pages/ChildSelector'));
+  })
 );
+
+/**
+ * Memoized parent loading component with skeleton
+ */
+const ParentLoader = memo(() => <DashboardSkeleton />);
+
+ParentLoader.displayName = 'ParentLoader';
 
 /**
  * Parent routes

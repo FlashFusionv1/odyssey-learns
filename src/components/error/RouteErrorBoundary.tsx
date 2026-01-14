@@ -2,6 +2,7 @@ import { Component, ErrorInfo, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
+import { normalizeError } from '@/lib/errorHandler';
 
 interface Props {
   children: ReactNode;
@@ -12,11 +13,13 @@ interface State {
   hasError: boolean;
   error: Error | null;
   errorInfo: ErrorInfo | null;
+  errorId: string;
 }
 
 /**
  * Feature-specific error boundary for route groups
  * Provides context-appropriate error messages and recovery actions
+ * Uses proper error normalization to prevent "%o %s %s {}" messages
  */
 export class RouteErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
@@ -25,40 +28,62 @@ export class RouteErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
+      errorId: '',
     };
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: unknown): Partial<State> {
+    // Normalize the error to prevent empty object issues
+    const normalizedError = normalizeError(error);
     return {
       hasError: true,
-      error,
+      error: normalizedError,
       errorInfo: null,
+      errorId: `route_${Date.now().toString(36)}`,
     };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  componentDidCatch(error: unknown, errorInfo: ErrorInfo) {
+    // Normalize the error
+    const normalizedError = normalizeError(error);
+    
+    // Log with proper formatting (not printf-style)
+    console.group(`[RouteErrorBoundary:${this.props.feature || 'unknown'}] Error Caught`);
+    console.error('Error:', normalizedError.message);
+    console.error('Stack:', normalizedError.stack);
+    console.error('Component Stack:', errorInfo.componentStack);
+    console.error('Original thrown value:', error);
+    console.groupEnd();
+    
     this.setState({
-      error,
+      error: normalizedError,
       errorInfo,
     });
 
     // Log error to database
-    this.logError(error, errorInfo);
+    this.logError(normalizedError, errorInfo, error);
   }
 
-  async logError(error: Error, errorInfo: ErrorInfo) {
+  async logError(error: Error, errorInfo: ErrorInfo, originalThrown: unknown) {
     try {
       await supabase.from('error_logs').insert({
-        error_message: error.message,
-        error_stack: error.stack || null,
+        error_message: error.message.substring(0, 500),
+        error_stack: error.stack?.substring(0, 2000) || null,
         component: this.props.feature || 'unknown',
         severity: 'error',
+        url: window.location.href,
+        user_agent: navigator.userAgent,
         metadata: {
-          componentStack: errorInfo.componentStack,
+          componentStack: errorInfo.componentStack?.substring(0, 2000),
+          errorId: this.state.errorId,
+          originalType: typeof originalThrown,
+          wasEmptyObject: typeof originalThrown === 'object' && 
+                          originalThrown !== null && 
+                          Object.keys(originalThrown as object).length === 0,
         },
       });
     } catch (logError) {
-      console.error('Failed to log error to database:', logError);
+      console.warn('[RouteErrorBoundary] Failed to log error to database:', logError);
     }
   }
 
@@ -67,6 +92,7 @@ export class RouteErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
+      errorId: '',
     });
   };
 

@@ -1,7 +1,23 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "inner-odyssey",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.2.0",
+  "description": "A comprehensive K-12 educational platform combining emotional intelligence, academic excellence, and life skills through gamified learning",
+  "author": "Inner Odyssey Team",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/inner-odyssey/odyssey-learns"
+  },
+  "keywords": [
+    "education",
+    "k-12",
+    "emotional-intelligence",
+    "learning-platform",
+    "react",
+    "typescript",
+    "supabase"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -25,6 +25,14 @@ import { PeerConnectionApprovals } from "@/components/parent/PeerConnectionAppro
 import { HelpButton, FeatureSpotlight } from "@/components/onboarding";
 import { logEmotionLogView } from "@/lib/auditLogger";
 
+// Type imports - using database row types for Supabase compatibility
+import type { 
+  ChildRow,
+  CollaborationRequestWithChildren,
+  DailyLessonQuotaRow,
+  WeeklyReportWithChild,
+} from "@/types/database";
+
 /**
  * Feature tour steps for parent dashboard
  * Highlights key parent features after onboarding
@@ -64,10 +72,10 @@ const PARENT_FEATURE_TOUR_STEPS = [
 
 const ParentDashboard = () => {
   const { user } = useAuth();
-  const [children, setChildren] = useState<any[]>([]);
-  const [weeklyReports, setWeeklyReports] = useState<any[]>([]);
-  const [collaborationRequests, setCollaborationRequests] = useState<any[]>([]);
-  const [dailyQuotas, setDailyQuotas] = useState<Record<string, any>>({});
+  const [children, setChildren] = useState<ChildRow[]>([]);
+  const [weeklyReports, setWeeklyReports] = useState<WeeklyReportWithChild[]>([]);
+  const [collaborationRequests, setCollaborationRequests] = useState<CollaborationRequestWithChildren[]>([]);
+  const [dailyQuotas, setDailyQuotas] = useState<Record<string, DailyLessonQuotaRow>>({});
   const [loading, setLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showFeatureTour, setShowFeatureTour] = useState(false);

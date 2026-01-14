@@ -22,6 +22,16 @@ import { LessonCard, LessonCardCompact } from "@/components/learning/LessonCard"
 import { StatCard } from "@/components/ui/stat-card";
 import { ChildOnboardingTutorial, HelpButton, FeatureSpotlight } from "@/components/onboarding";
 
+// Type imports - using database row types for Supabase compatibility
+import type { 
+  ChildRow, 
+  LessonRow, 
+  ChildGeneratedLessonRow,
+  DashboardStats, 
+  CelebrationData, 
+  DashboardDailyQuest 
+} from "@/types/database";
+
 /**
  * Feature tour steps for child dashboard
  * Highlights key features after onboarding
@@ -61,16 +71,16 @@ const CHILD_FEATURE_TOUR_STEPS = [
 
 const ChildDashboard = () => {
   const { childId, isValidating } = useValidatedChild();
-  const [child, setChild] = useState<any>(null);
-  const [lessons, setLessons] = useState<any[]>([]);
-  const [stats, setStats] = useState({ completed: 0, streak: 0 });
+  const [child, setChild] = useState<ChildRow | null>(null);
+  const [lessons, setLessons] = useState<LessonRow[]>([]);
+  const [stats, setStats] = useState<DashboardStats>({ completed: 0, streak: 0 });
   const [loading, setLoading] = useState(true);
-  const [dailyQuest, setDailyQuest] = useState<any>(null);
-  const [celebration, setCelebration] = useState<any>(null);
+  const [dailyQuest, setDailyQuest] = useState<DashboardDailyQuest | null>(null);
+  const [celebration, setCelebration] = useState<CelebrationData | null>(null);
   const [showAvatarCustomizer, setShowAvatarCustomizer] = useState(false);
-  const [myLessons, setMyLessons] = useState<any[]>([]);
+  const [myLessons, setMyLessons] = useState<ChildGeneratedLessonRow[]>([]);
   const [shareModalOpen, setShareModalOpen] = useState(false);
-  const [selectedLesson, setSelectedLesson] = useState<any>(null);
+  const [selectedLesson, setSelectedLesson] = useState<ChildGeneratedLessonRow | null>(null);
   const [showChildOnboarding, setShowChildOnboarding] = useState(false);
   const [showFeatureTour, setShowFeatureTour] = useState(false);
   const navigate = useNavigate();
@@ -141,7 +151,7 @@ const ChildDashboard = () => {
     setLoading(false);
   };
 
-  const loadOrGenerateQuest = async (childData: any) => {
+  const loadOrGenerateQuest = async (childData: ChildRow) => {
     // Check if quest needs to be regenerated
     const needsNewQuest = 
       !childData.daily_quest_id || 

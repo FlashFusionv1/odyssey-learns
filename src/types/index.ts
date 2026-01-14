@@ -6,6 +6,49 @@ export * from './adaptive';
 export * from './routes';
 export * from './survey';
 
+// Dashboard types - explicit exports to avoid conflicts with parent.ts
+export type {
+  DashboardStats,
+  CelebrationType,
+  CelebrationData,
+  DashboardDailyQuest,
+  CollaborationRequest,
+  DailyLessonQuota,
+  LessonAnalyticsData,
+  TimelineDataPoint,
+  LessonPerformanceMetrics,
+  DailyLessonStats,
+  StrugglingStudent,
+  StudentOverallStats,
+  SubjectBreakdownItem,
+  StrengthItem,
+  StruggleItem,
+  RecommendationItem,
+  ProgressDataPoint,
+  AIInsightsData,
+  PeerConnection,
+  PeerSearchResult,
+  SharedActivity,
+  ActivityParticipant,
+  LessonReviewData,
+  ReviewerPerformanceData,
+  SeedResult,
+  BetaMetrics,
+  CreatorStats,
+  LessonStats,
+  CreatorActivity,
+  PersonalProgress,
+} from './dashboard';
+
+// Dashboard types with aliases to avoid parent.ts conflicts
+export type { 
+  WeeklyReport as DashboardWeeklyReport,
+  ParentDashboardStats as DashboardParentStats,
+} from './dashboard';
+
+// PWA types
+export * from './pwa';
+
 // Child types (exclude overlapping exports)
 export type {
   AvatarConfig,

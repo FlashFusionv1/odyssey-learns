@@ -7,7 +7,7 @@ import { Trophy, Star, Flame, Award } from 'lucide-react';
 interface CelebrationModalProps {
   open: boolean;
   onClose: () => void;
-  type: 'lesson' | 'quest' | 'streak' | 'badge';
+  type: 'lesson' | 'quest' | 'streak' | 'badge' | 'level' | 'points';
   title: string;
   message: string;
   points?: number;
@@ -68,6 +68,10 @@ export const CelebrationModal = ({
         return <Flame className={`${isYoung ? 'w-20 h-20' : 'w-16 h-16'} text-orange-500`} />;
       case 'badge':
         return <Award className={`${isYoung ? 'w-20 h-20' : 'w-16 h-16'} text-purple-500`} />;
+      case 'level':
+        return <Star className={`${isYoung ? 'w-20 h-20' : 'w-16 h-16'} text-blue-500`} />;
+      case 'points':
+        return <Trophy className={`${isYoung ? 'w-20 h-20' : 'w-16 h-16'} text-green-500`} />;
       default:
         return <Trophy className={`${isYoung ? 'w-20 h-20' : 'w-16 h-16'} text-primary`} />;
     }

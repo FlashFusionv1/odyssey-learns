@@ -5,17 +5,20 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { AvatarDisplay } from './AvatarDisplay';
+import type { Json } from '@/integrations/supabase/types';
+
+export interface AvatarConfig {
+  hair: string;
+  color: string;
+  accessory: string;
+}
 
 interface AvatarCustomizerProps {
   open: boolean;
   onClose: () => void;
   childId: string;
-  currentConfig: {
-    hair: string;
-    color: string;
-    accessory: string;
-  };
-  onSave: (config: any) => void;
+  currentConfig: AvatarConfig | null;
+  onSave: (config: AvatarConfig) => void;
 }
 
 interface AvatarItem {
@@ -26,8 +29,14 @@ interface AvatarItem {
   points_cost: number;
 }
 
+const DEFAULT_AVATAR_CONFIG: AvatarConfig = {
+  hair: 'short',
+  color: 'brown',
+  accessory: 'none'
+};
+
 export const AvatarCustomizer = ({ open, onClose, childId, currentConfig, onSave }: AvatarCustomizerProps) => {
-  const [config, setConfig] = useState(currentConfig);
+  const [config, setConfig] = useState<AvatarConfig>(currentConfig || DEFAULT_AVATAR_CONFIG);
   const [items, setItems] = useState<AvatarItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -64,7 +73,7 @@ export const AvatarCustomizer = ({ open, onClose, childId, currentConfig, onSave
     try {
       const { error } = await supabase
         .from('children')
-        .update({ avatar_config: config })
+        .update({ avatar_config: config as unknown as Json })
         .eq('id', childId);
 
       if (error) throw error;

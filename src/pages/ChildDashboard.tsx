@@ -196,12 +196,14 @@ const ChildDashboard = () => {
 
     // Load child's custom lessons
     const { data: customLessons } = await supabase
-      .from('child_generated_lessons' as any)
+      .from('child_generated_lessons')
       .select('*')
       .eq('creator_child_id', childId)
       .order('created_at', { ascending: false });
 
-    setMyLessons(customLessons || []);
+    if (customLessons) {
+      setMyLessons(customLessons);
+    }
   };
 
   if (isValidating || loading) {
@@ -262,9 +264,9 @@ const ChildDashboard = () => {
           open={showAvatarCustomizer}
           onClose={() => setShowAvatarCustomizer(false)}
           childId={child.id}
-          currentConfig={child.avatar_config}
+          currentConfig={child.avatar_config as { hair: string; color: string; accessory: string } | null}
           onSave={(newConfig) => {
-            setChild({ ...child, avatar_config: newConfig });
+            setChild({ ...child, avatar_config: newConfig as unknown as typeof child.avatar_config });
             setShowAvatarCustomizer(false);
           }}
         />

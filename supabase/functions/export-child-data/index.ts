@@ -60,10 +60,11 @@ serve(async (req) => {
       .eq('child_id', child_id);
     exportData.learning_progress = progress || [];
 
-    // Emotion logs
+    // Emotion logs (sensitive fields are encrypted - export includes encrypted bytea columns)
+    // Note: Plaintext trigger/coping_strategy/reflection_notes have been removed for security
     const { data: emotions } = await supabaseClient
       .from('emotion_logs')
-      .select('*')
+      .select('id, child_id, emotion_type, intensity, logged_at, created_at, trigger_encrypted, coping_strategy_encrypted, reflection_notes_encrypted')
       .eq('child_id', child_id);
     exportData.emotion_logs = emotions || [];
 

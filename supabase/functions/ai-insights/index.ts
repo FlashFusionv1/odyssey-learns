@@ -77,10 +77,10 @@ serve(async (req) => {
       .order('completed_at', { ascending: false })
       .limit(10);
 
-    // Fetch emotion logs
+    // Fetch emotion logs (plaintext columns removed for security - only basic fields available)
     const { data: emotionLogs } = await supabase
       .from('emotion_logs')
-      .select('emotion_type, intensity, trigger')
+      .select('emotion_type, intensity, logged_at')
       .eq('child_id', childId)
       .order('logged_at', { ascending: false })
       .limit(10);

@@ -35,6 +35,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Real-time notifications for new messages
   - Up to 60-second video messages with optional text
 
+- **Interactive Content Hub (Feature 5 Complete)**
+  - `ActivityPlayer` component for playing interactive activities (quizzes, stories, matching)
+  - Quiz mode with immediate feedback, explanations, and scoring
+  - Story mode with page navigation and completion tracking
+  - Progress bar with step tracking
+  - Confetti celebration on completion
+  - Sound toggle for kid-friendly audio feedback
+  - Automatic completion tracking to `interactive_completions` table
+
+- **Peer-to-Peer Social Features (Feature 6 Complete)**
+  - `SharedActivitiesUI` component for collaborative learning activities
+  - `PeerConnectionsUI` component for managing friend connections
+  - Activity types: Study Groups, Projects, Challenges, Reading Clubs
+  - Connection request/accept/reject flow with toast notifications
+  - Participant tracking and max capacity enforcement
+  - Centralized exports via `src/components/social/index.ts`
+
 ---
 
 ## [1.4.1] - 2026-01-15

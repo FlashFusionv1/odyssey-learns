@@ -6,9 +6,15 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Test keys for development (Google's official test keys)
-const TEST_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
-const TEST_SECRET_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
+// Minimum score threshold (0.0-1.0, higher = more likely human)
+// 0.5 is Google's recommended threshold for most use cases
+const SCORE_THRESHOLD = 0.5;
+
+// Check if we're in development/test mode
+const isDevelopment = () => {
+  const env = Deno.env.get('ENVIRONMENT') || Deno.env.get('DENO_ENV');
+  return env === 'development' || env === 'test' || env === 'local';
+};
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -22,57 +28,57 @@ serve(async (req) => {
     // Get reCAPTCHA secret key from environment
     const RECAPTCHA_SECRET_KEY = Deno.env.get('RECAPTCHA_SECRET_KEY');
 
-    console.log('reCAPTCHA config:', {
+    console.log('reCAPTCHA verification request:', {
       action,
       hasToken: !!token,
       tokenLength: token?.length || 0,
       hasSecretKey: !!RECAPTCHA_SECRET_KEY,
-      isTestSecretKey: RECAPTCHA_SECRET_KEY === TEST_SECRET_KEY
+      environment: Deno.env.get('ENVIRONMENT') || 'production'
     });
 
-    // DEVELOPMENT MODE: Allow through if no secret key configured
+    // SECURITY: Require secret key in production
     if (!RECAPTCHA_SECRET_KEY) {
-      console.warn('⚠️ RECAPTCHA_SECRET_KEY not configured - allowing request through (dev mode)');
+      // Only allow bypass in explicit development mode
+      if (isDevelopment()) {
+        console.warn('⚠️ DEV MODE: RECAPTCHA_SECRET_KEY not configured - bypassing verification');
+        return new Response(
+          JSON.stringify({ 
+            valid: true, 
+            score: 1.0, 
+            action, 
+            reason: 'Development mode bypass',
+            devMode: true
+          }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      // SECURITY: In production, reject if no secret key
+      console.error('❌ SECURITY: RECAPTCHA_SECRET_KEY not configured in production');
       return new Response(
         JSON.stringify({ 
-          valid: true, 
-          score: 1.0, 
+          valid: false, 
+          score: 0, 
           action, 
-          reason: 'Development mode - no secret key configured',
-          devMode: true
+          error: 'Bot protection misconfigured',
+          code: 'CONFIG_ERROR'
         }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // DEVELOPMENT MODE: Auto-validate if using test secret key
-    if (RECAPTCHA_SECRET_KEY === TEST_SECRET_KEY) {
-      console.log('✅ Using reCAPTCHA test keys - auto-validating (dev mode)');
+    // SECURITY: Require token
+    if (!token || token === '' || token.length < 20) {
+      console.warn('❌ SECURITY: No valid reCAPTCHA token provided');
       return new Response(
         JSON.stringify({ 
-          valid: true, 
-          score: 1.0, 
+          valid: false, 
+          score: 0, 
           action, 
-          reason: 'Test key verification',
-          devMode: true
+          error: 'Missing or invalid reCAPTCHA token',
+          code: 'TOKEN_MISSING'
         }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // If no token provided but we have production keys, allow through with warning
-    // This handles cases where reCAPTCHA script hasn't loaded yet
-    if (!token || token === '') {
-      console.warn('⚠️ No reCAPTCHA token provided - allowing through (graceful fallback)');
-      return new Response(
-        JSON.stringify({ 
-          valid: true, 
-          score: 0.7, 
-          action, 
-          reason: 'Token not provided - graceful fallback',
-          fallback: true
-        }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -88,6 +94,20 @@ serve(async (req) => {
       }
     );
 
+    if (!verifyResponse.ok) {
+      console.error('❌ Google reCAPTCHA API error:', verifyResponse.status);
+      return new Response(
+        JSON.stringify({ 
+          valid: false, 
+          score: 0, 
+          action, 
+          error: 'Failed to verify with reCAPTCHA service',
+          code: 'API_ERROR'
+        }),
+        { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const verifyData = await verifyResponse.json();
 
     console.log('reCAPTCHA verification result:', {
@@ -98,68 +118,89 @@ serve(async (req) => {
       errorCodes: verifyData['error-codes']
     });
 
-    // Handle Google API errors gracefully
+    // SECURITY: Handle verification failures properly
     if (!verifyData.success) {
       const errorCodes = verifyData['error-codes'] || [];
+      console.warn('❌ reCAPTCHA verification failed:', errorCodes.join(', '));
       
-      // If it's a key mismatch issue, allow through with warning
-      if (errorCodes.includes('invalid-input-secret') || 
-          errorCodes.includes('invalid-input-response') ||
-          errorCodes.includes('timeout-or-duplicate')) {
-        console.warn(`⚠️ reCAPTCHA key mismatch or timeout - allowing through: ${errorCodes.join(', ')}`);
-        return new Response(
-          JSON.stringify({ 
-            valid: true, 
-            score: 0.7, 
-            action, 
-            reason: 'Key configuration issue - graceful fallback',
-            fallback: true
-          }),
-          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+      // Map error codes to user-friendly messages
+      let errorMessage = 'Bot verification failed';
+      let statusCode = 403;
+      
+      if (errorCodes.includes('timeout-or-duplicate')) {
+        errorMessage = 'Verification expired, please try again';
+        statusCode = 400;
+      } else if (errorCodes.includes('invalid-input-response')) {
+        errorMessage = 'Invalid verification token';
+        statusCode = 400;
+      } else if (errorCodes.includes('invalid-input-secret')) {
+        // Log but don't expose internal config issues
+        console.error('❌ CRITICAL: Invalid reCAPTCHA secret key configured');
+        errorMessage = 'Bot protection service error';
+        statusCode = 500;
       }
+      
+      return new Response(
+        JSON.stringify({ 
+          valid: false, 
+          score: 0, 
+          action: verifyData.action || action,
+          error: errorMessage,
+          code: errorCodes[0] || 'VERIFICATION_FAILED'
+        }),
+        { status: statusCode, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    // For reCAPTCHA v3, check the score (0.0-1.0, higher is more human-like)
-    const scoreThreshold = 0.3; // Lowered threshold for better UX
-    const score = verifyData.score ?? 0.5; // Default to middle score if undefined
-    const isValid = verifyData.success && (score >= scoreThreshold);
+    // SECURITY: Check score threshold (v3 specific)
+    const score = verifyData.score ?? 0;
+    const isValid = score >= SCORE_THRESHOLD;
 
     if (!isValid) {
-      console.warn(`reCAPTCHA validation concern: score=${score}, threshold=${scoreThreshold}`);
-      // Even if low score, allow through but log it (soft enforcement)
-      // This prevents blocking legitimate users while still detecting bots
+      console.warn(`❌ reCAPTCHA score too low: ${score} < ${SCORE_THRESHOLD} (likely bot)`);
+      return new Response(
+        JSON.stringify({
+          valid: false,
+          score: score,
+          action: verifyData.action || action,
+          error: 'Verification failed - suspicious activity detected',
+          code: 'LOW_SCORE'
+        }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
+    // SECURITY: Optionally validate action matches expected action
+    if (action && verifyData.action && verifyData.action !== action) {
+      console.warn(`⚠️ Action mismatch: expected=${action}, received=${verifyData.action}`);
+      // This is suspicious but not necessarily invalid - log and continue
+    }
+
+    // ✅ All checks passed - human verified
+    console.log(`✅ reCAPTCHA verified: score=${score}, action=${verifyData.action}`);
     return new Response(
       JSON.stringify({
-        valid: true, // Always return valid for UX (log suspicious activity instead)
+        valid: true,
         score: score,
-        action: verifyData.action,
-        reason: isValid ? 'Verified' : 'Low score but allowed',
-        suspicious: !isValid
+        action: verifyData.action || action,
+        reason: 'Verified'
       }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
+      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error: any) {
-    console.error('reCAPTCHA verification error:', error);
-    // On any error, allow through gracefully (don't block auth due to reCAPTCHA issues)
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('❌ reCAPTCHA verification error:', errorMessage);
+    
+    // SECURITY: Don't allow bypass on errors - reject the request
     return new Response(
       JSON.stringify({ 
-        valid: true, 
-        score: 0.5, 
-        reason: 'Error during verification - graceful fallback',
-        fallback: true,
-        error: error?.message || 'Unknown error'
+        valid: false, 
+        score: 0, 
+        error: 'Bot verification service unavailable',
+        code: 'SERVICE_ERROR'
       }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
+      { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });

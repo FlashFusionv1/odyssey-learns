@@ -3,6 +3,8 @@
  * Use these constants instead of hardcoding paths in components
  */
 export const ROUTE_PATHS = {
+  // Social route
+  SOCIAL: '/child/social',
   // Root
   ROOT: '/',
   INDEX: '/index',

@@ -11,6 +11,7 @@ import {
 } from "@/hooks/useInteractiveContent";
 import {
   ActivityCard,
+  ActivityPlayer,
   CalmZone,
   ContentTypeFilter,
   EmptyState,
@@ -19,8 +20,9 @@ import {
 export default function Play() {
   const { childId, isValidating } = useValidatedChild();
   const [selectedType, setSelectedType] = useState<string>("all");
+  const [activeActivity, setActiveActivity] = useState<InteractiveContent | null>(null);
 
-  const { data: content, isLoading } = useInteractiveContent({
+  const { data: content, isLoading, refetch } = useInteractiveContent({
     enabled: !!childId,
   });
 
@@ -28,8 +30,16 @@ export default function Play() {
   const filteredContent = filterContentByType(content, selectedType);
 
   const handlePlay = (item: InteractiveContent) => {
-    // TODO: Implement activity player based on content_type
-    console.log("Playing:", item);
+    setActiveActivity(item);
+  };
+
+  const handleClosePlayer = () => {
+    setActiveActivity(null);
+    refetch(); // Refresh to update play counts
+  };
+
+  const handleComplete = (score: number, pointsEarned: number) => {
+    console.log(`Activity completed - Score: ${score}%, Points: ${pointsEarned}`);
   };
 
   if (isValidating || isLoading) {
@@ -71,6 +81,16 @@ export default function Play() {
       </TabsContent>
 
       {content && <CalmZone activities={content} onPlay={handlePlay} />}
+
+      {/* Activity Player Modal */}
+      {activeActivity && childId && (
+        <ActivityPlayer
+          activity={activeActivity}
+          childId={childId}
+          onClose={handleClosePlayer}
+          onComplete={handleComplete}
+        />
+      )}
     </div>
   );
 }

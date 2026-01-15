@@ -318,6 +318,13 @@ export type Database = {
             referencedRelation: "teacher_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "assignment_submissions_graded_by_fkey"
+            columns: ["graded_by"]
+            isOneToOne: false
+            referencedRelation: "teacher_profiles_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
       avatar_items: {
@@ -887,6 +894,13 @@ export type Database = {
             referencedRelation: "teacher_profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "class_assignments_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "teacher_profiles_safe"
+            referencedColumns: ["id"]
+          },
         ]
       }
       class_roster: {
@@ -1009,6 +1023,13 @@ export type Database = {
             columns: ["teacher_id"]
             isOneToOne: false
             referencedRelation: "teacher_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classes_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "teacher_profiles_safe"
             referencedColumns: ["id"]
           },
         ]
@@ -1429,8 +1450,10 @@ export type Database = {
           coping_strategy_encrypted: string | null
           created_at: string | null
           emotion_type: string
+          emotion_type_encrypted: string | null
           id: string
           intensity: number
+          intensity_encrypted: string | null
           logged_at: string | null
           reflection_notes_encrypted: string | null
           trigger_encrypted: string | null
@@ -1440,8 +1463,10 @@ export type Database = {
           coping_strategy_encrypted?: string | null
           created_at?: string | null
           emotion_type: string
+          emotion_type_encrypted?: string | null
           id?: string
           intensity: number
+          intensity_encrypted?: string | null
           logged_at?: string | null
           reflection_notes_encrypted?: string | null
           trigger_encrypted?: string | null
@@ -1451,8 +1476,10 @@ export type Database = {
           coping_strategy_encrypted?: string | null
           created_at?: string | null
           emotion_type?: string
+          emotion_type_encrypted?: string | null
           id?: string
           intensity?: number
+          intensity_encrypted?: string | null
           logged_at?: string | null
           reflection_notes_encrypted?: string | null
           trigger_encrypted?: string | null
@@ -4673,6 +4700,57 @@ export type Database = {
         }
         Relationships: []
       }
+      emotion_logs_safe: {
+        Row: {
+          child_id: string | null
+          coping_strategy_encrypted: string | null
+          created_at: string | null
+          emotion_type_encrypted: string | null
+          id: string | null
+          intensity_encrypted: string | null
+          logged_at: string | null
+          reflection_notes_encrypted: string | null
+          trigger_encrypted: string | null
+        }
+        Insert: {
+          child_id?: string | null
+          coping_strategy_encrypted?: string | null
+          created_at?: string | null
+          emotion_type_encrypted?: string | null
+          id?: string | null
+          intensity_encrypted?: string | null
+          logged_at?: string | null
+          reflection_notes_encrypted?: string | null
+          trigger_encrypted?: string | null
+        }
+        Update: {
+          child_id?: string | null
+          coping_strategy_encrypted?: string | null
+          created_at?: string | null
+          emotion_type_encrypted?: string | null
+          id?: string | null
+          intensity_encrypted?: string | null
+          logged_at?: string | null
+          reflection_notes_encrypted?: string | null
+          trigger_encrypted?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "emotion_logs_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "emotion_logs_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lesson_review_dashboard: {
         Row: {
           assigned_at: string | null
@@ -4694,6 +4772,47 @@ export type Database = {
           weaknesses: string | null
         }
         Relationships: []
+      }
+      teacher_profiles_safe: {
+        Row: {
+          avatar_url: string | null
+          department: string | null
+          full_name: string | null
+          grade_levels: number[] | null
+          id: string | null
+          is_verified: boolean | null
+          school_id: string | null
+          subjects: string[] | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          department?: string | null
+          full_name?: string | null
+          grade_levels?: number[] | null
+          id?: string | null
+          is_verified?: boolean | null
+          school_id?: string | null
+          subjects?: string[] | null
+        }
+        Update: {
+          avatar_url?: string | null
+          department?: string | null
+          full_name?: string | null
+          grade_levels?: number[] | null
+          id?: string | null
+          is_verified?: boolean | null
+          school_id?: string | null
+          subjects?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teacher_profiles_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Functions: {
@@ -4795,6 +4914,13 @@ export type Database = {
               reason_explanation: string
             }[]
           }
+      get_emotion_summary_for_parent: {
+        Args: { p_child_id: string }
+        Returns: {
+          log_count: number
+          log_date: string
+        }[]
+      }
       get_lesson_performance_overview: {
         Args: { p_lesson_id: string }
         Returns: {

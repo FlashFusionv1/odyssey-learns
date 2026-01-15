@@ -15,6 +15,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.4.0] - 2026-01-15
+
+### Added
+- **AI-Powered Adaptive Learning Path (Phase 1-3 Complete)**
+  - `useLearningProfile` hook for computing learning profiles from activity data
+  - `useRecommendations` hook for AI-generated lesson recommendations
+  - `RecommendedLessons` component with personalized lesson suggestions
+  - `LearningProfileCard` component showing strengths, weaknesses, and trends
+  - `analyze-learning-profile` Edge Function for AI profile analysis
+  - `generate-recommendations` Edge Function for intelligent lesson recommendations
+  - Database tables: `learning_profiles`, `learning_patterns`, `skill_mastery`, `lesson_recommendations`
+  
+- **Dashboard Integrations**
+  - ChildDashboard: Added "Recommended For You" section with AI-powered suggestions
+  - ChildDashboard: Added compact Learning Profile card
+  - ParentDashboard: Added Learning Profiles for all children
+  - ParentDashboard: Added Personalized Recommendations per child
+  - New feature tour step for recommendations
+
+- **Types & Helpers**
+  - Comprehensive `src/types/adaptive.ts` with 20+ types for adaptive learning
+  - Subject labels, difficulty labels, recommendation reason labels
+  - Type guards for runtime validation
+
+### Changed
+- Feature tour now highlights AI recommendations as first step
+- Parent dashboard reorganized with Learning Profiles section
+
+---
+
 ## [1.3.0] - 2026-01-15
 
 ### Added

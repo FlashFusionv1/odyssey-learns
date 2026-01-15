@@ -1,5 +1,45 @@
 # Changelog
 
+## [1.6.0] - 2026-01-15
+
+### Added - Major Feature Integration
+- **Play Zone ActivityPlayer Integration** - Full modal activity player with:
+  - Quiz/trivia support with animated feedback
+  - Story mode with page navigation
+  - Score tracking and completion celebration
+  - Confetti animation on completion
+  - Points earned display
+  
+- **Social Page Enhanced** - Complete `/child/social` route with:
+  - Stats cards (friends, activities, points, grade)
+  - Friends tab with PeerConnectionsUI
+  - Activities tab with SharedActivitiesUI
+  - Real-time friend/activity counts
+  
+- **Interactive Content Seeding** - 9 sample activities:
+  - Math games (Addition Adventure, Multiplication Challenge)
+  - Science puzzles (Animal Kingdom)
+  - Reading adventures (Friendly Dragon, Ocean Explorer)
+  - Emotional Intelligence roleplay (Feelings Explorer)
+  - Social Studies roleplay (Community Helpers)
+  - Mindfulness self-soothing (Breathing Bubbles, Starry Night)
+
+- **AI Tutor Chatbot Foundation** - Q1 2026 roadmap feature:
+  - `AITutorChat` component with conversational UI
+  - `AITutorButton` floating button with tooltip
+  - Quick prompts (Help, Hint, Explain)
+  - Contextual response system
+  - Minimize/maximize chat panel
+
+- **E2E Test Coverage** - New `play-zone.spec.ts`:
+  - Play Zone content loading and filtering
+  - Activity player open/close/progress
+  - Social page tabs and stats
+  - AI Tutor interaction tests
+  - Multiplayer games page tests
+
+
+
 All notable changes to Inner Odyssey will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),

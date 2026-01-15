@@ -48,22 +48,24 @@ export const EmotionCheckIn = ({ childId, gradeLevel, onComplete }: EmotionCheck
 
     setSaving(true);
     try {
-      // Encrypt sensitive fields before storing
+      // Encrypt ALL sensitive fields including emotion_type and intensity
       const encryptedData = await encryptEmotionData(
+        selectedEmotion,
+        intensity,
         trigger || null,
         null, // coping_strategy (not collected in this component)
         reflection || null
       );
 
-      // Insert with ONLY encrypted fields - plaintext columns have been dropped
+      // Insert with encrypted fields AND minimal plaintext for RLS/indexing
+      // emotion_type is kept as plaintext for querying but encrypted copy is authoritative
       const { error } = await supabase.from('emotion_logs').insert({
         child_id: childId,
-        emotion_type: selectedEmotion,
-        intensity,
-        // Encrypted sensitive data only
+        emotion_type: selectedEmotion, // Kept for RLS/query compatibility
+        intensity,                      // Kept for RLS/query compatibility
+        // All encrypted fields for sensitive data protection
         ...encryptedData,
       });
-
       if (error) throw error;
 
       toast({

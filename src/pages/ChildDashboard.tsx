@@ -21,6 +21,8 @@ import { ShareLessonModal } from "@/components/learning/ShareLessonModal";
 import { LessonCard, LessonCardCompact } from "@/components/learning/LessonCard";
 import { StatCard } from "@/components/ui/stat-card";
 import { ChildOnboardingTutorial, HelpButton, FeatureSpotlight } from "@/components/onboarding";
+import { RecommendedLessons } from "@/components/learning/RecommendedLessons";
+import { LearningProfileCard } from "@/components/progress/LearningProfileCard";
 
 // Type imports - using database row types for Supabase compatibility
 import type { 
@@ -37,6 +39,12 @@ import type {
  * Highlights key features after onboarding
  */
 const CHILD_FEATURE_TOUR_STEPS = [
+  {
+    targetSelector: '[data-tour="recommendations"]',
+    title: 'Recommended For You',
+    description: 'AI-powered lesson suggestions based on your learning style!',
+    placement: 'bottom' as const,
+  },
   {
     targetSelector: '[data-tour="daily-quest"]',
     title: 'Daily Quest',
@@ -326,6 +334,16 @@ const ChildDashboard = () => {
           </Button>
         </div>
 
+        {/* AI-Powered Recommendations */}
+        {child && (
+          <div data-tour="recommendations">
+            <RecommendedLessons 
+              childId={child.id} 
+              gradeLevel={child.grade_level}
+            />
+          </div>
+        )}
+
         {/* Daily Quest - Age-Adaptive UI */}
         <div data-tour="daily-quest">
           <DailyQuest />
@@ -412,6 +430,17 @@ const ChildDashboard = () => {
         <div data-tour="badges">
           <BadgeShowcase childId={childId} compact />
         </div>
+
+        {/* Learning Profile Card - Compact */}
+        {child && (
+          <div data-tour="learning-profile">
+            <LearningProfileCard 
+              childId={child.id} 
+              childName={child.name}
+              compact
+            />
+          </div>
+        )}
 
         {/* Leaderboard - Age Adaptive */}
         {child && (

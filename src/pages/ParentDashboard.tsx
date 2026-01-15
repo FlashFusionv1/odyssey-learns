@@ -24,6 +24,8 @@ import { EngagementScoreCard } from "@/components/parent/EngagementScoreCard";
 import { PeerConnectionApprovals } from "@/components/parent/PeerConnectionApprovals";
 import { HelpButton, FeatureSpotlight } from "@/components/onboarding";
 import { logEmotionLogView } from "@/lib/auditLogger";
+import { LearningProfileCard } from "@/components/progress/LearningProfileCard";
+import { RecommendedLessons } from "@/components/learning/RecommendedLessons";
 
 // Type imports - using database row types for Supabase compatibility
 import type { 
@@ -348,10 +350,49 @@ const ParentDashboard = () => {
                 ))}
               </div>
 
-              {/* AI Insights for First Child (expandable to all children later) */}
+              {/* Learning Profiles for All Children */}
               {children.length > 0 && (
                 <div>
-                  <h2 className="text-2xl font-bold mb-4">AI-Powered Insights</h2>
+                  <h2 className="text-2xl font-bold mb-4">Learning Profiles</h2>
+                  <p className="text-muted-foreground mb-4">
+                    AI-analyzed learning patterns, strengths, and areas for growth
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {children.map((child) => (
+                      <LearningProfileCard
+                        key={child.id}
+                        childId={child.id}
+                        childName={child.name}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* AI-Powered Recommendations for Each Child */}
+              {children.length > 0 && (
+                <div className="mt-8">
+                  <h2 className="text-2xl font-bold mb-4">Personalized Recommendations</h2>
+                  <p className="text-muted-foreground mb-4">
+                    AI-suggested lessons tailored to each child's learning profile
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {children.map((child) => (
+                      <RecommendedLessons
+                        key={child.id}
+                        childId={child.id}
+                        gradeLevel={child.grade_level}
+                        compact
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* AI Insights for First Child (expandable to all children later) */}
+              {children.length > 0 && (
+                <div className="mt-8">
+                  <h2 className="text-2xl font-bold mb-4">Additional AI Insights</h2>
                   <AIInsights childId={children[0].id} />
                 </div>
               )}

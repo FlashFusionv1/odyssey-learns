@@ -4387,6 +4387,73 @@ export type Database = {
           },
         ]
       }
+      video_messages: {
+        Row: {
+          child_id: string
+          created_at: string | null
+          duration_seconds: number | null
+          id: string
+          message_text: string | null
+          parent_id: string
+          read_at: string | null
+          status: string | null
+          thumbnail_url: string | null
+          title: string | null
+          updated_at: string | null
+          video_url: string
+        }
+        Insert: {
+          child_id: string
+          created_at?: string | null
+          duration_seconds?: number | null
+          id?: string
+          message_text?: string | null
+          parent_id: string
+          read_at?: string | null
+          status?: string | null
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string | null
+          video_url: string
+        }
+        Update: {
+          child_id?: string
+          created_at?: string | null
+          duration_seconds?: number | null
+          id?: string
+          message_text?: string | null
+          parent_id?: string
+          read_at?: string | null
+          status?: string | null
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string | null
+          video_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_messages_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_messages_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "video_messages_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       video_quiz_responses: {
         Row: {
           answered_at: string | null

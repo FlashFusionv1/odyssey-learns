@@ -1,10 +1,10 @@
-# Next Feature Plan: AI-Powered Adaptive Learning Path
+# Next Feature Plan: Voice-Based Lesson Narration
 
-**Date:** January 10, 2026  
+**Date:** January 15, 2026  
 **Priority:** High  
-**Estimated Effort:** 2-3 weeks  
-**Status:** ✅ COMPLETE (Phases 1-3)
-**Completed:** January 15, 2026
+**Estimated Effort:** 1-2 weeks  
+**Status:** 🔄 IN PROGRESS
+**Previous Feature:** Multiplayer Learning Games ✅ COMPLETE (Jan 15, 2026)
 
 ---
 

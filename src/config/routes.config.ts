@@ -39,6 +39,7 @@ const Rewards = createLazyRoute(() => import('@/pages/Rewards'));
 const LearningProgress = createLazyRoute(() => import('@/pages/LearningProgress'));
 const KidsRoom = createLazyRoute(() => import('@/pages/KidsRoom'));
 const Play = createLazyRoute(() => import('@/pages/Play'));
+const MultiplayerGames = createLazyRoute(() => import('@/pages/MultiplayerGames'));
 
 // Admin pages
 const BetaAnalytics = createLazyRoute(() => import('@/pages/BetaAnalytics'));
@@ -363,6 +364,16 @@ export const childRoutes: RouteConfig[] = [
     roles: ['child'],
     meta: {
       title: 'Play Zone - Inner Odyssey',
+    },
+  },
+  {
+    path: ROUTE_PATHS.CHILD.MULTIPLAYER_GAMES,
+    component: MultiplayerGames,
+    requireAuth: true,
+    roles: ['child'],
+    meta: {
+      title: 'Multiplayer Games - Inner Odyssey',
+      description: 'Play educational games with friends',
     },
   },
 ];

@@ -15,7 +15,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.4.0] - 2026-01-15
+## [1.5.0] - 2026-01-15
+
+### Added
+- **Multiplayer Learning Games (Feature 2 Complete)**
+  - Real-time multiplayer game infrastructure with Supabase Realtime
+  - 5 game types: Math Race, Spelling Bee, Science Quiz, Story Builder, Geography Challenge
+  - `MultiplayerGame` class for game state management and realtime sync
+  - `useMultiplayerGame` hook for React integration
+  - Game components: `GameLobby`, `GameQuestion`, `GameResults`, `GameSelector`
+  - Database tables: `game_rooms`, `game_players`, `game_questions`, `game_answers`, `game_results`
+
+- **Parent-Child Video Messaging (Feature 4 Complete)**
+  - `VideoMessageService` class for recording, upload, and playback
+  - `useVideoMessages` and `useVideoRecorder` hooks
+  - `VideoRecorder` component for parents to record messages
+  - `VideoMessageInbox` component for children to view messages
+  - Database table: `video_messages` with storage bucket
+  - Real-time notifications for new messages
+  - Up to 60-second video messages with optional text
+
+---
+
+## [1.4.1] - 2026-01-15
+
+### Added
+- **Voice-Based Lesson Narration (Feature 3 Complete)**
+  - `LessonNarrator` class using Web Speech API for browser-native TTS
+  - `useNarration` and `useAvailableVoices` hooks for React integration
+  - `LessonAudioPlayer` component with full playback controls
+  - Voice selection with per-child preferences
+  - Speed control (0.5x - 2x) and volume adjustment
+  - Text chunking for smooth narration of long lessons
+  - Compact mode for mobile/space-constrained views
+  - Auto-save preferences to localStorage
+  - Integration in LessonPlayer page
+
+---
 
 ### Added
 - **AI-Powered Adaptive Learning Path (Phase 1-3 Complete)**

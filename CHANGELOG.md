@@ -15,6 +15,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.0] - 2026-01-15
+
+### Added
+- **Server-Side SVG Validation**
+  - Database CHECK constraints for room_decorations table
+  - Blocks script tags, iframe tags, event handlers, and dangerous protocols
+  - Defense-in-depth for XSS prevention alongside DOMPurify
+
+- **Client-Side Rate Limiting**
+  - useValidatedChild hook now includes rate limiting (5s cooldown, 12 max/min)
+  - Prevents query spam from localStorage manipulation attacks
+  - Cached child validation to reduce database queries
+
+### Changed
+- **Performance Optimizations**
+  - LessonCard and LessonCardCompact now use React.memo with custom comparators
+  - Lessons page uses useMemo for filtered lessons and subjects list
+  - Added useCallback for stable navigation handlers
+  - Reduced unnecessary re-renders in lesson grids
+
+### Security
+- verify-recaptcha Edge Function now implements fail-closed behavior
+  - Returns valid=false for all error cases in production
+  - Development bypass only with explicit ENVIRONMENT=development
+  - Proper score threshold (0.5) enforcement
+- All security findings from audit resolved or documented
+
+---
+
 ## [1.2.0] - 2025-12-30
 
 ### Added

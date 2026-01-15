@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -22,7 +22,6 @@ const Lessons = () => {
   const { childId, isValidating } = useValidatedChild();
   const [child, setChild] = useState<any>(null);
   const [lessons, setLessons] = useState<any[]>([]);
-  const [filteredLessons, setFilteredLessons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [subjectFilter, setSubjectFilter] = useState("all");
@@ -34,9 +33,26 @@ const Lessons = () => {
     }
   }, [childId, isValidating]);
 
-  useEffect(() => {
-    filterLessons();
-  }, [searchTerm, subjectFilter, lessons]);
+  // Memoized filtered lessons - recalculates only when dependencies change
+  const filteredLessons = useMemo(() => {
+    let filtered = lessons;
+
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(lesson =>
+        lesson.title.toLowerCase().includes(searchLower) ||
+        lesson.description?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    if (subjectFilter !== "all") {
+      filtered = filtered.filter(lesson => 
+        lesson.subject.toLowerCase() === subjectFilter.toLowerCase()
+      );
+    }
+
+    return filtered;
+  }, [lessons, searchTerm, subjectFilter]);
 
   const loadLessons = async () => {
     if (!childId) return;
@@ -56,30 +72,21 @@ const Lessons = () => {
 
     setChild(childData);
     setLessons(lessonsData || []);
-    setFilteredLessons(lessonsData || []);
     setLoading(false);
   };
 
-  const filterLessons = () => {
-    let filtered = lessons;
+  // Memoized subjects list - recalculates only when lessons change
+  const subjects = useMemo(() => 
+    Array.from(new Set(lessons.map(l => l.subject))),
+    [lessons]
+  );
 
-    if (searchTerm) {
-      filtered = filtered.filter(lesson =>
-        lesson.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lesson.description?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+  // Memoized navigate callback for lesson cards
+  const handleLessonClick = useCallback((lessonId: string) => {
+    navigate(`/lesson/${lessonId}`);
+  }, [navigate]);
 
-    if (subjectFilter !== "all") {
-      filtered = filtered.filter(lesson => 
-        lesson.subject.toLowerCase() === subjectFilter.toLowerCase()
-      );
-    }
-
-    setFilteredLessons(filtered);
-  };
-
-  const subjects = Array.from(new Set(lessons.map(l => l.subject)));
+  
 
   if (isValidating || loading) {
     return (
@@ -175,7 +182,7 @@ const Lessons = () => {
               <LessonCard
                 key={lesson.id}
                 lesson={lesson}
-                onClick={() => navigate(`/lesson/${lesson.id}`)}
+                onClick={() => handleLessonClick(lesson.id)}
               />
             ))}
           </div>

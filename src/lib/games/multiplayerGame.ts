@@ -5,6 +5,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { RealtimeChannel } from '@supabase/supabase-js';
+import type { Json } from '@/integrations/supabase/types';
 import type {
   GameRoom,
   GamePlayer,
@@ -39,7 +40,7 @@ export class MultiplayerGame {
         creator_id: creatorId,
         grade_level: gradeLevel,
         difficulty,
-        settings: settings as unknown,
+        settings: settings as Json,
         status: 'waiting',
       }])
       .select()

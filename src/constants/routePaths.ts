@@ -51,6 +51,7 @@ export const ROUTE_PATHS = {
     VIDEO_PLAYER: '/video/:id',
     KIDS_ROOM: '/my-room',
     INTERACTIVE: '/play',
+    MULTIPLAYER_GAMES: '/games',
   },
   
   // Admin routes

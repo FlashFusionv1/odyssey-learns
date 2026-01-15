@@ -1546,6 +1546,297 @@ export type Database = {
         }
         Relationships: []
       }
+      game_answers: {
+        Row: {
+          answer_text: string
+          answered_at: string | null
+          id: string
+          is_correct: boolean
+          player_id: string | null
+          points_earned: number | null
+          question_id: string | null
+          room_id: string | null
+          time_taken_ms: number | null
+        }
+        Insert: {
+          answer_text: string
+          answered_at?: string | null
+          id?: string
+          is_correct: boolean
+          player_id?: string | null
+          points_earned?: number | null
+          question_id?: string | null
+          room_id?: string | null
+          time_taken_ms?: number | null
+        }
+        Update: {
+          answer_text?: string
+          answered_at?: string | null
+          id?: string
+          is_correct?: boolean
+          player_id?: string | null
+          points_earned?: number | null
+          question_id?: string | null
+          room_id?: string | null
+          time_taken_ms?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_answers_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_answers_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "game_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_answers_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "game_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      game_players: {
+        Row: {
+          correct_answers: number | null
+          finished_at: string | null
+          id: string
+          joined_at: string | null
+          player_id: string | null
+          rank: number | null
+          room_id: string | null
+          score: number | null
+          status: string | null
+          total_answers: number | null
+        }
+        Insert: {
+          correct_answers?: number | null
+          finished_at?: string | null
+          id?: string
+          joined_at?: string | null
+          player_id?: string | null
+          rank?: number | null
+          room_id?: string | null
+          score?: number | null
+          status?: string | null
+          total_answers?: number | null
+        }
+        Update: {
+          correct_answers?: number | null
+          finished_at?: string | null
+          id?: string
+          joined_at?: string | null
+          player_id?: string | null
+          rank?: number | null
+          room_id?: string | null
+          score?: number | null
+          status?: string | null
+          total_answers?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_players_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_players_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_players_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "game_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      game_questions: {
+        Row: {
+          correct_answer: string
+          created_at: string | null
+          id: string
+          options: Json | null
+          points: number | null
+          question_number: number
+          question_text: string
+          question_type: string | null
+          room_id: string | null
+          subject: string | null
+          time_limit_seconds: number | null
+        }
+        Insert: {
+          correct_answer: string
+          created_at?: string | null
+          id?: string
+          options?: Json | null
+          points?: number | null
+          question_number: number
+          question_text: string
+          question_type?: string | null
+          room_id?: string | null
+          subject?: string | null
+          time_limit_seconds?: number | null
+        }
+        Update: {
+          correct_answer?: string
+          created_at?: string | null
+          id?: string
+          options?: Json | null
+          points?: number | null
+          question_number?: number
+          question_text?: string
+          question_type?: string | null
+          room_id?: string | null
+          subject?: string | null
+          time_limit_seconds?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_questions_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "game_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      game_results: {
+        Row: {
+          created_at: string | null
+          duration_seconds: number | null
+          final_scores: Json
+          id: string
+          room_id: string | null
+          total_questions: number | null
+          winner_id: string | null
+          xp_awarded: Json | null
+        }
+        Insert: {
+          created_at?: string | null
+          duration_seconds?: number | null
+          final_scores?: Json
+          id?: string
+          room_id?: string | null
+          total_questions?: number | null
+          winner_id?: string | null
+          xp_awarded?: Json | null
+        }
+        Update: {
+          created_at?: string | null
+          duration_seconds?: number | null
+          final_scores?: Json
+          id?: string
+          room_id?: string | null
+          total_questions?: number | null
+          winner_id?: string | null
+          xp_awarded?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_results_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "game_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_results_winner_id_fkey"
+            columns: ["winner_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_results_winner_id_fkey"
+            columns: ["winner_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      game_rooms: {
+        Row: {
+          created_at: string | null
+          creator_id: string | null
+          difficulty: string | null
+          ended_at: string | null
+          game_type: string
+          grade_level: number
+          id: string
+          max_players: number | null
+          room_code: string | null
+          settings: Json | null
+          started_at: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          creator_id?: string | null
+          difficulty?: string | null
+          ended_at?: string | null
+          game_type: string
+          grade_level: number
+          id?: string
+          max_players?: number | null
+          room_code?: string | null
+          settings?: Json | null
+          started_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          creator_id?: string | null
+          difficulty?: string | null
+          ended_at?: string | null
+          game_type?: string
+          grade_level?: number
+          id?: string
+          max_players?: number | null
+          room_code?: string | null
+          settings?: Json | null
+          started_at?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_rooms_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_rooms_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       idempotency_cache: {
         Row: {
           created_at: string | null
@@ -4407,6 +4698,7 @@ export type Database = {
         Returns: string
       }
       generate_class_code: { Args: never; Returns: string }
+      generate_room_code: { Args: never; Returns: string }
       get_active_recommendations:
         | {
             Args: { p_child_id: string }

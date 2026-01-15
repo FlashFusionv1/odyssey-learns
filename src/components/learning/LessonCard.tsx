@@ -1,3 +1,4 @@
+import { memo, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { SubjectBadge } from "@/components/ui/subject-badge";
 import { StatusIndicator } from "@/components/ui/status-badge";
@@ -5,17 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Clock, Star, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+interface LessonData {
+  id: string;
+  title: string;
+  description?: string;
+  subject: string;
+  estimated_minutes?: number;
+  points_value?: number;
+  share_status?: string;
+  times_used?: number;
+}
+
 interface LessonCardProps {
-  lesson: {
-    id: string;
-    title: string;
-    description?: string;
-    subject: string;
-    estimated_minutes?: number;
-    points_value?: number;
-    share_status?: string;
-    times_used?: number;
-  };
+  lesson: LessonData;
   onClick?: () => void;
   onShare?: () => void;
   showStats?: boolean;
@@ -24,14 +27,20 @@ interface LessonCardProps {
 
 /**
  * Reusable lesson card component with consistent styling
+ * Memoized to prevent unnecessary re-renders in large lists
  */
-export const LessonCard = ({
+export const LessonCard = memo(function LessonCard({
   lesson,
   onClick,
   onShare,
   showStats = true,
   className,
-}: LessonCardProps) => {
+}: LessonCardProps) {
+  const handleShareClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    onShare?.();
+  }, [onShare]);
+
   return (
     <Card
       className={cn(
@@ -48,10 +57,7 @@ export const LessonCard = ({
               <Button
                 size="sm"
                 variant="ghost"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onShare();
-                }}
+                onClick={handleShareClick}
               >
                 <Share2 className="w-4 h-4 mr-1" />
                 Share
@@ -98,18 +104,34 @@ export const LessonCard = ({
       )}
     </Card>
   );
-};
+}, (prevProps, nextProps) => {
+  // Custom comparison for better memoization
+  return (
+    prevProps.lesson.id === nextProps.lesson.id &&
+    prevProps.lesson.title === nextProps.lesson.title &&
+    prevProps.lesson.share_status === nextProps.lesson.share_status &&
+    prevProps.lesson.times_used === nextProps.lesson.times_used &&
+    prevProps.showStats === nextProps.showStats &&
+    prevProps.className === nextProps.className
+  );
+});
 
 /**
  * Compact version for My Lessons list
+ * Memoized for performance in scrolling lists
  */
-export const LessonCardCompact = ({
+export const LessonCardCompact = memo(function LessonCardCompact({
   lesson,
   onClick,
   onShare,
-}: Omit<LessonCardProps, "showStats" | "className">) => {
+}: Omit<LessonCardProps, "showStats" | "className">) {
+  const handleShareClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    onShare?.();
+  }, [onShare]);
+
   return (
-    <Card className="p-4" onClick={onClick}>
+    <Card className="p-4 cursor-pointer hover:shadow-sm" onClick={onClick}>
       <div className="flex items-start justify-between gap-2 mb-2">
         <SubjectBadge subject={lesson.subject as any} />
         {lesson.share_status && (
@@ -118,10 +140,7 @@ export const LessonCardCompact = ({
               <Button
                 size="sm"
                 variant="ghost"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onShare();
-                }}
+                onClick={handleShareClick}
               >
                 <Share2 className="w-4 h-4 mr-1" />
                 Share
@@ -149,4 +168,14 @@ export const LessonCardCompact = ({
       )}
     </Card>
   );
-};
+}, (prevProps, nextProps) => {
+  return (
+    prevProps.lesson.id === nextProps.lesson.id &&
+    prevProps.lesson.title === nextProps.lesson.title &&
+    prevProps.lesson.share_status === nextProps.lesson.share_status &&
+    prevProps.lesson.times_used === nextProps.lesson.times_used
+  );
+});
+
+// Re-export for backwards compatibility
+export type { LessonData, LessonCardProps };

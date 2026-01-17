@@ -226,56 +226,30 @@ export class MultiplayerGame {
       return { isCorrect: false, pointsEarned: 0 };
     }
 
-    // Get the question to check answer
-    const { data: question } = await supabase
-      .from('game_questions')
-      .select('correct_answer, points, time_limit_seconds')
-      .eq('id', questionId)
-      .single();
+    // Use server-side verification RPC - never expose correct_answer to client
+    // This prevents cheating by inspecting network requests or database directly
+    // @ts-expect-error - verify_game_answer RPC added via migration, types will regenerate
+    const { data: result, error } = await supabase.rpc('verify_game_answer', {
+      p_question_id: questionId,
+      p_answer: answer,
+      p_player_id: this.playerId,
+      p_room_id: this.roomId,
+      p_time_taken_ms: timeTakenMs,
+    }) as { data: { is_correct?: boolean; points_earned?: number; error?: string } | null; error: unknown };
 
-    if (!question) {
+    if (error) {
+      console.error('Error verifying answer:', error);
       return { isCorrect: false, pointsEarned: 0 };
     }
 
-    const isCorrect = answer.toLowerCase().trim() === question.correct_answer.toLowerCase().trim();
-    
-    // Calculate points with time bonus
-    let pointsEarned = 0;
-    if (isCorrect) {
-      const timeBonus = Math.max(0, 1 - timeTakenMs / (question.time_limit_seconds * 1000));
-      pointsEarned = Math.round(question.points * (1 + timeBonus * 0.5));
+    // Handle error response from RPC
+    if (result?.error) {
+      console.error('Answer verification failed:', result.error);
+      return { isCorrect: false, pointsEarned: 0 };
     }
 
-    // Insert answer
-    await supabase.from('game_answers').insert({
-      room_id: this.roomId,
-      question_id: questionId,
-      player_id: this.playerId,
-      answer_text: answer,
-      is_correct: isCorrect,
-      time_taken_ms: timeTakenMs,
-      points_earned: pointsEarned,
-    });
-
-    // Update player score directly
-    const { data: currentPlayer } = await supabase
-      .from('game_players')
-      .select('score, correct_answers, total_answers')
-      .eq('room_id', this.roomId)
-      .eq('player_id', this.playerId)
-      .single();
-
-    if (currentPlayer) {
-      await supabase
-        .from('game_players')
-        .update({
-          score: (currentPlayer.score || 0) + pointsEarned,
-          correct_answers: (currentPlayer.correct_answers || 0) + (isCorrect ? 1 : 0),
-          total_answers: (currentPlayer.total_answers || 0) + 1,
-        })
-        .eq('room_id', this.roomId)
-        .eq('player_id', this.playerId);
-    }
+    const isCorrect = result?.is_correct ?? false;
+    const pointsEarned = result?.points_earned ?? 0;
 
     // Broadcast answer
     this.channel?.send({

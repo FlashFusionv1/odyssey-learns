@@ -124,24 +124,27 @@ export function useMultiplayerGame(childId: string): UseMultiplayerGameReturn {
         );
       }
 
-      // Fetch questions if game in progress
+      // Fetch questions if game in progress - use safe view that excludes correct_answer
       if (roomData.status === 'in_progress') {
-        const { data: questionsData } = await supabase
-          .from('game_questions')
+        // Use game_questions_safe view to prevent cheating (excludes correct_answer)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: questionsData } = await (supabase as any)
+          .from('game_questions_safe')
           .select('*')
           .eq('room_id', roomId)
           .order('question_number');
 
         if (questionsData) {
           setQuestions(
-            questionsData.map(q => ({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            questionsData.map((q: any) => ({
               id: q.id,
               roomId: q.room_id,
               questionNumber: q.question_number,
               questionText: q.question_text,
               questionType: q.question_type as 'multiple_choice' | 'true_false' | 'fill_blank' | 'spelling',
               options: q.options as string[] | null,
-              correctAnswer: q.correct_answer,
+              correctAnswer: '', // Server-side verification only - never expose to client
               points: q.points,
               timeLimitSeconds: q.time_limit_seconds,
               subject: q.subject,

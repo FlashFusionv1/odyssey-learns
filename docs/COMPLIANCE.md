@@ -1,7 +1,21 @@
 # Compliance Documentation
 
 ## Overview
-Inner Odyssey is committed to protecting children's privacy and maintaining compliance with relevant regulations. This document outlines our approach to COPPA, FERPA, and GDPR compliance.
+Inner Odyssey is committed to protecting children's privacy and maintaining compliance with relevant regulations. This document outlines our approach to COPPA, FERPA, and GDPR compliance, including 2025 FTC updates.
+
+**Last Updated**: January 2026  
+**Compliance Review Schedule**: Quarterly
+
+---
+
+## Table of Contents
+1. [COPPA Compliance](#coppa-compliance-childrens-online-privacy-protection-act)
+2. [COPPA 2025 Updates](#coppa-2025-ftc-rule-updates)
+3. [Emotion Data Protection](#emotion-data-protection)
+4. [Teacher PII Protection](#teacher-pii-protection)
+5. [Data Retention Policies](#data-retention-policies)
+6. [FERPA Compliance](#ferpa-compliance)
+7. [GDPR Considerations](#gdpr-considerations)
 
 ---
 
@@ -19,6 +33,7 @@ Inner Odyssey serves children under 13 years old, making COPPA compliance mandat
   - Parent email verification at signup
   - Parent must explicitly create child profiles (no self-signup for children)
   - Parent controls all settings and data access
+  - **NEW (2025)**: Opt-in consent for each data collection category
 
 #### 2. Privacy Policy ✅
 - **Requirement**: Clear privacy policy explaining data collection practices
@@ -54,7 +69,7 @@ Inner Odyssey serves children under 13 years old, making COPPA compliance mandat
   - Encrypted data transmission (TLS 1.3)
   - Row-level security (RLS) policies on all tables
   - Parent-only access to child data via authenticated sessions
-  - Emotion log data encrypted at rest
+  - Emotion log data encrypted at rest via database trigger
   - Regular security audits and vulnerability scanning
 
 #### 6. Data Retention ✅
@@ -63,6 +78,173 @@ Inner Odyssey serves children under 13 years old, making COPPA compliance mandat
   - Parents can request deletion at any time
   - Automatic cleanup of old error logs (90-day retention)
   - Session data cleaned after inactivity
+
+---
+
+## COPPA 2025 FTC Rule Updates
+
+The FTC updated COPPA rules effective 2025, requiring enhanced protections. Here's our compliance status:
+
+### New Requirements & Implementation
+
+#### 1. Opt-In Consent (Separate Consent) ✅
+- **Requirement**: Separate opt-in consent required for each category of data collection
+- **Implementation**:
+  - `ConsentModal` component displays consent options during child profile creation
+  - Parent must explicitly consent to:
+    - Learning progress tracking
+    - Emotional wellness logging
+    - Social features (peer connections)
+    - AI-powered recommendations
+  - Consent preferences stored in `children.consent_preferences` JSONB field
+  - Consent can be withdrawn at any time via parent dashboard
+
+#### 2. Right to Delete (Enhanced) ✅
+- **Requirement**: Parents can delete specific data categories, not just entire account
+- **Implementation**:
+  - `DeleteChildAccount` component with granular deletion options
+  - Delete options:
+    - All emotion logs (via `delete-child-account` edge function)
+    - Progress history (preserves account)
+    - Social connections only
+    - Complete account deletion
+  - Deletion audit logged to `data_export_log` table
+
+#### 3. Third-Party Data Sharing Ban ✅
+- **Requirement**: Operators cannot share children's data with third parties for advertising
+- **Implementation**:
+  - NO advertising to children
+  - AI lesson generation uses only lesson prompts (no child PII sent)
+  - Third-party services (Supabase) bound by DPA with educational use restrictions
+
+#### 4. Data Retention Limits ✅
+- **Requirement**: Cannot retain data longer than necessary
+- **Implementation**: See [Data Retention Policies](#data-retention-policies) section
+
+---
+
+## Emotion Data Protection
+
+### Overview
+Emotional wellness data is highly sensitive. We implement defense-in-depth protection.
+
+### Technical Implementation
+
+#### Database Trigger: `enforce_emotion_masking`
+```sql
+-- Automatically masks plaintext emotion data on INSERT/UPDATE
+CREATE OR REPLACE FUNCTION public.enforce_emotion_masking()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- If plaintext emotion_type is provided, encrypt it
+  IF NEW.emotion_type IS NOT NULL AND NEW.emotion_type_encrypted IS NULL THEN
+    NEW.emotion_type_encrypted := encode(
+      convert_to(NEW.emotion_type, 'UTF8'), 
+      'base64'
+    );
+    NEW.emotion_type := '[MASKED]'; -- Mask plaintext field
+  END IF;
+  
+  -- Same for intensity and other sensitive fields
+  IF NEW.intensity IS NOT NULL AND NEW.intensity_encrypted IS NULL THEN
+    NEW.intensity_encrypted := encode(
+      convert_to(NEW.intensity::text, 'UTF8'), 
+      'base64'
+    );
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+#### Access Controls
+- **RLS Policy**: Only parent of child can access emotion logs
+- **View Restriction**: No admin bulk access to raw emotion data
+- **Export Encryption**: `export-child-data` edge function encrypts emotion fields in export
+- **Audit Logging**: All emotion log access recorded in `data_access_audit`
+
+#### Client-Side Encryption
+- `src/lib/emotionEncryption.ts` provides additional client-side encryption
+- Uses Web Crypto API for AES-256-GCM encryption
+- Encryption key derived from parent's session
+
+---
+
+## Teacher PII Protection
+
+### Overview
+Teacher personally identifiable information (email, employee IDs) is protected via database views.
+
+### Technical Implementation
+
+#### Safe View: `teacher_profiles_safe`
+```sql
+-- View that excludes PII from teacher profiles
+CREATE VIEW public.teacher_profiles_safe AS
+SELECT 
+  id,
+  display_name,
+  school_id,
+  grade_levels_taught,
+  subjects_taught,
+  is_verified,
+  created_at
+  -- Excluded: email, employee_id, personal_phone
+FROM public.teacher_profiles;
+```
+
+#### Access Patterns
+- **Frontend queries**: Always use `teacher_profiles_safe` view
+- **Admin access**: Full `teacher_profiles` table via admin-only RLS policy
+- **API responses**: Edge functions strip PII before returning
+
+#### RLS Policies
+```sql
+-- Teachers can only view their own full profile
+CREATE POLICY teacher_own_profile ON teacher_profiles
+FOR SELECT USING (user_id = auth.uid());
+
+-- Students/Parents see only safe view (via public grant on view)
+GRANT SELECT ON teacher_profiles_safe TO authenticated;
+```
+
+---
+
+## Data Retention Policies
+
+### Retention Schedule
+
+| Data Category | Retention Period | Deletion Method | Notes |
+|---------------|------------------|-----------------|-------|
+| **Child Profiles** | Until parent deletes | Soft delete → 30d → Hard delete | GDPR right to erasure |
+| **Learning Progress** | 3 years after last activity | Automated cleanup job | Educational continuity |
+| **Emotion Logs** | 1 year | Parent-initiated only | Sensitive data |
+| **Session Data** | 7 days after logout | Automated cleanup | Security best practice |
+| **Error Logs** | 90 days | Automated cleanup | Debugging needs |
+| **Audit Logs** | 7 years | No auto-delete | Compliance requirement |
+| **Video Messages** | 30 days unless saved | Automated cleanup | Storage optimization |
+| **Game Results** | 1 year | Automated cleanup | Historical stats |
+
+### Automated Cleanup Jobs
+```sql
+-- Error logs cleanup (runs daily via pg_cron)
+DELETE FROM error_logs WHERE created_at < NOW() - INTERVAL '90 days';
+
+-- Session cleanup
+DELETE FROM auth.sessions WHERE updated_at < NOW() - INTERVAL '7 days';
+
+-- Soft-deleted children (30 days after deletion_scheduled_at)
+DELETE FROM children 
+WHERE deleted_at IS NOT NULL 
+AND deletion_scheduled_at < NOW() - INTERVAL '30 days';
+```
+
+### Parent-Initiated Deletion
+Parents can delete child data through:
+1. **Parent Dashboard** → Settings → Delete Account
+2. **Data Export Manager** → Export then Delete
+3. **Email Request** → security@innerodyssey.com (processed within 72 hours)
 
 ---
 

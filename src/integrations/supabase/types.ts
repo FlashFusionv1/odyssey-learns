@@ -162,6 +162,105 @@ export type Database = {
           },
         ]
       }
+      ai_nudges: {
+        Row: {
+          action_label: string | null
+          action_url: string | null
+          child_id: string | null
+          clicked_at: string | null
+          completed_at: string | null
+          confidence_score: number | null
+          context_data: Json | null
+          created_at: string | null
+          dismissed_at: string | null
+          display_after: string | null
+          display_location: string | null
+          expires_at: string | null
+          feedback_rating: number | null
+          generated_by: string | null
+          icon: string | null
+          id: string
+          impressions_count: number | null
+          max_impressions: number | null
+          message: string
+          nudge_type: string
+          priority: number | null
+          title: string
+          trigger_reason: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          action_label?: string | null
+          action_url?: string | null
+          child_id?: string | null
+          clicked_at?: string | null
+          completed_at?: string | null
+          confidence_score?: number | null
+          context_data?: Json | null
+          created_at?: string | null
+          dismissed_at?: string | null
+          display_after?: string | null
+          display_location?: string | null
+          expires_at?: string | null
+          feedback_rating?: number | null
+          generated_by?: string | null
+          icon?: string | null
+          id?: string
+          impressions_count?: number | null
+          max_impressions?: number | null
+          message: string
+          nudge_type: string
+          priority?: number | null
+          title: string
+          trigger_reason: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          action_label?: string | null
+          action_url?: string | null
+          child_id?: string | null
+          clicked_at?: string | null
+          completed_at?: string | null
+          confidence_score?: number | null
+          context_data?: Json | null
+          created_at?: string | null
+          dismissed_at?: string | null
+          display_after?: string | null
+          display_location?: string | null
+          expires_at?: string | null
+          feedback_rating?: number | null
+          generated_by?: string | null
+          icon?: string | null
+          id?: string
+          impressions_count?: number | null
+          max_impressions?: number | null
+          message?: string
+          nudge_type?: string
+          priority?: number | null
+          title?: string
+          trigger_reason?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_nudges_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_nudges_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       analytics_events: {
         Row: {
           child_id: string
@@ -1573,6 +1672,54 @@ export type Database = {
         }
         Relationships: []
       }
+      feature_discovery_log: {
+        Row: {
+          child_id: string | null
+          discovered_at: string | null
+          feature_category: string
+          feature_id: string
+          id: string
+          tutorial_completed: boolean | null
+          tutorial_triggered: boolean | null
+          user_id: string
+        }
+        Insert: {
+          child_id?: string | null
+          discovered_at?: string | null
+          feature_category: string
+          feature_id: string
+          id?: string
+          tutorial_completed?: boolean | null
+          tutorial_triggered?: boolean | null
+          user_id: string
+        }
+        Update: {
+          child_id?: string | null
+          discovered_at?: string | null
+          feature_category?: string
+          feature_id?: string
+          id?: string
+          tutorial_completed?: boolean | null
+          tutorial_triggered?: boolean | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_discovery_log_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feature_discovery_log_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       game_answers: {
         Row: {
           answer_text: string
@@ -2879,6 +3026,72 @@ export type Database = {
         }
         Relationships: []
       }
+      onboarding_preferences: {
+        Row: {
+          community_interest: string | null
+          created_at: string | null
+          deferred_setup_items: string[] | null
+          difficulty_preference: string | null
+          focus_areas: string[] | null
+          id: string
+          learning_style: string | null
+          notification_frequency: string | null
+          onboarding_mode: string | null
+          preferred_subjects: string[] | null
+          primary_goal: string | null
+          quick_start_completed: boolean | null
+          session_length_minutes: number | null
+          share_progress_publicly: boolean | null
+          target_lessons_per_week: number | null
+          updated_at: string | null
+          user_id: string
+          wizard_completed: boolean | null
+          wizard_completed_at: string | null
+        }
+        Insert: {
+          community_interest?: string | null
+          created_at?: string | null
+          deferred_setup_items?: string[] | null
+          difficulty_preference?: string | null
+          focus_areas?: string[] | null
+          id?: string
+          learning_style?: string | null
+          notification_frequency?: string | null
+          onboarding_mode?: string | null
+          preferred_subjects?: string[] | null
+          primary_goal?: string | null
+          quick_start_completed?: boolean | null
+          session_length_minutes?: number | null
+          share_progress_publicly?: boolean | null
+          target_lessons_per_week?: number | null
+          updated_at?: string | null
+          user_id: string
+          wizard_completed?: boolean | null
+          wizard_completed_at?: string | null
+        }
+        Update: {
+          community_interest?: string | null
+          created_at?: string | null
+          deferred_setup_items?: string[] | null
+          difficulty_preference?: string | null
+          focus_areas?: string[] | null
+          id?: string
+          learning_style?: string | null
+          notification_frequency?: string | null
+          onboarding_mode?: string | null
+          preferred_subjects?: string[] | null
+          primary_goal?: string | null
+          quick_start_completed?: boolean | null
+          session_length_minutes?: number | null
+          share_progress_publicly?: boolean | null
+          target_lessons_per_week?: number | null
+          updated_at?: string | null
+          user_id?: string
+          wizard_completed?: boolean | null
+          wizard_completed_at?: string | null
+        }
+        Relationships: []
+      }
       parent_child_messages: {
         Row: {
           child_id: string
@@ -4139,6 +4352,81 @@ export type Database = {
             columns: ["school_id"]
             isOneToOne: false
             referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tutorial_progress: {
+        Row: {
+          child_id: string | null
+          completed_at: string | null
+          completion_percentage: number | null
+          created_at: string | null
+          current_step: number | null
+          id: string
+          interactions_count: number | null
+          last_interaction_at: string | null
+          started_at: string | null
+          status: string | null
+          steps_skipped: number | null
+          time_spent_seconds: number | null
+          total_steps: number
+          tutorial_id: string
+          tutorial_type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          child_id?: string | null
+          completed_at?: string | null
+          completion_percentage?: number | null
+          created_at?: string | null
+          current_step?: number | null
+          id?: string
+          interactions_count?: number | null
+          last_interaction_at?: string | null
+          started_at?: string | null
+          status?: string | null
+          steps_skipped?: number | null
+          time_spent_seconds?: number | null
+          total_steps: number
+          tutorial_id: string
+          tutorial_type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          child_id?: string | null
+          completed_at?: string | null
+          completion_percentage?: number | null
+          created_at?: string | null
+          current_step?: number | null
+          id?: string
+          interactions_count?: number | null
+          last_interaction_at?: string | null
+          started_at?: string | null
+          status?: string | null
+          steps_skipped?: number | null
+          time_spent_seconds?: number | null
+          total_steps?: number
+          tutorial_id?: string
+          tutorial_type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tutorial_progress_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tutorial_progress_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_safe"
             referencedColumns: ["id"]
           },
         ]

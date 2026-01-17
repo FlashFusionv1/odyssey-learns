@@ -1,4 +1,11 @@
-import { useState, useEffect } from 'react';
+/**
+ * @file PeerConnectionsUI.tsx
+ * @description UI component for managing peer connections and friend requests
+ * @module Social
+ * @version 1.6.0
+ */
+
+import { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,14 +15,17 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Search, UserPlus, UserCheck, X, Check, Users } from 'lucide-react';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import type { Json } from '@/integrations/supabase/types';
 
+/** Child data structure from database */
 interface Child {
   id: string;
   name: string;
   grade_level: number;
-  avatar_config: any;
+  avatar_config: Json | null;
 }
 
+/** Peer connection with joined child data */
 interface Connection {
   id: string;
   peer_id: string;
@@ -23,7 +33,9 @@ interface Connection {
   children: Child;
 }
 
+/** Props for PeerConnectionsUI component */
 interface PeerConnectionsUIProps {
+  /** The ID of the current child viewing connections */
   childId: string;
 }
 
@@ -152,7 +164,7 @@ export const PeerConnectionsUI = ({ childId }: PeerConnectionsUIProps) => {
             placeholder="Search by name..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && searchPeers()}
+            onKeyDown={(e) => e.key === 'Enter' && searchPeers()}
           />
           <Button onClick={searchPeers}>Search</Button>
         </div>

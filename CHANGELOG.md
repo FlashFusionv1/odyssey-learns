@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.6.1] - 2026-01-17
+
+### Added
+- **AI Tutor Backend**: Real AI-powered tutoring via `ai-tutor` edge function using Lovable AI Gateway
+- **Streaming Responses**: Token-by-token streaming for natural conversation flow
+- **Age-Adaptive Prompts**: System prompts adjust complexity based on grade level
+- **ChildDashboard Integration**: Floating AI Tutor button now appears on child dashboard
+
+### Security
+- Rate limit handling (429) with friendly kid-appropriate messages
+- Payment required handling (402) with parent notification prompt
+
+---
+
 ## [1.6.0] - 2026-01-15
 
 ### Added - Major Feature Integration

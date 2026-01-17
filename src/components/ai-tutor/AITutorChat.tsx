@@ -14,10 +14,10 @@ import {
   BookOpen,
   X,
   Minimize2,
-  Maximize2,
   Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface Message {
   id: string;
@@ -35,6 +35,9 @@ interface AITutorChatProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+/** Edge function URL for AI tutor */
+const AI_TUTOR_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-tutor`;
 
 const QUICK_PROMPTS = [
   { icon: HelpCircle, label: "Help me understand", prompt: "Can you help me understand this better?" },
@@ -77,6 +80,9 @@ export function AITutorChat({
     }
   }, [isOpen, isMinimized]);
 
+  /**
+   * Send message to AI tutor edge function with streaming
+   */
   const sendMessage = async (content: string) => {
     if (!content.trim() || isLoading) return;
 
@@ -92,28 +98,123 @@ export function AITutorChat({
     setIsLoading(true);
 
     try {
-      // Simulate AI response - In production, this would call an edge function
-      await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 1000));
-
-      const responses = getContextualResponse(content, gradeLevel, subject);
+      // Build conversation history for context
+      const conversationHistory = messages
+        .filter((m) => m.id !== "welcome")
+        .map((m) => ({ role: m.role, content: m.content }));
       
-      const assistantMessage: Message = {
-        id: `assistant-${Date.now()}`,
-        role: "assistant",
-        content: responses.message,
-        timestamp: new Date(),
-        suggestions: responses.suggestions,
-      };
+      conversationHistory.push({ role: "user", content: content.trim() });
 
-      setMessages((prev) => [...prev, assistantMessage]);
+      const response = await fetch(AI_TUTOR_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          messages: conversationHistory,
+          childName,
+          gradeLevel,
+          subject,
+        }),
+      });
+
+      // Handle error responses
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || "Something went wrong!";
+        
+        if (response.status === 429) {
+          toast.error("Taking a quick break! Try again in a moment.");
+        } else if (response.status === 402) {
+          toast.error("AI credits need to be topped up.");
+        }
+        
+        throw new Error(errorMessage);
+      }
+
+      if (!response.body) {
+        throw new Error("No response body");
+      }
+
+      // Stream the response
+      let assistantContent = "";
+      const assistantId = `assistant-${Date.now()}`;
+      
+      // Add placeholder message
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: assistantId,
+          role: "assistant",
+          content: "",
+          timestamp: new Date(),
+        },
+      ]);
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let textBuffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        textBuffer += decoder.decode(value, { stream: true });
+
+        // Process SSE lines
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (line.startsWith(":") || line.trim() === "") continue;
+          if (!line.startsWith("data: ")) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") break;
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const deltaContent = parsed.choices?.[0]?.delta?.content;
+            if (deltaContent) {
+              assistantContent += deltaContent;
+              // Update the assistant message with streamed content
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantId
+                    ? { ...m, content: assistantContent }
+                    : m
+                )
+              );
+            }
+          } catch {
+            // Incomplete JSON, put back and wait
+            textBuffer = line + "\n" + textBuffer;
+            break;
+          }
+        }
+      }
+
+      // Add follow-up suggestions based on content
+      const suggestions = generateSuggestions(assistantContent, gradeLevel);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === assistantId
+            ? { ...m, suggestions }
+            : m
+        )
+      );
+
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error("AI Tutor error:", error);
       setMessages((prev) => [
         ...prev,
         {
           id: `error-${Date.now()}`,
           role: "assistant",
-          content: "Oops! Something went wrong. Let's try again! 🔄",
+          content: error instanceof Error ? error.message : "Oops! Something went wrong. Let's try again! 🔄",
           timestamp: new Date(),
         },
       ]);
@@ -289,44 +390,40 @@ export function AITutorChat({
   );
 }
 
-// Helper function for demo responses
-function getContextualResponse(
-  input: string,
-  gradeLevel: number,
-  subject?: string
-): { message: string; suggestions?: string[] } {
-  const lowerInput = input.toLowerCase();
-
-  if (lowerInput.includes("math") || lowerInput.includes("add") || lowerInput.includes("multiply")) {
-    return {
-      message: "Math is so cool! 🧮 It's like a puzzle where numbers come together. What specific math topic would you like help with? Addition, subtraction, or something else?",
-      suggestions: ["Addition help", "Multiplication tables", "Word problems"],
-    };
+/**
+ * Generate contextual follow-up suggestions based on AI response
+ */
+function generateSuggestions(response: string, gradeLevel: number): string[] {
+  const lowerResponse = response.toLowerCase();
+  
+  // Math-related suggestions
+  if (lowerResponse.includes("math") || lowerResponse.includes("number") || lowerResponse.includes("calculate")) {
+    return gradeLevel <= 2 
+      ? ["More math fun!", "Try a different one", "I did it!"]
+      : ["Explain more", "Give me a harder one", "Show me an example"];
   }
-
-  if (lowerInput.includes("hint")) {
-    return {
-      message: "Great job asking for a hint instead of the answer! 💡 Think about what you already know about this topic. Can you break the problem into smaller steps?",
-      suggestions: ["Still stuck", "I figured it out!", "Explain more"],
-    };
+  
+  // Reading/Language suggestions
+  if (lowerResponse.includes("read") || lowerResponse.includes("story") || lowerResponse.includes("word")) {
+    return gradeLevel <= 2
+      ? ["Read more!", "What happens next?", "I love stories!"]
+      : ["Analyze this further", "Related vocabulary", "Writing tips"];
   }
-
-  if (lowerInput.includes("fun fact") || lowerInput.includes("interesting")) {
-    return {
-      message: "Here's a fun fact! 🌟 Did you know that honey never spoils? Archaeologists have found 3,000-year-old honey in Egyptian tombs that was still good to eat!",
-      suggestions: ["Another fun fact", "Tell me about space", "Animal facts"],
-    };
+  
+  // Science suggestions
+  if (lowerResponse.includes("science") || lowerResponse.includes("experiment") || lowerResponse.includes("discover")) {
+    return ["Tell me more!", "How does it work?", "Fun science fact"];
   }
-
-  if (lowerInput.includes("quiz") || lowerInput.includes("test")) {
-    return {
-      message: "I love quizzes! 📝 Let me think of a question for you... What's 7 + 8? Take your time!",
-      suggestions: ["15", "14", "I need a hint"],
-    };
+  
+  // Emotional/Social suggestions
+  if (lowerResponse.includes("feel") || lowerResponse.includes("emotion") || lowerResponse.includes("friend")) {
+    return ["That helps!", "What else can I do?", "Thanks buddy! 💙"];
   }
-
-  return {
-    message: "That's a great question! 🤔 I'm here to help you learn in a fun way. Could you tell me more about what you'd like to know?",
-    suggestions: ["Help with homework", "Explain a concept", "Tell me something cool"],
-  };
+  
+  // Default age-appropriate suggestions
+  return gradeLevel <= 2
+    ? ["Tell me more!", "That's cool!", "What else?"]
+    : gradeLevel <= 5
+    ? ["Explain differently", "Give me a challenge", "Quiz me!"]
+    : ["Dig deeper", "Real-world examples", "Related topics"];
 }

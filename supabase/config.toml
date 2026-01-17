@@ -32,3 +32,6 @@ verify_jwt = true
 
 [functions.seed-kindergarten-lessons]
 verify_jwt = true
+
+[functions.ai-tutor]
+verify_jwt = false

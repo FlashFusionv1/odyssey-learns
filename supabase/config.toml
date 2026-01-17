@@ -38,3 +38,6 @@ verify_jwt = false
 
 [functions.generate-platform-images]
 verify_jwt = true
+
+[functions.generate-nudges]
+verify_jwt = false

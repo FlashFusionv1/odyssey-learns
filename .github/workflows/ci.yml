@@ -156,7 +156,37 @@ jobs:
           path: playwright-report/
           retention-days: 7
 
-  performance:
+  smoke-tests:
+    name: Smoke Tests
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+      
+      - name: Run Smoke Tests
+        run: npx playwright test e2e/smoke.spec.ts --reporter=list
+        env:
+          BASE_URL: http://localhost:8080
+      
+      - name: Upload smoke test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-test-failures
+          path: playwright-report/
+          retention-days: 3
     name: Performance Check
     runs-on: ubuntu-latest
     needs: build

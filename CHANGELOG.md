@@ -1,16 +1,34 @@
 # Changelog
 
-## [1.6.1] - 2026-01-17
+## [1.7.0] - 2026-01-17
 
 ### Added
 - **AI Tutor Backend**: Real AI-powered tutoring via `ai-tutor` edge function using Lovable AI Gateway
 - **Streaming Responses**: Token-by-token streaming for natural conversation flow
 - **Age-Adaptive Prompts**: System prompts adjust complexity based on grade level
 - **ChildDashboard Integration**: Floating AI Tutor button now appears on child dashboard
+- **Component Lazy Loading**: Heavy components (ActivityPlayer, AITutorChat, MultiplayerGame) now load on-demand
+- **Feature-Specific Error Boundaries**: Isolated error handling for AI Tutor, Games, and Activity Player
+- **Smoke Test Suite**: Critical path E2E tests for landing, auth, dashboard, lessons, AI tutor, and multiplayer
+- **Enhanced Query Caching**: Game-specific stale times (5s for realtime, 10min for lesson lists)
 
 ### Security
+- **Game Answer Anti-Cheat**: Server-side answer verification via `verify_game_answer` RPC function
+- **Emotion Data Protection**: Database trigger `enforce_emotion_masking` encrypts plaintext emotion logs
+- **Teacher PII Protection**: `teacher_profiles_safe` view excludes email and employee IDs from queries
+- **Game Questions Protection**: `game_questions_safe` view hides correct answers from clients
 - Rate limit handling (429) with friendly kid-appropriate messages
 - Payment required handling (402) with parent notification prompt
+
+### Changed
+- CI/CD pipelines now require smoke tests before deployment
+- React Query caching optimized for multiplayer game realtime updates
+
+### Documentation
+- Added COPPA 2025 compliance updates (opt-in consent requirements)
+- Updated DATABASE_SCHEMA.md with new views, functions, and triggers
+- Created QUICK_START.md for 5-minute developer onboarding
+- Created FAQ.md with common troubleshooting solutions
 
 ---
 

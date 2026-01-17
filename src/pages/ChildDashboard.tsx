@@ -23,6 +23,7 @@ import { StatCard } from "@/components/ui/stat-card";
 import { ChildOnboardingTutorial, HelpButton, FeatureSpotlight } from "@/components/onboarding";
 import { RecommendedLessons } from "@/components/learning/RecommendedLessons";
 import { LearningProfileCard } from "@/components/progress/LearningProfileCard";
+import { AITutorButton } from "@/components/ai-tutor";
 
 // Type imports - using database row types for Supabase compatibility
 import type { 
@@ -482,6 +483,15 @@ const ChildDashboard = () => {
           )}
         </div>
       </div>
+
+      {/* AI Tutor Button - Floating chat assistant */}
+      {child && (
+        <AITutorButton
+          childId={child.id}
+          childName={child.name}
+          gradeLevel={child.grade_level}
+        />
+      )}
     </AppLayout>
   );
 };

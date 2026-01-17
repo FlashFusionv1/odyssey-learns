@@ -1864,6 +1864,51 @@ export type Database = {
           },
         ]
       }
+      generated_images: {
+        Row: {
+          base64_preview: string | null
+          created_at: string | null
+          id: string
+          image_category: string | null
+          image_type: string
+          is_active: boolean | null
+          metadata: Json | null
+          prompt: string
+          storage_path: string | null
+          storage_url: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          base64_preview?: string | null
+          created_at?: string | null
+          id?: string
+          image_category?: string | null
+          image_type: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          prompt: string
+          storage_path?: string | null
+          storage_url?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          base64_preview?: string | null
+          created_at?: string | null
+          id?: string
+          image_category?: string | null
+          image_type?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          prompt?: string
+          storage_path?: string | null
+          storage_url?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       idempotency_cache: {
         Row: {
           created_at: string | null

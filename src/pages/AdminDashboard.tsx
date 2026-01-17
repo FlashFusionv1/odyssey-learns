@@ -11,10 +11,11 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { BatchLessonGenerator } from "@/components/admin/BatchLessonGenerator";
 import { ContentReviewDashboard } from "@/components/admin/ContentReviewDashboard";
 import { LessonSeedTrigger } from "@/components/admin/LessonSeedTrigger";
+import { ImageGenerationStudio } from "@/components/admin/ImageGenerationStudio";
 import { 
   Users, BookOpen, MessageSquare, AlertCircle, 
-  TrendingUp, Award, Settings, Database, ClipboardCheck,
-  Activity, Shield
+  TrendingUp, Award, Settings, Database,
+  Activity, Shield, Wand2
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -236,6 +237,7 @@ export default function AdminDashboard() {
         <Tabs defaultValue="feedback" className="space-y-4">
           <TabsList>
             <TabsTrigger value="seed">Seed Lessons</TabsTrigger>
+            <TabsTrigger value="images">Image Studio</TabsTrigger>
             <TabsTrigger value="feedback">Recent Feedback</TabsTrigger>
             <TabsTrigger value="review">Content Review</TabsTrigger>
             <TabsTrigger value="users">Recent Users</TabsTrigger>
@@ -245,6 +247,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="seed" className="space-y-4">
             <LessonSeedTrigger />
+          </TabsContent>
+
+          <TabsContent value="images" className="space-y-4">
+            <ImageGenerationStudio />
           </TabsContent>
 
           <TabsContent value="feedback" className="space-y-4">

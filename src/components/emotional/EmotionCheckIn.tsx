@@ -57,13 +57,13 @@ export const EmotionCheckIn = ({ childId, gradeLevel, onComplete }: EmotionCheck
         reflection || null
       );
 
-      // Insert with encrypted fields AND minimal plaintext for RLS/indexing
-      // emotion_type is kept as plaintext for querying but encrypted copy is authoritative
+      // Insert with encrypted fields only - plaintext fields are masked by database trigger
+      // The trigger automatically sets emotion_type='encrypted' and intensity=0
       const { error } = await supabase.from('emotion_logs').insert({
         child_id: childId,
-        emotion_type: selectedEmotion, // Kept for RLS/query compatibility
-        intensity,                      // Kept for RLS/query compatibility
-        // All encrypted fields for sensitive data protection
+        emotion_type: 'encrypted', // Masked value (trigger enforces this)
+        intensity: 0,              // Masked value (trigger enforces this)
+        // All encrypted fields contain the actual sensitive data
         ...encryptedData,
       });
       if (error) throw error;

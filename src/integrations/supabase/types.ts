@@ -4821,33 +4821,51 @@ export type Database = {
       teacher_profiles_safe: {
         Row: {
           avatar_url: string | null
+          bio: string | null
+          created_at: string | null
           department: string | null
           full_name: string | null
           grade_levels: number[] | null
           id: string | null
           is_verified: boolean | null
           school_id: string | null
+          settings: Json | null
           subjects: string[] | null
+          updated_at: string | null
+          user_id: string | null
+          verification_date: string | null
         }
         Insert: {
           avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
           department?: string | null
           full_name?: string | null
           grade_levels?: number[] | null
           id?: string | null
           is_verified?: boolean | null
           school_id?: string | null
+          settings?: Json | null
           subjects?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+          verification_date?: string | null
         }
         Update: {
           avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
           department?: string | null
           full_name?: string | null
           grade_levels?: number[] | null
           id?: string | null
           is_verified?: boolean | null
           school_id?: string | null
+          settings?: Json | null
           subjects?: string[] | null
+          updated_at?: string | null
+          user_id?: string | null
+          verification_date?: string | null
         }
         Relationships: [
           {

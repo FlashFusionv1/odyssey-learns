@@ -1,6 +1,7 @@
 /**
  * @fileoverview Onboarding Components Barrel Export
  * Central export point for all onboarding-related components.
+ * Inner Odyssey K-12 - AI-Powered Adaptive Onboarding System
  */
 
 // Core onboarding components
@@ -14,3 +15,7 @@ export { OnboardingProvider, useOnboardingContext } from './OnboardingProvider';
 export { QuickStartWizard } from './QuickStartWizard';
 export { OnboardingPathSelector } from './OnboardingPathSelector';
 export { DeferredSetupBanner } from './DeferredSetupBanner';
+
+// Tutorial System (Phase 5)
+export { TutorialOverlay } from './TutorialOverlay';
+export { TutorialManager } from './TutorialManager';

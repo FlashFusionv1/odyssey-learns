@@ -1,4 +1,4 @@
-import { StrictMode, useEffect } from "react";
+import { StrictMode, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
@@ -7,6 +7,7 @@ import { setupGlobalErrorHandlers } from "./lib/errorHandler";
 import { initializePerformanceMonitoring } from "./lib/performance";
 import { startHealthHeartbeat, markHealthy, wasRecovered, clearRecoveryParam } from "./lib/healthCheck";
 import { PWA_VERSION, BUILD_TIMESTAMP } from "./config/pwaVersion";
+import { markAppReady } from "./lib/performanceInit";
 import "./lib/clearCache"; // Expose emergency cache clear
 
 // Initialize global error handlers and performance monitoring
@@ -23,14 +24,35 @@ if (wasRecovered()) {
   // Will show toast after React mounts
 }
 
+/**
+ * Hide the initial loading screen
+ */
+function hideAppLoader(): void {
+  const loader = document.getElementById('app-loader');
+  if (loader) {
+    loader.classList.add('hide');
+    // Remove from DOM after transition
+    setTimeout(() => loader.remove(), 300);
+  }
+}
+
 // Wrapper component to handle post-mount health check
 function AppWithHealthCheck() {
+  const [isReady, setIsReady] = useState(false);
+  
   useEffect(() => {
     // Mark app as healthy after successful render
     markHealthy();
     
     // Start the health heartbeat
     startHealthHeartbeat();
+    
+    // Hide loading screen and mark ready
+    hideAppLoader();
+    setIsReady(true);
+    
+    // Mark app as ready for performance timing
+    markAppReady();
     
     // Show recovery toast if applicable
     if (window.location.search.includes('cacheBust')) {
@@ -46,10 +68,16 @@ function AppWithHealthCheck() {
   return <App />;
 }
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ErrorBoundary>
-      <AppWithHealthCheck />
-    </ErrorBoundary>
-  </StrictMode>
-);
+// Start rendering
+const root = document.getElementById("root");
+if (root) {
+  createRoot(root).render(
+    <StrictMode>
+      <ErrorBoundary>
+        <AppWithHealthCheck />
+      </ErrorBoundary>
+    </StrictMode>
+  );
+} else {
+  console.error('[Fatal] Root element not found');
+}

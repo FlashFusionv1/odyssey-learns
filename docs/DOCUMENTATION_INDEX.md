@@ -100,6 +100,7 @@
 | [README_COMPLETE.md](./README_COMPLETE.md) | Developer setup guide | ⭐ High |
 | [REFACTOR_PLAN.md](./REFACTOR_PLAN.md) | Code improvement strategy | High |
 | [IMPROVEMENT_PLAN.md](./IMPROVEMENT_PLAN.md) | General improvements | Medium |
+| [ONBOARDING_SYSTEM.md](./ONBOARDING_SYSTEM.md) | AI-powered onboarding | ⭐ High |
 
 ### Product & Planning
 | Document | Description | Priority |

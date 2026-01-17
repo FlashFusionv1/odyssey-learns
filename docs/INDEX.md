@@ -64,6 +64,7 @@ Welcome to the Odyssey Learns documentation! This index will help you find what 
 |----------|-------------|----------|
 | [FEATURES_PLAN.md](FEATURES_PLAN.md) | Feature specifications and plans | Product/Developers |
 | [IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md) | Implementation details | Developers |
+| [ONBOARDING_SYSTEM.md](ONBOARDING_SYSTEM.md) | AI-powered onboarding system | Developers |
 
 ### Security
 

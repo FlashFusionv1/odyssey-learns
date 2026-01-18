@@ -116,221 +116,37 @@
     <!-- Root with placeholder content to prevent false white screen detection -->
     <div id="root"><!-- React will mount here --></div>
     
-    <!-- PWA Startup Recovery Script - Runs BEFORE React -->
+    <!-- Minimal PWA startup script - no aggressive recovery -->
     <script>
       (function() {
         'use strict';
         
-        var HEALTH_KEY = 'pwa_health_timestamp';
-        var RECOVERY_KEY = 'pwa_recovery_attempts';
-        var RECOVERY_COOLDOWN_KEY = 'pwa_recovery_cooldown';
-        var MAX_RECOVERY_ATTEMPTS = 3;
-        var STALE_THRESHOLD = 30000; // 30 seconds (increased from 10s)
-        var WHITE_SCREEN_TIMEOUT = 20000; // 20 seconds (increased from 8s)
-        var RECOVERY_COOLDOWN = 3600000; // 1 hour cooldown between recovery cycles
-        
-        // Update loading progress text
+        // Simple progress update
         function updateProgress(text) {
           var el = document.getElementById('loading-progress');
           if (el) el.textContent = text;
         }
         
-        // Check if we're within the cooldown period
-        function isInCooldown() {
-          try {
-            var cooldownEnd = parseInt(localStorage.getItem(RECOVERY_COOLDOWN_KEY) || '0');
-            return Date.now() < cooldownEnd;
-          } catch (e) {
-            return false;
+        // Clear any stuck recovery state from previous attempts
+        try {
+          localStorage.removeItem('pwa_recovery_attempts');
+          localStorage.removeItem('pwa_recovery_cooldown');
+          localStorage.removeItem('pwa_health_timestamp');
+          localStorage.removeItem('pwa_init_state');
+        } catch (e) {}
+        
+        // Just update progress, no recovery logic
+        updateProgress('Starting application...');
+        
+        // Simple timeout to hide loader if React doesn't (fallback only)
+        setTimeout(function() {
+          var loader = document.getElementById('app-loader');
+          var root = document.getElementById('root');
+          // Only hide if React has mounted content
+          if (loader && root && root.innerHTML.length > 100) {
+            loader.classList.add('hide');
           }
-        }
-        
-        // Set cooldown after max attempts reached
-        function setCooldown() {
-          try {
-            localStorage.setItem(RECOVERY_COOLDOWN_KEY, (Date.now() + RECOVERY_COOLDOWN).toString());
-          } catch (e) {}
-        }
-        
-        // Clear stale recovery state on fresh successful load
-        function clearStaleRecoveryState() {
-          try {
-            // If we loaded successfully (no recovery param), clear old state
-            if (!window.location.search.includes('recovery=')) {
-              var attempts = parseInt(localStorage.getItem(RECOVERY_KEY) || '0');
-              // If attempts exist but we loaded fine, reset after a delay
-              if (attempts > 0) {
-                setTimeout(function() {
-                  var root = document.getElementById('root');
-                  var loader = document.getElementById('app-loader');
-                  // If app loaded successfully (loader hidden or root has content)
-                  if ((loader && loader.classList.contains('hide')) || 
-                      (root && root.children.length > 0 && root.innerHTML.length > 50)) {
-                    localStorage.removeItem(RECOVERY_KEY);
-                    console.log('[PWA Recovery] Cleared stale recovery state');
-                  }
-                }, 5000);
-              }
-            }
-          } catch (e) {}
-        }
-        
-        // Check if we should trigger recovery
-        function shouldRecover() {
-          try {
-            // Don't recover if in cooldown
-            if (isInCooldown()) {
-              console.log('[PWA Recovery] In cooldown period, skipping');
-              return false;
-            }
-            
-            var lastHealth = localStorage.getItem(HEALTH_KEY);
-            var recoveryAttempts = parseInt(localStorage.getItem(RECOVERY_KEY) || '0');
-            
-            // Don't try more than MAX_RECOVERY_ATTEMPTS times
-            if (recoveryAttempts >= MAX_RECOVERY_ATTEMPTS) {
-              console.log('[PWA Recovery] Max attempts reached, setting cooldown');
-              setCooldown();
-              localStorage.removeItem(RECOVERY_KEY);
-              return false;
-            }
-            
-            // If health timestamp exists and is stale, likely crashed
-            if (lastHealth) {
-              var staleTime = Date.now() - parseInt(lastHealth);
-              if (staleTime > STALE_THRESHOLD) {
-                console.log('[PWA Recovery] Stale health detected:', staleTime + 'ms');
-                return true;
-              }
-            }
-          } catch (e) {
-            console.warn('[PWA Recovery] Check failed:', e);
-          }
-          return false;
-        }
-        
-        // Graduated emergency clear based on attempt number
-        function emergencyClear() {
-          try {
-            var attempts = parseInt(localStorage.getItem(RECOVERY_KEY) || '0') + 1;
-            console.log('[PWA Recovery] Initiating recovery attempt', attempts);
-            
-            localStorage.setItem(RECOVERY_KEY, attempts.toString());
-            
-            // First attempt: Just clear caches, keep service worker
-            if (attempts === 1) {
-              updateProgress('Refreshing cached data...');
-              if ('caches' in window) {
-                caches.keys().then(function(names) {
-                  names.forEach(function(name) { 
-                    caches.delete(name);
-                    console.log('[PWA Recovery] Cleared cache:', name);
-                  });
-                });
-              }
-            }
-            // Second attempt: Clear service workers too
-            else if (attempts === 2) {
-              updateProgress('Resetting app state...');
-              if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(function(regs) {
-                  regs.forEach(function(r) { 
-                    r.unregister();
-                    console.log('[PWA Recovery] Unregistered SW');
-                  });
-                });
-              }
-              if ('caches' in window) {
-                caches.keys().then(function(names) {
-                  names.forEach(function(name) { caches.delete(name); });
-                });
-              }
-            }
-            // Third attempt: Full clear including some localStorage
-            else {
-              updateProgress('Full recovery in progress...');
-              if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(function(regs) {
-                  regs.forEach(function(r) { r.unregister(); });
-                });
-              }
-              if ('caches' in window) {
-                caches.keys().then(function(names) {
-                  names.forEach(function(name) { caches.delete(name); });
-                });
-              }
-              // Clear PWA-related localStorage but preserve user data
-              try {
-                localStorage.removeItem('pwa_version');
-                localStorage.removeItem('pwa_last_update');
-                localStorage.removeItem(HEALTH_KEY);
-              } catch (e) {}
-            }
-            
-            // Force reload after a short delay
-            setTimeout(function() {
-              window.location.href = window.location.origin + '?recovery=' + Date.now();
-            }, 750);
-          } catch (e) {
-            console.error('[PWA Recovery] Emergency clear failed:', e);
-            // Last resort: simple reload
-            setTimeout(function() {
-              window.location.reload();
-            }, 1000);
-          }
-        }
-        
-        // Improved white screen detection
-        function setupWhiteScreenDetection() {
-          setTimeout(function() {
-            var root = document.getElementById('root');
-            var loader = document.getElementById('app-loader');
-            
-            // Check multiple conditions to avoid false positives
-            var loaderVisible = loader && !loader.classList.contains('hide');
-            var rootEmpty = root && root.innerHTML.trim().length < 50;
-            var noReactContent = !document.querySelector('[data-reactroot], [data-react-helmet]');
-            
-            // Only trigger if:
-            // 1. Loader is NOT visible (meaning we expected React to take over)
-            // 2. Root is essentially empty
-            // 3. No React markers found
-            if (!loaderVisible && rootEmpty && noReactContent) {
-              console.log('[PWA Recovery] White screen detected after ' + WHITE_SCREEN_TIMEOUT + 'ms');
-              console.log('[PWA Recovery] Debug - loaderVisible:', loaderVisible, 'rootEmpty:', rootEmpty);
-              emergencyClear();
-            } else if (loaderVisible) {
-              // Loader still visible, give more time and check again
-              console.log('[PWA Recovery] Loader still visible, extending timeout...');
-              setTimeout(function() {
-                var newRoot = document.getElementById('root');
-                var newLoader = document.getElementById('app-loader');
-                if (newLoader && !newLoader.classList.contains('hide') && 
-                    newRoot && newRoot.innerHTML.trim().length < 50) {
-                  console.log('[PWA Recovery] App still loading after extended timeout');
-                  // Don't trigger recovery, just log - app might just be slow
-                }
-              }, WHITE_SCREEN_TIMEOUT);
-            }
-          }, WHITE_SCREEN_TIMEOUT);
-        }
-        
-        // Clear stale state from successful loads
-        clearStaleRecoveryState();
-        
-        // Run recovery check
-        if (shouldRecover()) {
-          emergencyClear();
-        } else {
-          // Set initial health timestamp (React will update this via heartbeat)
-          try {
-            localStorage.setItem(HEALTH_KEY, Date.now().toString());
-            updateProgress('Starting application...');
-          } catch (e) {}
-          
-          // Setup white screen detection as backup
-          setupWhiteScreenDetection();
-        }
+        }, 30000); // 30 second fallback
       })();
     </script>
     

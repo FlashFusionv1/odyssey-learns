@@ -11,12 +11,10 @@ import {
   markMounting,
   wasRecovered, 
   clearRecoveryParam,
-  observeReactMount,
-  setInitState 
+  observeReactMount
 } from "./lib/healthCheck";
 import { PWA_VERSION, BUILD_TIMESTAMP } from "./config/pwaVersion";
 import { markAppReady } from "./lib/performanceInit";
-import "./lib/clearCache"; // Expose emergency cache clear
 
 // Initialize global error handlers and performance monitoring early
 setupGlobalErrorHandlers();
@@ -24,9 +22,6 @@ initializePerformanceMonitoring();
 
 // Log PWA version for debugging
 console.log(`[Inner Odyssey] Version: ${PWA_VERSION} | Build: ${BUILD_TIMESTAMP}`);
-
-// Mark that we're starting initialization
-setInitState('starting');
 
 // Check if we recovered from an issue
 if (wasRecovered()) {

@@ -421,6 +421,13 @@ export type Database = {
             foreignKeyName: "assignment_submissions_graded_by_fkey"
             columns: ["graded_by"]
             isOneToOne: false
+            referencedRelation: "teacher_profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignment_submissions_graded_by_fkey"
+            columns: ["graded_by"]
+            isOneToOne: false
             referencedRelation: "teacher_profiles_safe"
             referencedColumns: ["id"]
           },
@@ -997,6 +1004,13 @@ export type Database = {
             foreignKeyName: "class_assignments_teacher_id_fkey"
             columns: ["teacher_id"]
             isOneToOne: false
+            referencedRelation: "teacher_profiles_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_assignments_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
             referencedRelation: "teacher_profiles_safe"
             referencedColumns: ["id"]
           },
@@ -1122,6 +1136,13 @@ export type Database = {
             columns: ["teacher_id"]
             isOneToOne: false
             referencedRelation: "teacher_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classes_teacher_id_fkey"
+            columns: ["teacher_id"]
+            isOneToOne: false
+            referencedRelation: "teacher_profiles_public"
             referencedColumns: ["id"]
           },
           {
@@ -1548,10 +1569,10 @@ export type Database = {
           child_id: string
           coping_strategy_encrypted: string | null
           created_at: string | null
-          emotion_type: string
+          emotion_type: string | null
           emotion_type_encrypted: string | null
           id: string
-          intensity: number
+          intensity: number | null
           intensity_encrypted: string | null
           logged_at: string | null
           reflection_notes_encrypted: string | null
@@ -1561,10 +1582,10 @@ export type Database = {
           child_id: string
           coping_strategy_encrypted?: string | null
           created_at?: string | null
-          emotion_type: string
+          emotion_type?: string | null
           emotion_type_encrypted?: string | null
           id?: string
-          intensity: number
+          intensity?: number | null
           intensity_encrypted?: string | null
           logged_at?: string | null
           reflection_notes_encrypted?: string | null
@@ -1574,10 +1595,10 @@ export type Database = {
           child_id?: string
           coping_strategy_encrypted?: string | null
           created_at?: string | null
-          emotion_type?: string
+          emotion_type?: string | null
           emotion_type_encrypted?: string | null
           id?: string
-          intensity?: number
+          intensity?: number | null
           intensity_encrypted?: string | null
           logged_at?: string | null
           reflection_notes_encrypted?: string | null
@@ -4082,6 +4103,8 @@ export type Database = {
           id: string
           lesson_id: string | null
           max_participants: number | null
+          privacy_level: string | null
+          show_participant_names: boolean | null
           started_at: string | null
           status: string | null
           title: string
@@ -4096,6 +4119,8 @@ export type Database = {
           id?: string
           lesson_id?: string | null
           max_participants?: number | null
+          privacy_level?: string | null
+          show_participant_names?: boolean | null
           started_at?: string | null
           status?: string | null
           title: string
@@ -4110,6 +4135,8 @@ export type Database = {
           id?: string
           lesson_id?: string | null
           max_participants?: number | null
+          privacy_level?: string | null
+          show_participant_names?: boolean | null
           started_at?: string | null
           status?: string | null
           title?: string
@@ -5106,6 +5133,56 @@ export type Database = {
         }
         Relationships: []
       }
+      teacher_profiles_public: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          department: string | null
+          full_name: string | null
+          grade_levels: number[] | null
+          id: string | null
+          is_verified: boolean | null
+          school_id: string | null
+          subjects: string[] | null
+          user_id: string | null
+          verification_date: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          department?: string | null
+          full_name?: string | null
+          grade_levels?: number[] | null
+          id?: string | null
+          is_verified?: boolean | null
+          school_id?: string | null
+          subjects?: string[] | null
+          user_id?: string | null
+          verification_date?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          department?: string | null
+          full_name?: string | null
+          grade_levels?: number[] | null
+          id?: string | null
+          is_verified?: boolean | null
+          school_id?: string | null
+          subjects?: string[] | null
+          user_id?: string | null
+          verification_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teacher_profiles_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       teacher_profiles_safe: {
         Row: {
           avatar_url: string | null
@@ -5326,6 +5403,10 @@ export type Database = {
       }
       internal_is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_current_user_admin: { Args: never; Returns: boolean }
+      is_school_admin_for_teacher: {
+        Args: { teacher_user_id: string }
+        Returns: boolean
+      }
       log_sensitive_access: {
         Args: {
           p_access_type: string

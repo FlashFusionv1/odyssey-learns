@@ -8,36 +8,34 @@ A comprehensive K-12 educational platform combining emotional intelligence train
 
 ## 📚 Documentation
 
-### ⚡ Quick Reference
-- **[DEVELOPER_CHEAT_SHEET.md](docs/DEVELOPER_CHEAT_SHEET.md)** - 🎯 **START HERE!** 2-page quick reference
-- **[CLAUDE.md](CLAUDE.md)** - AI agent development guide
-- **[ROADMAP.md](ROADMAP.md)** - Product roadmap to post-MVP
-- **[CHANGELOG.md](CHANGELOG.md)** - Version history and release notes
+### 📖 Complete Reference
+- **[COMPLETE_DOCUMENTATION.md](docs/COMPLETE_DOCUMENTATION.md)** - 📘 **MASTER GUIDE** - Full documentation for users, developers, and operators
 
-### AI Agent Documentation
-- **[CLAUDE.md](CLAUDE.md)** - Claude AI development patterns & codebase guidance
-- **[AGENTS.md](AGENTS.md)** - Multi-agent collaboration workflows
-- **[GEMINI.md](GEMINI.md)** - Lovable AI content generation integration
+### ⚡ Quick Reference
+| Audience | Start Here |
+|----------|------------|
+| **New Developers** | [DEVELOPER_CHEAT_SHEET.md](docs/DEVELOPER_CHEAT_SHEET.md) - 2-page quick reference |
+| **AI Agents** | [CLAUDE.md](CLAUDE.md) - Development patterns & codebase guidance |
+| **End Users** | [COMPLETE_DOCUMENTATION.md#2-end-user-guide](docs/COMPLETE_DOCUMENTATION.md#2-end-user-guide) |
+| **DevOps** | [COMPLETE_DOCUMENTATION.md#4-operator--devops-guide](docs/COMPLETE_DOCUMENTATION.md#4-operator--devops-guide) |
 
 ### Core Documentation
-- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System architecture, technology stack, data flow
-- **[DEVELOPER_ONBOARDING.md](docs/DEVELOPER_ONBOARDING.md)** - New developer setup guide
-- **[DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md)** - Complete database schema & RLS policies
-- **[EDGE_FUNCTIONS.md](docs/EDGE_FUNCTIONS.md)** - Backend function reference
-- **[SECURITY.md](docs/SECURITY.md)** - Security measures & compliance (COPPA/FERPA)
+| Category | Documents |
+|----------|-----------|
+| **Architecture** | [ARCHITECTURE.md](docs/ARCHITECTURE.md) • [DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md) • [TECHNICAL_SPECS.md](docs/TECHNICAL_SPECS.md) |
+| **Development** | [DEVELOPER_ONBOARDING.md](docs/DEVELOPER_ONBOARDING.md) • [API_INTEGRATION.md](docs/API_INTEGRATION.md) • [COMPONENTS.md](docs/COMPONENTS.md) |
+| **Security** | [SECURITY.md](docs/SECURITY.md) • [COMPLIANCE.md](docs/COMPLIANCE.md) • [security-testing-guide.md](docs/security-testing-guide.md) |
+| **Operations** | [DEPLOYMENT.md](docs/DEPLOYMENT.md) • [MONITORING.md](docs/MONITORING.md) • [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) |
+| **Testing** | [TESTING.md](docs/TESTING.md) • [TESTING_GUIDE.md](docs/TESTING_GUIDE.md) • [ACCESSIBILITY.md](docs/ACCESSIBILITY.md) |
 
-### Integration Documentation
-- **[COMPONENTS.md](docs/COMPONENTS.md)** - Component library catalog (100+ components)
-- **[API_INTEGRATION.md](docs/API_INTEGRATION.md)** - Supabase API patterns
-- **[STATE_MANAGEMENT.md](docs/STATE_MANAGEMENT.md)** - React Query + custom hooks
-- **[WORKFLOWS.md](docs/WORKFLOWS.md)** - User journey flows
-- **[TESTING.md](docs/TESTING.md)** - Testing strategies & best practices
+### AI Agent Documentation
+- **[CLAUDE.md](CLAUDE.md)** - Claude AI development patterns
+- **[AGENTS.md](AGENTS.md)** - Multi-agent collaboration workflows
+- **[GEMINI.md](GEMINI.md)** - Lovable AI content generation
 
-### Operational Documentation
-- **[TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** - Common issues & solutions
-- **[DEPLOYMENT.md](docs/DEPLOYMENT.md)** - Deployment workflow & rollback procedures
-- **[PERFORMANCE.md](docs/PERFORMANCE.md)** - Performance optimization guide
-- **[MONITORING.md](docs/MONITORING.md)** - Monitoring, alerting & incident response
+### Product
+- **[ROADMAP.md](ROADMAP.md)** - Product roadmap to post-MVP
+- **[CHANGELOG.md](CHANGELOG.md)** - Version history and release notes
 
 ## 🚀 Quick Start
 

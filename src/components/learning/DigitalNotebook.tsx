@@ -139,6 +139,8 @@ export const DigitalNotebook = ({ childId, lessonId, lessonTitle }: DigitalNoteb
         </div>
 
         <Textarea
+          id="notebook-content"
+          name="notebook-content"
           value={noteContent}
           onChange={(e) => setNoteContent(e.target.value)}
           placeholder="Write your notes here... You can summarize key points, write questions, or draw connections to other lessons!"
@@ -165,6 +167,8 @@ export const DigitalNotebook = ({ childId, lessonId, lessonTitle }: DigitalNoteb
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
+              id="notebook-search"
+              name="notebook-search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search your notes..."

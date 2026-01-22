@@ -96,6 +96,8 @@ export const CustomLessonGenerator = ({
 
       <div className="space-y-4">
         <Input
+          id="custom-lesson-topic"
+          name="custom-lesson-topic"
           placeholder="Enter a topic (e.g., 'Dinosaurs', 'Space', 'Kindness')"
           value={topic}
           onChange={(e) => setTopic(e.target.value)}

@@ -245,8 +245,10 @@ export function ClassManagement() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label>Class Name *</Label>
+                <Label htmlFor="class-name">Class Name *</Label>
                 <Input
+                  id="class-name"
+                  name="class-name"
                   placeholder="e.g., Math Period 1"
                   value={newClass.name}
                   onChange={e => setNewClass(prev => ({ ...prev, name: e.target.value }))}
@@ -287,8 +289,10 @@ export function ClassManagement() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>Description</Label>
+                <Label htmlFor="class-description">Description</Label>
                 <Textarea
+                  id="class-description"
+                  name="class-description"
                   placeholder="Optional class description..."
                   value={newClass.description}
                   onChange={e => setNewClass(prev => ({ ...prev, description: e.target.value }))}

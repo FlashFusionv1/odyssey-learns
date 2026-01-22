@@ -189,8 +189,10 @@ export const RewardRedemptions = ({ parentId }: { parentId: string }) => {
 
                     <div className="space-y-3">
                       <div>
-                        <label className="text-sm font-medium mb-1 block">Add a note (optional)</label>
+                        <label htmlFor={`redemption-note-${redemption.id}`} className="text-sm font-medium mb-1 block">Add a note (optional)</label>
                         <Textarea
+                          id={`redemption-note-${redemption.id}`}
+                          name={`redemption-note-${redemption.id}`}
                           value={notes[redemption.id] || ''}
                           onChange={(e) => setNotes({ ...notes, [redemption.id]: e.target.value })}
                           placeholder="Add a personal message..."

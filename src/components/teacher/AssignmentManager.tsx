@@ -294,8 +294,10 @@ export function AssignmentManager() {
             </DialogHeader>
             <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
               <div className="space-y-2">
-                <Label>Assignment Title *</Label>
+                <Label htmlFor="assignment-title">Assignment Title *</Label>
                 <Input
+                  id="assignment-title"
+                  name="assignment-title"
                   placeholder="e.g., Chapter 3 Reading"
                   value={newAssignment.title}
                   onChange={e => setNewAssignment(prev => ({ ...prev, title: e.target.value }))}
@@ -391,8 +393,10 @@ export function AssignmentManager() {
               </div>
 
               <div className="space-y-2">
-                <Label>Description</Label>
+                <Label htmlFor="assignment-description">Description</Label>
                 <Textarea
+                  id="assignment-description"
+                  name="assignment-description"
                   placeholder="Instructions for students..."
                   value={newAssignment.description}
                   onChange={e => setNewAssignment(prev => ({ ...prev, description: e.target.value }))}

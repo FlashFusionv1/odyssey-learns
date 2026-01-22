@@ -86,6 +86,8 @@ export function AILessonGenerator({ childId, gradeLevel, onLessonCreated }: AILe
         <div className="space-y-2">
           <label className="text-sm font-medium">What do you want to learn about?</label>
           <Input
+            id="lesson-topic"
+            name="lesson-topic"
             placeholder="e.g., 'Dinosaurs', 'How volcanoes work', 'Making friends'..."
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
@@ -110,6 +112,8 @@ export function AILessonGenerator({ childId, gradeLevel, onLessonCreated }: AILe
             <span className="text-muted-foreground">(optional)</span>
           </label>
           <Textarea
+            id="lesson-additional-notes"
+            name="lesson-additional-notes"
             placeholder="e.g., 'Include a story about a brave knight' or 'Make it about space exploration'..."
             value={additionalNotes}
             onChange={(e) => setAdditionalNotes(e.target.value)}

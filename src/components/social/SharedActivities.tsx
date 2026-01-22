@@ -154,8 +154,10 @@ export const SharedActivities = ({ childId }: SharedActivitiesProps) => {
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium">Title</label>
+                <label htmlFor="activity-title" className="text-sm font-medium">Title</label>
                 <Input
+                  id="activity-title"
+                  name="activity-title"
                   value={newActivity.title}
                   onChange={(e) =>
                     setNewActivity({ ...newActivity, title: e.target.value })
@@ -164,8 +166,10 @@ export const SharedActivities = ({ childId }: SharedActivitiesProps) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Description</label>
+                <label htmlFor="activity-description" className="text-sm font-medium">Description</label>
                 <Textarea
+                  id="activity-description"
+                  name="activity-description"
                   value={newActivity.description}
                   onChange={(e) =>
                     setNewActivity({
@@ -178,14 +182,14 @@ export const SharedActivities = ({ childId }: SharedActivitiesProps) => {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium">Activity Type</label>
+                <label htmlFor="activity-type" className="text-sm font-medium">Activity Type</label>
                 <Select
                   value={newActivity.activity_type}
                   onValueChange={(value) =>
                     setNewActivity({ ...newActivity, activity_type: value })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="activity-type" name="activity-type">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -197,8 +201,10 @@ export const SharedActivities = ({ childId }: SharedActivitiesProps) => {
                 </Select>
               </div>
               <div>
-                <label className="text-sm font-medium">Max Participants</label>
+                <label htmlFor="activity-max-participants" className="text-sm font-medium">Max Participants</label>
                 <Input
+                  id="activity-max-participants"
+                  name="activity-max-participants"
                   type="number"
                   min="2"
                   max="10"

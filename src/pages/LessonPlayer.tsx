@@ -364,6 +364,8 @@ const LessonPlayer = () => {
 
                     {currentQuestion.type === 'short_answer' && (
                       <Textarea
+                        id="short-answer-response"
+                        name="short-answer-response"
                         value={userAnswers[currentQuestionIndex] || ''}
                         onChange={(e) =>
                           handleAnswerSelect(currentQuestionIndex, e.target.value)

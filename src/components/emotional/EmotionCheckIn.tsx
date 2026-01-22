@@ -137,6 +137,8 @@ export const EmotionCheckIn = ({ childId, gradeLevel, onComplete }: EmotionCheck
             <div className="flex items-center gap-4">
               <span className="text-xs text-muted-foreground">Low</span>
               <input
+                id="emotion-intensity"
+                name="emotion-intensity"
                 type="range"
                 min="1"
                 max="5"
@@ -155,6 +157,8 @@ export const EmotionCheckIn = ({ childId, gradeLevel, onComplete }: EmotionCheck
           <div className="animate-fade-in space-y-2">
             <label className="text-sm font-medium">What made you feel this way? (optional)</label>
             <Textarea
+              id="emotion-trigger"
+              name="emotion-trigger"
               value={trigger}
               onChange={(e) => setTrigger(e.target.value)}
               placeholder="I felt this way because..."
@@ -169,6 +173,8 @@ export const EmotionCheckIn = ({ childId, gradeLevel, onComplete }: EmotionCheck
           <div className="animate-fade-in space-y-2">
             <label className="text-sm font-medium">Any thoughts to share? (optional)</label>
             <Textarea
+              id="emotion-reflection"
+              name="emotion-reflection"
               value={reflection}
               onChange={(e) => setReflection(e.target.value)}
               placeholder="I'm thinking about..."

@@ -246,8 +246,10 @@ export const RewardManagement = ({ parentId }: { parentId: string }) => {
 
           <div className="space-y-4 py-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Reward Name</label>
+              <label htmlFor="reward-name" className="text-sm font-medium mb-2 block">Reward Name</label>
               <Input
+                id="reward-name"
+                name="reward-name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="e.g., Extra 30 minutes screen time"
@@ -256,8 +258,10 @@ export const RewardManagement = ({ parentId }: { parentId: string }) => {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Description</label>
+              <label htmlFor="reward-description" className="text-sm font-medium mb-2 block">Description</label>
               <Textarea
+                id="reward-description"
+                name="reward-description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Describe what the reward includes..."
@@ -267,8 +271,10 @@ export const RewardManagement = ({ parentId }: { parentId: string }) => {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Points Cost</label>
+              <label htmlFor="reward-points-cost" className="text-sm font-medium mb-2 block">Points Cost</label>
               <Input
+                id="reward-points-cost"
+                name="reward-points-cost"
                 type="number"
                 min="1"
                 max="10000"

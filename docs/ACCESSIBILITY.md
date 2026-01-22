@@ -50,29 +50,50 @@
 
 ---
 
+## Form Field Accessibility Requirements
+
+### All Form Fields MUST Have:
+1. **`id` attribute** - Unique identifier for the field
+2. **`name` attribute** - Name for form submission and autofill
+3. **Associated `<label>`** - Using `htmlFor` matching the `id`
+
+### Example Implementation:
+```tsx
+<div className="space-y-2">
+  <Label htmlFor="email-input">Email Address</Label>
+  <Input
+    id="email-input"
+    name="email"
+    type="email"
+    placeholder="Enter your email"
+  />
+</div>
+```
+
+### Why This Matters:
+- Screen readers can announce field purpose
+- Browser autofill works correctly
+- Clicking labels focuses the field
+- Form validation errors can reference specific fields
+- Automated testing can target fields reliably
+
+### Components Updated (January 2025):
+- `EmotionCheckIn.tsx` - trigger, reflection, intensity fields
+- `DigitalNotebook.tsx` - content, search fields
+- `AILessonGenerator.tsx` - topic, additional notes fields
+- `CustomLessonGenerator.tsx` - topic field
+- `LessonPlayer.tsx` - short answer field
+- `ClassManagement.tsx` - name, description fields
+- `AssignmentManager.tsx` - title, description fields
+- `RewardManagement.tsx` - name, description, points cost fields
+- `RewardRedemptions.tsx` - note fields (dynamic IDs)
+- `SharedActivities.tsx` - title, description, type, participants fields
+
+---
+
 ## Implementation Details
 
 ### Focus Management
-
-```css
-/* Global focus indicator - index.css */
-*:focus-visible {
-  outline: 3px solid hsl(var(--ring));
-  outline-offset: 2px;
-}
-```
-
-### Skip Links
-
-```tsx
-// Added to AppLayout
-<a 
-  href="#main-content" 
-  className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded"
->
-  Skip to main content
-</a>
-```
 
 ### ARIA Labels
 

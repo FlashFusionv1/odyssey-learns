@@ -126,6 +126,7 @@ docs/
 
 | Need | Go To |
 |------|-------|
+| **Browse All Docs** | [/docs](/docs) (searchable documentation site) |
 | Start developing | [DEVELOPER_CHEAT_SHEET.md](./DEVELOPER_CHEAT_SHEET.md) |
 | Understand architecture | [ARCHITECTURE.md](./ARCHITECTURE.md) |
 | Query the database | [API_INTEGRATION.md](./API_INTEGRATION.md) |
@@ -142,10 +143,25 @@ docs/
 
 | Metric | Count |
 |--------|-------|
-| Total Documents | 55+ |
+| Total Documents | 63+ |
 | Core Guides | 12 |
 | Security Docs | 5 |
 | Testing Docs | 5 |
 | Operations Docs | 7 |
 
-**Last Updated:** 2026-01-22
+**Last Updated:** 2026-01-23
+
+---
+
+## 🔎 Searchable Documentation Site
+
+The app includes an integrated documentation site at `/docs` with:
+
+- **Full-text search** powered by MiniSearch
+- **63+ indexed documents** across 11 categories
+- **Category-based navigation** with collapsible sections
+- **Popular documents** quick access
+- **Copy link** and **View Raw** functionality
+- **Mobile-responsive** sidebar navigation
+
+Access it at: [/docs](/docs)

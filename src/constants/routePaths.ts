@@ -29,6 +29,7 @@ export const ROUTE_PATHS = {
     DISCORD: '/discord',
     BETA_PROGRAM: '/beta-program',
     API_DOCS: '/api-docs',
+    DOCS: '/docs',
   },
   
   // Parent routes

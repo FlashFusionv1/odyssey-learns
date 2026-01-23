@@ -8,6 +8,14 @@ All edge functions run on Deno runtime and deploy automatically on git push. The
 **Deployment:** Automatic on git push  
 **Environment:** Lovable Cloud (Supabase Edge Functions)
 
+### 📚 Interactive API Documentation
+
+For interactive API documentation with request/response examples and a "Try It" feature:
+
+- **[View API Docs](/api-docs)** - Interactive Swagger-style documentation
+- **[OpenAPI Spec](/api/openapi.json)** - Raw OpenAPI 3.1 specification
+- **[TypeScript Types](../src/types/api.ts)** - Auto-generated TypeScript types for all endpoints
+
 ---
 
 ## Global Patterns

@@ -19,6 +19,7 @@ import Privacy from '@/pages/Privacy';
 import Discord from '@/pages/Discord';
 import BetaProgram from '@/pages/BetaProgram';
 import NotFound from '@/pages/NotFound';
+import ApiDocs from '@/pages/ApiDocs';
 
 // Lazy-loaded pages with preloading for critical routes
 const ParentSetup = createLazyRoute(() => import('@/pages/ParentSetup'), { preload: true });
@@ -187,6 +188,15 @@ export const publicRoutes: RouteConfig[] = [
     requireAuth: false,
     meta: {
       title: 'Beta Program - Inner Odyssey',
+    },
+  },
+  {
+    path: ROUTE_PATHS.PUBLIC.API_DOCS,
+    component: ApiDocs,
+    requireAuth: false,
+    meta: {
+      title: 'API Documentation - Inner Odyssey',
+      description: 'Interactive API documentation for Inner Odyssey Edge Functions',
     },
   },
 ];

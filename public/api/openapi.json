@@ -1,0 +1,1118 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Inner Odyssey API",
+    "version": "1.0.0",
+    "description": "API documentation for Inner Odyssey K-12 educational platform Edge Functions",
+    "contact": {
+      "name": "Inner Odyssey Support",
+      "email": "beta@innerodyssey.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://hcsglifjqdmiykrrmncn.supabase.co/functions/v1",
+      "description": "Production"
+    }
+  ],
+  "tags": [
+    {
+      "name": "AI",
+      "description": "AI-powered learning and insights endpoints"
+    },
+    {
+      "name": "Lessons",
+      "description": "Lesson generation and management"
+    },
+    {
+      "name": "Analytics",
+      "description": "Tracking and analytics endpoints"
+    },
+    {
+      "name": "Account",
+      "description": "User account management"
+    },
+    {
+      "name": "Security",
+      "description": "Security and verification endpoints"
+    },
+    {
+      "name": "System",
+      "description": "System health and monitoring"
+    }
+  ],
+  "paths": {
+    "/health-check": {
+      "get": {
+        "tags": ["System"],
+        "summary": "Health Check",
+        "description": "Check system health including database and AI service connectivity",
+        "operationId": "healthCheck",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Health status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthCheckResponse"
+                },
+                "example": {
+                  "db": "ok",
+                  "gemini": "ok",
+                  "config": {
+                    "safe_mode": false,
+                    "kill_switch": false,
+                    "has_gemini_key": true
+                  },
+                  "version": "1.0.0",
+                  "time": "2026-01-23T12:00:00.000Z",
+                  "latency_ms": {
+                    "db": 45,
+                    "gemini": 120,
+                    "total": 170
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "System error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ai-insights": {
+      "post": {
+        "tags": ["AI"],
+        "summary": "Generate AI Insights",
+        "description": "Generate personalized AI-powered learning insights for a child based on their progress and emotional data",
+        "operationId": "generateAiInsights",
+        "security": [
+          { "bearerAuth": [] }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiInsightsRequest"
+              },
+              "example": {
+                "childId": "550e8400-e29b-41d4-a716-446655440000"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "AI-generated insights",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiInsightsResponse"
+                },
+                "example": {
+                  "strengths": ["Strong performance in Mathematics", "Consistent learning engagement"],
+                  "recommendations": ["Continue current learning pace", "Explore science topics", "Practice emotional check-ins"],
+                  "alerts": [],
+                  "nextSteps": ["Review challenging topics", "Set weekly learning goals"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Not parent of this child",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ai-tutor": {
+      "post": {
+        "tags": ["AI"],
+        "summary": "AI Tutor Chat",
+        "description": "Interactive AI tutor that provides streaming responses for educational conversations",
+        "operationId": "aiTutorChat",
+        "security": [
+          { "bearerAuth": [] }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AiTutorRequest"
+              },
+              "example": {
+                "messages": [
+                  { "role": "user", "content": "Can you help me understand fractions?" }
+                ],
+                "childName": "Emma",
+                "gradeLevel": 3,
+                "subject": "Mathematics"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Streaming AI response",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Server-Sent Events stream"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/generate-custom-lesson": {
+      "post": {
+        "tags": ["Lessons"],
+        "summary": "Generate Custom Lesson",
+        "description": "Generate an AI-powered custom lesson on a specific topic for a child. Rate limited to 10 lessons per day per user, with additional quota of 3 per child per day.",
+        "operationId": "generateCustomLesson",
+        "security": [
+          { "bearerAuth": [] }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateCustomLessonRequest"
+              },
+              "example": {
+                "childId": "550e8400-e29b-41d4-a716-446655440000",
+                "topic": "The Solar System",
+                "subject": "Science",
+                "gradeLevel": 3
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Generated lesson",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateCustomLessonResponse"
+                },
+                "example": {
+                  "success": true,
+                  "lesson": {
+                    "id": "550e8400-e29b-41d4-a716-446655440001",
+                    "title": "The Solar System - A Learning Adventure",
+                    "subject": "Science",
+                    "grade_level": 3,
+                    "description": "Explore our cosmic neighborhood! Learn about planets, moons, and the sun.",
+                    "content_markdown": "## Learning Objectives\n- Identify the 8 planets...",
+                    "quiz_questions": [],
+                    "estimated_minutes": 15,
+                    "points_value": 50
+                  },
+                  "quota_remaining": 2
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Content flagged by safety filter or missing fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Daily quota exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuotaExceededResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/generate-nudges": {
+      "post": {
+        "tags": ["AI"],
+        "summary": "Generate AI Nudges",
+        "description": "Generate personalized engagement suggestions and learning nudges for users",
+        "operationId": "generateNudges",
+        "security": [
+          { "bearerAuth": [] }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateNudgesRequest"
+              },
+              "example": {
+                "childId": "550e8400-e29b-41d4-a716-446655440000",
+                "forceRegenerate": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Generated nudges",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateNudgesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/verify-recaptcha": {
+      "post": {
+        "tags": ["Security"],
+        "summary": "Verify reCAPTCHA",
+        "description": "Server-side verification of Google reCAPTCHA v3 tokens",
+        "operationId": "verifyRecaptcha",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyRecaptchaRequest"
+              },
+              "example": {
+                "token": "03AGdBq24...",
+                "action": "signup"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Verification result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyRecaptchaResponse"
+                },
+                "example": {
+                  "valid": true,
+                  "score": 0.9,
+                  "action": "signup",
+                  "reason": null
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/export-child-data": {
+      "post": {
+        "tags": ["Account"],
+        "summary": "Export Child Data",
+        "description": "Export all data for a child account (COPPA/GDPR compliance). Returns JSON with learning progress, emotion logs, screen time, and activity data.",
+        "operationId": "exportChildData",
+        "security": [
+          { "bearerAuth": [] }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExportChildDataRequest"
+              },
+              "example": {
+                "child_id": "550e8400-e29b-41d4-a716-446655440000",
+                "format": "json"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Exported data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportChildDataResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not authorized to access this child's data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/delete-child-account": {
+      "post": {
+        "tags": ["Account"],
+        "summary": "Delete Child Account",
+        "description": "Schedule, cancel, or execute child account deletion. Includes 7-day grace period.",
+        "operationId": "deleteChildAccount",
+        "security": [
+          { "bearerAuth": [] }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteChildAccountRequest"
+              },
+              "example": {
+                "child_id": "550e8400-e29b-41d4-a716-446655440000",
+                "action": "schedule"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Deletion action result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteChildAccountResponse"
+                },
+                "example": {
+                  "message": "Deletion scheduled",
+                  "deletion_date": "2026-01-30T12:00:00.000Z"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Child not found or access denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/track-lesson-analytics": {
+      "post": {
+        "tags": ["Analytics"],
+        "summary": "Track Lesson Analytics",
+        "description": "Track lesson engagement events (views, saves, shares)",
+        "operationId": "trackLessonAnalytics",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrackLessonAnalyticsRequest"
+              },
+              "example": {
+                "lessonId": "550e8400-e29b-41d4-a716-446655440001",
+                "childId": "550e8400-e29b-41d4-a716-446655440000",
+                "eventType": "view"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Analytics tracked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "example": {
+                  "success": true,
+                  "message": "Analytics tracked successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/track-video-analytics": {
+      "post": {
+        "tags": ["Analytics"],
+        "summary": "Track Video Analytics",
+        "description": "Track video viewing events and engagement",
+        "operationId": "trackVideoAnalytics",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrackVideoAnalyticsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Video analytics tracked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/survey-analytics": {
+      "post": {
+        "tags": ["Analytics"],
+        "summary": "Survey Analytics",
+        "description": "Calculate and retrieve NPS scores and survey analytics",
+        "operationId": "surveyAnalytics",
+        "security": [
+          { "bearerAuth": [] }
+        ],
+        "responses": {
+          "200": {
+            "description": "Survey analytics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurveyAnalyticsResponse"
+                },
+                "example": {
+                  "success": true,
+                  "analytics": {
+                    "by_score": {
+                      "promoters": 45,
+                      "passives": 20,
+                      "detractors": 5
+                    },
+                    "total_responses": 70,
+                    "nps_score": 57,
+                    "common_themes": ["engaging", "fun", "educational"]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/performance-alerts": {
+      "post": {
+        "tags": ["System"],
+        "summary": "Performance Alerts",
+        "description": "Check and generate performance alerts for Core Web Vitals and error rates",
+        "operationId": "performanceAlerts",
+        "security": [
+          { "bearerAuth": [] }
+        ],
+        "responses": {
+          "200": {
+            "description": "Performance alerts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PerformanceAlertsResponse"
+                },
+                "example": {
+                  "success": true,
+                  "alerts": [],
+                  "metrics_checked": 150,
+                  "timestamp": "2026-01-23T12:00:00.000Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/security-alert": {
+      "post": {
+        "tags": ["Security"],
+        "summary": "Security Alert",
+        "description": "Log and send security alerts for incidents",
+        "operationId": "securityAlert",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SecurityAlertRequest"
+              },
+              "example": {
+                "severity": "high",
+                "type": "suspicious_activity",
+                "message": "Multiple failed login attempts detected",
+                "metadata": {
+                  "ip": "192.168.1.1",
+                  "attempts": 5
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Alert sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/verify-backups": {
+      "post": {
+        "tags": ["System"],
+        "summary": "Verify Backups",
+        "description": "Verify database backup integrity and record counts",
+        "operationId": "verifyBackups",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Backup verification result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyBackupsResponse"
+                },
+                "example": {
+                  "timestamp": "2026-01-23T12:00:00.000Z",
+                  "status": "success",
+                  "database_accessible": true,
+                  "record_counts": {
+                    "children": 150,
+                    "lessons": 500,
+                    "user_progress": 2500,
+                    "profiles": 100,
+                    "emotion_logs": 800
+                  },
+                  "total_records": 4050,
+                  "rls_active": true,
+                  "checks_passed": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Supabase JWT access token from authentication"
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["error"],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message"
+          }
+        }
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "HealthCheckResponse": {
+        "type": "object",
+        "properties": {
+          "db": {
+            "type": "string",
+            "enum": ["ok", "error"]
+          },
+          "gemini": {
+            "type": "string",
+            "enum": ["ok", "error"]
+          },
+          "config": {
+            "type": "object",
+            "properties": {
+              "safe_mode": { "type": "boolean" },
+              "kill_switch": { "type": "boolean" },
+              "has_gemini_key": { "type": "boolean" }
+            }
+          },
+          "version": { "type": "string" },
+          "time": { "type": "string", "format": "date-time" },
+          "latency_ms": {
+            "type": "object",
+            "properties": {
+              "db": { "type": "integer" },
+              "gemini": { "type": "integer" },
+              "total": { "type": "integer" }
+            }
+          }
+        }
+      },
+      "AiInsightsRequest": {
+        "type": "object",
+        "required": ["childId"],
+        "properties": {
+          "childId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "UUID of the child to generate insights for"
+          }
+        }
+      },
+      "AiInsightsResponse": {
+        "type": "object",
+        "properties": {
+          "strengths": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of identified learning strengths"
+          },
+          "recommendations": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Actionable recommendations for parents"
+          },
+          "alerts": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Concerns that need attention"
+          },
+          "nextSteps": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Suggested next actions"
+          }
+        }
+      },
+      "AiTutorRequest": {
+        "type": "object",
+        "required": ["messages", "childName", "gradeLevel"],
+        "properties": {
+          "messages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "enum": ["user", "assistant"]
+                },
+                "content": { "type": "string" }
+              }
+            }
+          },
+          "childName": { "type": "string" },
+          "gradeLevel": { "type": "integer", "minimum": 0, "maximum": 12 },
+          "subject": { "type": "string" }
+        }
+      },
+      "GenerateCustomLessonRequest": {
+        "type": "object",
+        "required": ["childId", "topic", "subject", "gradeLevel"],
+        "properties": {
+          "childId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "topic": {
+            "type": "string",
+            "description": "Topic to generate lesson about",
+            "maxLength": 200
+          },
+          "subject": {
+            "type": "string",
+            "enum": ["Mathematics", "Science", "Reading", "Writing", "Social Studies", "Art", "Music", "Life Skills", "Emotional Intelligence"]
+          },
+          "gradeLevel": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 12,
+            "description": "Grade level (0 = Kindergarten)"
+          }
+        }
+      },
+      "GenerateCustomLessonResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "lesson": {
+            "$ref": "#/components/schemas/Lesson"
+          },
+          "quota_remaining": {
+            "type": "integer",
+            "description": "Remaining daily quota for this child"
+          }
+        }
+      },
+      "Lesson": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "title": { "type": "string" },
+          "subject": { "type": "string" },
+          "grade_level": { "type": "integer" },
+          "description": { "type": "string" },
+          "content_markdown": { "type": "string" },
+          "quiz_questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuizQuestion"
+            }
+          },
+          "estimated_minutes": { "type": "integer" },
+          "points_value": { "type": "integer" }
+        }
+      },
+      "QuizQuestion": {
+        "type": "object",
+        "properties": {
+          "question": { "type": "string" },
+          "options": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "correct": { "type": "string" },
+          "explanation": { "type": "string" }
+        }
+      },
+      "QuotaExceededResponse": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string" },
+          "limit": { "type": "integer" },
+          "generated": { "type": "integer" },
+          "retry_after": { "type": "string" }
+        }
+      },
+      "GenerateNudgesRequest": {
+        "type": "object",
+        "properties": {
+          "childId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "forceRegenerate": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "GenerateNudgesResponse": {
+        "type": "object",
+        "properties": {
+          "generated": { "type": "integer" },
+          "nudges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Nudge"
+            }
+          }
+        }
+      },
+      "Nudge": {
+        "type": "object",
+        "properties": {
+          "nudge_type": { "type": "string" },
+          "trigger_reason": { "type": "string" },
+          "title": { "type": "string" },
+          "message": { "type": "string" },
+          "action_url": { "type": "string" },
+          "action_label": { "type": "string" },
+          "icon": { "type": "string" },
+          "priority": { "type": "integer" },
+          "display_location": { "type": "string" },
+          "confidence_score": { "type": "number" }
+        }
+      },
+      "VerifyRecaptchaRequest": {
+        "type": "object",
+        "required": ["token", "action"],
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "reCAPTCHA v3 response token"
+          },
+          "action": {
+            "type": "string",
+            "description": "Action name (e.g., 'signup', 'login')"
+          }
+        }
+      },
+      "VerifyRecaptchaResponse": {
+        "type": "object",
+        "properties": {
+          "valid": { "type": "boolean" },
+          "score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Bot likelihood score (higher = more human)"
+          },
+          "action": { "type": "string" },
+          "reason": { "type": "string", "nullable": true }
+        }
+      },
+      "ExportChildDataRequest": {
+        "type": "object",
+        "required": ["child_id"],
+        "properties": {
+          "child_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "format": {
+            "type": "string",
+            "enum": ["json", "csv"],
+            "default": "json"
+          }
+        }
+      },
+      "ExportChildDataResponse": {
+        "type": "object",
+        "properties": {
+          "export_date": { "type": "string", "format": "date-time" },
+          "child_profile": { "type": "object" },
+          "learning_progress": { "type": "array" },
+          "emotion_logs": { "type": "array" },
+          "screen_time_history": { "type": "array" },
+          "activity_events": { "type": "array" },
+          "messages": { "type": "array" },
+          "created_lessons": { "type": "array" }
+        }
+      },
+      "DeleteChildAccountRequest": {
+        "type": "object",
+        "required": ["child_id", "action"],
+        "properties": {
+          "child_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string",
+            "enum": ["schedule", "cancel", "execute"],
+            "description": "schedule = start 7-day grace period, cancel = abort scheduled deletion, execute = permanent deletion"
+          }
+        }
+      },
+      "DeleteChildAccountResponse": {
+        "type": "object",
+        "properties": {
+          "message": { "type": "string" },
+          "deletion_date": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "TrackLessonAnalyticsRequest": {
+        "type": "object",
+        "required": ["lessonId", "childId", "eventType"],
+        "properties": {
+          "lessonId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "childId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "eventType": {
+            "type": "string",
+            "enum": ["view", "save", "share"]
+          }
+        }
+      },
+      "TrackVideoAnalyticsRequest": {
+        "type": "object",
+        "required": ["videoId", "childId", "eventType"],
+        "properties": {
+          "videoId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "childId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "eventType": {
+            "type": "string"
+          },
+          "watchDuration": {
+            "type": "integer"
+          }
+        }
+      },
+      "SurveyAnalyticsResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "analytics": {
+            "type": "object",
+            "properties": {
+              "by_score": {
+                "type": "object",
+                "properties": {
+                  "promoters": { "type": "integer" },
+                  "passives": { "type": "integer" },
+                  "detractors": { "type": "integer" }
+                }
+              },
+              "total_responses": { "type": "integer" },
+              "nps_score": { "type": "integer" },
+              "common_themes": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "PerformanceAlertsResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "alerts": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "metrics_checked": { "type": "integer" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        }
+      },
+      "SecurityAlertRequest": {
+        "type": "object",
+        "required": ["severity", "type", "message"],
+        "properties": {
+          "severity": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"]
+          },
+          "type": { "type": "string" },
+          "message": { "type": "string" },
+          "metadata": { "type": "object" }
+        }
+      },
+      "VerifyBackupsResponse": {
+        "type": "object",
+        "properties": {
+          "timestamp": { "type": "string", "format": "date-time" },
+          "status": { "type": "string", "enum": ["success", "error"] },
+          "database_accessible": { "type": "boolean" },
+          "record_counts": {
+            "type": "object",
+            "additionalProperties": { "type": "integer" }
+          },
+          "total_records": { "type": "integer" },
+          "rls_active": { "type": "boolean" },
+          "checks_passed": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

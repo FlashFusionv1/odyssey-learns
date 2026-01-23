@@ -21,6 +21,9 @@ import BetaProgram from '@/pages/BetaProgram';
 import NotFound from '@/pages/NotFound';
 import ApiDocs from '@/pages/ApiDocs';
 
+// Lazy-loaded docs page
+const DocsPage = createLazyRoute(() => import('@/pages/DocsPage'), { preload: true });
+
 // Lazy-loaded pages with preloading for critical routes
 const ParentSetup = createLazyRoute(() => import('@/pages/ParentSetup'), { preload: true });
 const ParentDashboard = createLazyRoute(() => import('@/pages/ParentDashboard'), { preload: true });
@@ -197,6 +200,15 @@ export const publicRoutes: RouteConfig[] = [
     meta: {
       title: 'API Documentation - Inner Odyssey',
       description: 'Interactive API documentation for Inner Odyssey Edge Functions',
+    },
+  },
+  {
+    path: ROUTE_PATHS.PUBLIC.DOCS,
+    component: DocsPage,
+    requireAuth: false,
+    meta: {
+      title: 'Documentation - Inner Odyssey',
+      description: 'Searchable documentation for Inner Odyssey K-12 educational platform',
     },
   },
 ];

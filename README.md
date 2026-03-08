@@ -9,23 +9,29 @@ A comprehensive K-12 educational platform combining emotional intelligence train
 
 ## 📚 Documentation
 
+### 🔍 Interactive Documentation
+- **[Searchable Docs Site](/docs)** - Full-text search across 60+ docs with category filtering
+- **[Interactive API Explorer](/api-docs)** - Swagger-style API documentation for all 26 Edge Functions
+- **[OpenAPI Spec](/api/openapi.json)** - Raw OpenAPI 3.1 specification
+
 ### 📖 Complete Reference
 - **[COMPLETE_DOCUMENTATION.md](docs/COMPLETE_DOCUMENTATION.md)** - 📘 **MASTER GUIDE** - Full documentation for users, developers, and operators
 
 ### ⚡ Quick Reference
 | Audience | Start Here |
 |----------|------------|
-| **New Developers** | [DEVELOPER_CHEAT_SHEET.md](docs/DEVELOPER_CHEAT_SHEET.md) - 2-page quick reference |
+| **New Developers** | [QUICK_START.md](docs/QUICK_START.md) - 5-minute setup guide |
+| **Developer Reference** | [DEVELOPER_CHEAT_SHEET.md](docs/DEVELOPER_CHEAT_SHEET.md) - 2-page quick reference |
 | **AI Agents** | [CLAUDE.md](CLAUDE.md) - Development patterns & codebase guidance |
-| **End Users** | [COMPLETE_DOCUMENTATION.md#2-end-user-guide](docs/COMPLETE_DOCUMENTATION.md#2-end-user-guide) |
-| **DevOps** | [COMPLETE_DOCUMENTATION.md#4-operator--devops-guide](docs/COMPLETE_DOCUMENTATION.md#4-operator--devops-guide) |
+| **End Users** | [COMPLETE_DOCUMENTATION.md](docs/COMPLETE_DOCUMENTATION.md#2-end-user-guide) |
+| **DevOps** | [DEPLOYMENT.md](docs/DEPLOYMENT.md) - Deployment & operations |
 
 ### Core Documentation
 | Category | Documents |
 |----------|-----------|
 | **Architecture** | [ARCHITECTURE.md](docs/ARCHITECTURE.md) • [DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md) • [TECHNICAL_SPECS.md](docs/TECHNICAL_SPECS.md) |
-| **Development** | [DEVELOPER_ONBOARDING.md](docs/DEVELOPER_ONBOARDING.md) • [API_INTEGRATION.md](docs/API_INTEGRATION.md) • [COMPONENTS.md](docs/COMPONENTS.md) |
-| **Security** | [SECURITY.md](docs/SECURITY.md) • [COMPLIANCE.md](docs/COMPLIANCE.md) • [security-testing-guide.md](docs/security-testing-guide.md) |
+| **Development** | [DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md) • [API_INTEGRATION.md](docs/API_INTEGRATION.md) • [COMPONENTS.md](docs/COMPONENTS.md) • [EDGE_FUNCTIONS.md](docs/EDGE_FUNCTIONS.md) |
+| **Security** | [SECURITY.md](docs/SECURITY.md) • [AUTHENTICATION.md](docs/AUTHENTICATION.md) • [COMPLIANCE.md](docs/COMPLIANCE.md) |
 | **Operations** | [DEPLOYMENT.md](docs/DEPLOYMENT.md) • [MONITORING.md](docs/MONITORING.md) • [TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) |
 | **Testing** | [TESTING.md](docs/TESTING.md) • [TESTING_GUIDE.md](docs/TESTING_GUIDE.md) • [ACCESSIBILITY.md](docs/ACCESSIBILITY.md) |
 
@@ -34,9 +40,10 @@ A comprehensive K-12 educational platform combining emotional intelligence train
 - **[AGENTS.md](AGENTS.md)** - Multi-agent collaboration workflows
 - **[GEMINI.md](GEMINI.md)** - Lovable AI content generation
 
-### Product
-- **[ROADMAP.md](ROADMAP.md)** - Product roadmap to post-MVP
+### Product & Planning
+- **[ROADMAP.md](ROADMAP.md)** - Product roadmap
 - **[CHANGELOG.md](CHANGELOG.md)** - Version history and release notes
+- **[DOCUMENTATION_MAP.md](docs/DOCUMENTATION_MAP.md)** - Complete documentation navigation
 
 ## 🚀 Quick Start
 

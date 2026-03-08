@@ -158,8 +158,10 @@ docs/
 | Security Docs | 5 |
 | Testing Docs | 5 |
 | Operations Docs | 7 |
+| Edge Functions | 26 |
+| OpenAPI Endpoints | 25 |
 
-**Last Updated:** 2026-01-23
+**Last Updated:** 2026-03-08
 
 ---
 

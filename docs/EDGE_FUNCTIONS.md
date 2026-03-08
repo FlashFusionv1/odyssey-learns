@@ -632,7 +632,481 @@ Submit lesson for review/approval to share publicly.
 
 ---
 
-## Calling Functions from Client
+### ai-tutor
+Interactive AI tutor with streaming responses for educational conversations.
+
+**Path:** `supabase/functions/ai-tutor/index.ts`  
+**Method:** POST  
+**Auth:** Not required (public, but context-aware)  
+**Rate Limit:** Handled by Lovable AI gateway  
+**Streaming:** Yes (SSE)
+
+**Request Body:**
+```json
+{
+  "messages": [{ "role": "user", "content": "What is photosynthesis?" }],
+  "childName": "Alex",
+  "gradeLevel": 3,
+  "subject": "science"
+}
+```
+
+**Response:** Server-Sent Events stream of chat completion chunks.
+
+**AI Model:** `google/gemini-3-flash-preview` (Lovable AI, streaming, max 500 tokens)
+
+**Security:**
+- Builds age-appropriate system prompt per grade level
+- Limits response length (500 tokens) for child safety
+- Returns friendly error messages for rate limits and payment issues
+
+**Error Handling:**
+- 429: Rate limit exceeded (friendly child message)
+- 402: Payment required
+- 500: AI gateway error
+
+---
+
+### analyze-learning-profile
+Analyze a child's learning profile using activity history, progress, and quiz data.
+
+**Path:** `supabase/functions/analyze-learning-profile/index.ts`  
+**Method:** POST  
+**Auth:** Required  
+**Rate Limit:** None
+
+**Request Body:**
+```json
+{
+  "childId": "uuid",
+  "forceRefresh": false
+}
+```
+
+**Response:**
+```json
+{
+  "profile": {
+    "strengths": [{ "subject": "math", "avg_score": 92 }],
+    "weaknesses": [{ "subject": "reading", "avg_score": 65 }],
+    "preferred_subjects": ["math", "science"],
+    "average_quiz_score": 78,
+    "preferred_difficulty": "medium"
+  },
+  "cached": false,
+  "processing_time_ms": 450
+}
+```
+
+**Implementation:**
+1. Verify authentication and child ownership
+2. Check for cached profile (skip recomputation unless `forceRefresh`)
+3. Fetch activity sessions and user progress with lesson joins
+4. Compute per-subject averages, strengths, weaknesses
+5. Determine preferred difficulty based on score distribution
+
+**Error Handling:**
+- 401: Not authenticated
+- 404: Child not found
+- 403: Not the child's parent
+
+---
+
+### generate-lesson-content
+Generate AI-powered lesson content for a grade level, subject, and topic.
+
+**Path:** `supabase/functions/generate-lesson-content/index.ts`  
+**Method:** POST  
+**Auth:** Required  
+**Rate Limit:** None
+
+**Request Body:**
+```json
+{
+  "grade_level": 3,
+  "subject": "Science",
+  "topic": "Photosynthesis"
+}
+```
+
+**Response:**
+```json
+{
+  "title": "How Plants Make Food",
+  "description": "Learn how plants use sunlight to make their own food.",
+  "content_markdown": "# How Plants Make Food\n\n...",
+  "quiz_questions": [
+    {
+      "question": "What do plants need?",
+      "options": ["Sunlight", "Darkness", "Rocks", "Metal"],
+      "correct_answer": 0,
+      "explanation": "Plants need sunlight for photosynthesis."
+    }
+  ],
+  "estimated_minutes": 15,
+  "points_value": 75,
+  "difficulty": "medium"
+}
+```
+
+**AI Model:** `google/gemini-2.5-pro` (Lovable AI)
+
+**Age Guidance:** Prompt adapts language complexity based on grade level (K-2 simple, 3-5 moderate, 6-8 academic, 9-12 college-prep).
+
+**Error Handling:**
+- 400: Missing required fields
+- 500: AI generation or JSON parse failure
+
+---
+
+### delete-child-account
+Schedule, cancel, or execute child account deletion with 7-day grace period.
+
+**Path:** `supabase/functions/delete-child-account/index.ts`  
+**Method:** POST  
+**Auth:** Required  
+**Rate Limit:** None
+
+**Request Body:**
+```json
+{
+  "child_id": "uuid",
+  "action": "schedule"
+}
+```
+
+**Actions:**
+- `schedule`: Sets `deletion_scheduled_at` to 7 days in the future
+- `cancel`: Clears scheduled deletion
+- `execute`: Marks account as deleted (sets `deleted_at`)
+
+**Response (schedule):**
+```json
+{
+  "message": "Deletion scheduled",
+  "deletion_date": "2026-03-15T12:00:00.000Z"
+}
+```
+
+**Security:** Verifies parent owns child via RLS before any action.
+
+**Error Handling:**
+- 401: Not authenticated
+- 403: Child not found or access denied
+- 400: Invalid action
+
+---
+
+### export-child-data
+Export all data for a child account (COPPA/GDPR compliance).
+
+**Path:** `supabase/functions/export-child-data/index.ts`  
+**Method:** POST  
+**Auth:** Required  
+**Rate Limit:** None
+
+**Request Body:**
+```json
+{
+  "child_id": "uuid",
+  "format": "json"
+}
+```
+
+**Response:** JSON containing child profile, learning progress, emotion logs (encrypted fields), screen time sessions, analytics events, parent-child messages, and created lessons.
+
+**Security:**
+- Verifies parent owns child
+- Emotion log sensitive fields exported as encrypted bytea columns
+- Supports `json` and `csv` formats
+
+**Error Handling:**
+- 401: Not authenticated
+- 403: Child not found or access denied
+
+---
+
+### generate-nudges
+Generate personalized engagement nudges using rule-based and AI-powered logic.
+
+**Path:** `supabase/functions/generate-nudges/index.ts`  
+**Method:** POST  
+**Auth:** Required  
+**Rate Limit:** None
+
+**Request Body:**
+```json
+{
+  "childId": "uuid",
+  "forceRegenerate": false
+}
+```
+
+**Response:**
+```json
+{
+  "generated": 3,
+  "nudges": [
+    {
+      "nudge_type": "incomplete_setup",
+      "title": "Personalize Your Experience",
+      "message": "Setting up learning preferences helps us recommend perfect lessons!",
+      "action_url": "/settings?tab=preferences",
+      "priority": 7,
+      "confidence_score": 0.95
+    }
+  ]
+}
+```
+
+**Implementation:**
+1. Rule-based nudges (fast, no AI): incomplete setup, inactivity, streaks
+2. AI-enhanced nudges (optional): personalized suggestions via Lovable AI
+3. Inserts nudges into `ai_nudges` table
+4. Deduplicates against existing active nudges
+
+**Error Handling:**
+- 401: Not authenticated
+- 500: Database or AI error
+
+---
+
+### generate-platform-images
+Generate images for platform UI (badges, mascots, illustrations) using Lovable AI.
+
+**Path:** `supabase/functions/generate-platform-images/index.ts`  
+**Method:** POST  
+**Auth:** Required  
+**Rate Limit:** None
+
+**Request Body (single):**
+```json
+{
+  "imageType": "badge",
+  "title": "Math Wizard",
+  "prompt": "A golden badge with math symbols",
+  "saveToStorage": true
+}
+```
+
+**Request Body (batch):**
+```json
+{
+  "images": [
+    { "imageType": "badge", "title": "Math Wizard", "prompt": "..." },
+    { "imageType": "mascot", "title": "Sunny", "prompt": "..." }
+  ]
+}
+```
+
+**AI Model:** `google/gemini-2.5-flash-image-preview` (Lovable AI)
+
+**Error Handling:** Continues processing on individual failures, returns per-image success/error.
+
+---
+
+### generate-recommendations
+Generate personalized lesson recommendations based on learning profile.
+
+**Path:** `supabase/functions/generate-recommendations/index.ts`  
+**Method:** POST  
+**Auth:** Required  
+**Rate Limit:** None
+
+**Request Body:**
+```json
+{
+  "childId": "uuid",
+  "count": 5,
+  "filterSubjects": ["math", "science"]
+}
+```
+
+**Response:**
+```json
+{
+  "recommendations": [
+    { "id": "uuid", "title": "Fractions Fun", "subject": "math", "reason": "Strengthen division skills" }
+  ],
+  "profile_summary": { "strengths": ["reading"], "weaknesses": ["math"] }
+}
+```
+
+**Implementation:**
+1. Verify child ownership
+2. Fetch or compute learning profile
+3. Fetch available lessons matching grade level
+4. Score and rank lessons by relevance (weakness-first, then diversity)
+5. Return top N recommendations with reasoning
+
+**Error Handling:**
+- 401: Not authenticated
+- 403: Unauthorized access
+- 404: Child not found
+
+---
+
+### performance-alerts
+Check Core Web Vitals and generate performance alerts.
+
+**Path:** `supabase/functions/performance-alerts/index.ts`  
+**Method:** POST  
+**Auth:** Service role (internal)  
+**Rate Limit:** None
+
+**Response:**
+```json
+{
+  "success": true,
+  "alerts": ["🚨 LCP Alert: 15.2% of users experiencing poor LCP (avg: 3200ms)"],
+  "metrics_checked": 150,
+  "timestamp": "2026-03-08T12:00:00Z"
+}
+```
+
+**Checks:** LCP (>2500ms), FID (>100ms), CLS (>0.1), error rate (>1%).
+
+---
+
+### security-alert
+Log and dispatch security incident alerts.
+
+**Path:** `supabase/functions/security-alert/index.ts`  
+**Method:** POST  
+**Auth:** Not required (service-to-service)  
+**Rate Limit:** None
+
+**Request Body:**
+```json
+{
+  "severity": "high",
+  "type": "brute_force_attempt",
+  "message": "Multiple failed login attempts from IP 1.2.3.4",
+  "metadata": { "ip": "1.2.3.4", "attempts": 50 }
+}
+```
+
+**Dispatch:**
+- All alerts → `security_alerts` table
+- High/critical → Slack webhook (if `SLACK_WEBHOOK_URL` configured)
+- Critical → Email to security team (if `SECURITY_TEAM_EMAIL` configured)
+
+---
+
+### seed-lessons
+Seed AI-generated lessons for all grade levels. Admin only.
+
+**Path:** `supabase/functions/seed-lessons/index.ts`  
+**Method:** POST  
+**Auth:** Admin only (verified via `is_current_user_admin` RPC)  
+**Rate Limit:** None
+
+**Request Body:**
+```json
+{
+  "grades": [0, 1, 2, 3],
+  "subjects": ["Reading", "Math", "Science"],
+  "count": 10
+}
+```
+
+**Implementation:** Generates 50 lessons per grade (10 per subject × 5 subjects) using Lovable AI. Inserts into `lessons` table.
+
+---
+
+### seed-videos
+Seed the K-12 video library with sample educational videos. Admin only.
+
+**Path:** `supabase/functions/seed-videos/index.ts`  
+**Method:** POST  
+**Auth:** Admin only  
+**Rate Limit:** None
+
+**Response:**
+```json
+{
+  "success": true,
+  "videosCreated": 30
+}
+```
+
+**Content:** Pre-defined video data covering K-12 with titles, transcripts, chapter markers, quiz timestamps, and learning objectives.
+
+---
+
+### survey-analytics
+Calculate NPS scores and survey feedback analytics.
+
+**Path:** `supabase/functions/survey-analytics/index.ts`  
+**Method:** POST  
+**Auth:** Service role (internal)  
+**Rate Limit:** None
+
+**Response:**
+```json
+{
+  "success": true,
+  "analytics": {
+    "by_score": { "promoters": 30, "passives": 10, "detractors": 5 },
+    "total_responses": 45,
+    "nps_score": 56,
+    "common_themes": ["engaging", "fun", "more content"]
+  }
+}
+```
+
+**Implementation:** Fetches `survey_responses`, calculates NPS (promoters − detractors / total × 100), extracts keyword themes.
+
+---
+
+### track-video-analytics
+Track video viewing events and engagement metrics.
+
+**Path:** `supabase/functions/track-video-analytics/index.ts`  
+**Method:** POST  
+**Auth:** Not required  
+**Rate Limit:** None
+
+**Request Body:**
+```json
+{
+  "video_id": "uuid",
+  "child_id": "uuid",
+  "event_type": "complete",
+  "event_data": { "watch_duration": 300 }
+}
+```
+
+**Event Types:** `view`, `play`, `pause`, `complete`, `quiz_answer`, `chapter_view`
+
+**Implementation:** Inserts event into `video_analytics` table, updates aggregate `video_stats` on completion.
+
+---
+
+### verify-backups
+Verify database backup integrity and record counts.
+
+**Path:** `supabase/functions/verify-backups/index.ts`  
+**Method:** POST  
+**Auth:** Not required (service-to-service)  
+**Rate Limit:** None
+
+**Response:**
+```json
+{
+  "timestamp": "2026-03-08T12:00:00Z",
+  "status": "success",
+  "database_accessible": true,
+  "record_counts": { "children": 150, "lessons": 500, "user_progress": 2500 },
+  "total_records": 4050,
+  "rls_active": true,
+  "checks_passed": true
+}
+```
+
+**Checks:** Database connectivity, record counts for critical tables, RLS policy verification.
+
+---
 
 ### Basic Pattern
 

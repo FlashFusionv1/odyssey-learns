@@ -312,6 +312,6 @@ Inner Odyssey is proprietary software. All rights reserved.
 
 ---
 
-**Last Updated:** 2025-12-30
-**Version:** 1.2.0 (Beta)
+**Last Updated:** 2026-03-08
+**Version:** 2.0.0 (Beta)
 **Maintainer:** Inner Odyssey Development Team

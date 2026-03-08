@@ -149,14 +149,20 @@ graph TD
 - ErrorBoundary.tsx - Global error catcher
 
 **gamification/** - Points and rewards
+- Leaderboard.tsx - Age-adaptive leaderboard
 - LessonTokenDisplay.tsx - Token balance
-- PointCounter.tsx - Point animations
-- ProgressBar.tsx - Progress visualization
-- StreakTracker.tsx - Daily streak display
+
+**games/** - Multiplayer features
+- GameLobby.tsx - Game lobby
+- GameQuestion.tsx - Game question display
+- GameResults.tsx - Game results
+- GameSelector.tsx - Game picker
 
 **layout/** - Page layouts
 - AgeAdaptiveNav.tsx - Age-specific navigation
 - AppLayout.tsx - Main app wrapper
+- LandingNav.tsx - Landing page navigation
+- LandingFooter.tsx - Landing page footer
 - MobileOptimized.tsx - Mobile-first layout
 - Navigation.tsx - Primary navigation
 - ParentLayout.tsx - Parent portal wrapper

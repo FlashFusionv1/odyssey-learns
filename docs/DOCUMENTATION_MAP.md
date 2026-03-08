@@ -102,12 +102,20 @@ docs/
 ```
 docs/
 ├── ONBOARDING_SYSTEM.md         # User onboarding
-├── EDGE_FUNCTIONS.md            # Backend functions
+├── EDGE_FUNCTIONS.md            # Backend functions (26 functions)
 ├── PWA_SETUP.md                 # PWA configuration
 ├── ROUTING.md                   # Route structure
 └── features/
     └── NARRATION_FEATURE.md     # Voice narration
 ```
+
+### Interactive Documentation
+| Resource | URL | Description |
+|----------|-----|-------------|
+| **Docs Site** | [/docs](/docs) | Searchable documentation with 63+ files |
+| **API Docs** | [/api-docs](/api-docs) | Interactive Swagger-style API explorer |
+| **OpenAPI Spec** | [/api/openapi.json](/api/openapi.json) | Raw OpenAPI 3.1 specification |
+| **TypeScript Types** | `src/types/api.ts` | Auto-generated API request/response types |
 
 ### Project Planning
 ```
@@ -127,9 +135,11 @@ docs/
 | Need | Go To |
 |------|-------|
 | **Browse All Docs** | [/docs](/docs) (searchable documentation site) |
+| **Explore API** | [/api-docs](/api-docs) (interactive API explorer) |
 | Start developing | [DEVELOPER_CHEAT_SHEET.md](./DEVELOPER_CHEAT_SHEET.md) |
 | Understand architecture | [ARCHITECTURE.md](./ARCHITECTURE.md) |
 | Query the database | [API_INTEGRATION.md](./API_INTEGRATION.md) |
+| Edge function reference | [EDGE_FUNCTIONS.md](./EDGE_FUNCTIONS.md) |
 | Add a new component | [COMPONENTS.md](./COMPONENTS.md) |
 | Write tests | [TESTING_GUIDE.md](./TESTING_GUIDE.md) |
 | Fix security issue | [SECURITY.md](./SECURITY.md) |
@@ -148,8 +158,10 @@ docs/
 | Security Docs | 5 |
 | Testing Docs | 5 |
 | Operations Docs | 7 |
+| Edge Functions | 26 |
+| OpenAPI Endpoints | 25 |
 
-**Last Updated:** 2026-01-23
+**Last Updated:** 2026-03-08
 
 ---
 

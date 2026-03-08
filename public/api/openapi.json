@@ -688,6 +688,297 @@
           }
         }
       }
+    },
+    "/analyze-learning-profile": {
+      "post": {
+        "tags": ["AI"],
+        "summary": "Analyze Learning Profile",
+        "description": "Analyze a child's learning profile using activity history, progress data, and quiz performance to identify strengths, weaknesses, and preferred learning style.",
+        "operationId": "analyzeLearningProfile",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AnalyzeLearningProfileRequest" },
+              "example": { "childId": "uuid", "forceRefresh": false }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Learning profile analysis",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AnalyzeLearningProfileResponse" },
+                "example": {
+                  "profile": {
+                    "strengths": [{ "subject": "math", "avg_score": 92 }],
+                    "weaknesses": [{ "subject": "reading", "avg_score": 65 }],
+                    "preferred_subjects": ["math", "science"],
+                    "average_quiz_score": 78,
+                    "preferred_difficulty": "medium"
+                  },
+                  "cached": false,
+                  "processing_time_ms": 450
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } },
+          "404": { "description": "Child not found" }
+        }
+      }
+    },
+    "/generate-lesson-content": {
+      "post": {
+        "tags": ["Lessons"],
+        "summary": "Generate Lesson Content",
+        "description": "Generate AI-powered lesson content for a given grade level, subject, and topic. Returns structured JSON with title, markdown content, quiz questions, and metadata.",
+        "operationId": "generateLessonContent",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/GenerateLessonContentRequest" },
+              "example": { "grade_level": 3, "subject": "Science", "topic": "Photosynthesis" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Generated lesson content",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GenerateLessonContentResponse" },
+                "example": {
+                  "title": "How Plants Make Food",
+                  "description": "Learn how plants use sunlight to make their own food.",
+                  "content_markdown": "# How Plants Make Food\n\n...",
+                  "quiz_questions": [{ "question": "What do plants need?", "options": ["Sunlight", "Darkness"], "correct_answer": 0, "explanation": "Plants need sunlight." }],
+                  "estimated_minutes": 15,
+                  "points_value": 75,
+                  "difficulty": "medium"
+                }
+              }
+            }
+          },
+          "400": { "description": "Missing required fields" },
+          "500": { "description": "AI generation error" }
+        }
+      }
+    },
+    "/generate-recommendations": {
+      "post": {
+        "tags": ["AI"],
+        "summary": "Generate Lesson Recommendations",
+        "description": "Generate personalized lesson recommendations for a child based on their learning profile, completed lessons, and performance data.",
+        "operationId": "generateRecommendations",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/GenerateRecommendationsRequest" },
+              "example": { "childId": "uuid", "count": 5, "filterSubjects": ["math", "science"] }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Recommended lessons",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GenerateRecommendationsResponse" },
+                "example": {
+                  "recommendations": [{ "id": "uuid", "title": "Fractions Fun", "subject": "math", "reason": "Strengthen division skills" }],
+                  "profile_summary": { "strengths": ["reading"], "weaknesses": ["math"] }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Access denied" }
+        }
+      }
+    },
+    "/generate-weekly-reports": {
+      "post": {
+        "tags": ["Analytics"],
+        "summary": "Generate Weekly Reports",
+        "description": "Generate weekly progress reports for all children with weekly_report_enabled. Intended for cron/scheduled invocation.",
+        "operationId": "generateWeeklyReports",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/GenerateWeeklyReportsRequest" },
+              "example": { "weekStartDate": "2026-03-01" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reports generated",
+            "content": {
+              "application/json": {
+                "example": { "success": true, "reportsGenerated": 45, "emailsSent": 45, "errors": [] }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/generate-platform-images": {
+      "post": {
+        "tags": ["AI"],
+        "summary": "Generate Platform Images",
+        "description": "Generate or batch-generate images for platform UI (badges, mascots, illustrations) using Lovable AI image generation.",
+        "operationId": "generatePlatformImages",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/GeneratePlatformImagesRequest" },
+              "example": { "imageType": "badge", "title": "Math Wizard", "prompt": "A golden badge with math symbols" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Generated image results",
+            "content": {
+              "application/json": {
+                "example": { "results": [{ "title": "Math Wizard", "success": true, "imageUrl": "https://..." }] }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/batch-lesson-generation": {
+      "post": {
+        "tags": ["Lessons"],
+        "summary": "Batch Lesson Generation",
+        "description": "Generate multiple lessons in one request. Admin only.",
+        "operationId": "batchLessonGeneration",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BatchLessonGenerationRequest" },
+              "example": { "gradeLevel": 3, "subjects": ["math", "science"], "count": 10, "topics": ["Multiplication", "Plants"] }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Batch generation results",
+            "content": {
+              "application/json": {
+                "example": { "success": true, "lessonsGenerated": 10, "lessonIds": ["uuid1", "uuid2"], "errors": [] }
+              }
+            }
+          },
+          "403": { "description": "Admin access required" }
+        }
+      }
+    },
+    "/request-lesson-share": {
+      "post": {
+        "tags": ["Lessons"],
+        "summary": "Request Lesson Share",
+        "description": "Submit a child-generated lesson for public sharing review and approval.",
+        "operationId": "requestLessonShare",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RequestLessonShareRequest" },
+              "example": { "lessonId": "uuid", "childId": "uuid" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lesson submitted for review",
+            "content": {
+              "application/json": {
+                "example": { "success": true, "reviewId": "uuid", "message": "Lesson submitted for review" }
+              }
+            }
+          },
+          "403": { "description": "User doesn't own lesson" }
+        }
+      }
+    },
+    "/seed-lessons": {
+      "post": {
+        "tags": ["System"],
+        "summary": "Seed Lessons (Admin)",
+        "description": "Seed AI-generated lessons for all grade levels and subjects. Admin only.",
+        "operationId": "seedLessons",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "example": { "grades": [0, 1, 2], "subjects": ["Math", "Reading"], "count": 10 }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Seed results", "content": { "application/json": { "example": { "success": true, "lessonsCreated": 50 } } } },
+          "403": { "description": "Admin access required" }
+        }
+      }
+    },
+    "/seed-kindergarten-lessons": {
+      "post": {
+        "tags": ["System"],
+        "summary": "Seed Kindergarten Lessons (Admin)",
+        "description": "Seed 50 pre-defined Kindergarten lessons from lesson outlines. Admin only.",
+        "operationId": "seedKindergartenLessons",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": { "application/json": { "example": { "force": true } } }
+        },
+        "responses": {
+          "200": { "description": "Seed results", "content": { "application/json": { "example": { "success": true, "lessonsCreated": 50 } } } }
+        }
+      }
+    },
+    "/seed-grade-2-lessons": {
+      "post": {
+        "tags": ["System"],
+        "summary": "Seed Grade 2 Lessons (Admin)",
+        "description": "Seed 50 pre-defined Grade 2 lessons from lesson outlines. Admin only.",
+        "operationId": "seedGrade2Lessons",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": { "application/json": { "example": { "force": true } } }
+        },
+        "responses": {
+          "200": { "description": "Seed results", "content": { "application/json": { "example": { "success": true, "lessonsCreated": 50 } } } }
+        }
+      }
+    },
+    "/seed-videos": {
+      "post": {
+        "tags": ["System"],
+        "summary": "Seed Video Library (Admin)",
+        "description": "Seed the comprehensive K-12 video library with sample educational videos. Admin only.",
+        "operationId": "seedVideos",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Seed results", "content": { "application/json": { "example": { "success": true, "videosCreated": 30 } } } }
+        }
+      }
     }
   },
   "components": {
@@ -1111,6 +1402,103 @@
           "total_records": { "type": "integer" },
           "rls_active": { "type": "boolean" },
           "checks_passed": { "type": "boolean" }
+        }
+      },
+      "AnalyzeLearningProfileRequest": {
+        "type": "object",
+        "required": ["childId"],
+        "properties": {
+          "childId": { "type": "string", "format": "uuid" },
+          "forceRefresh": { "type": "boolean", "default": false }
+        }
+      },
+      "AnalyzeLearningProfileResponse": {
+        "type": "object",
+        "properties": {
+          "profile": {
+            "type": "object",
+            "properties": {
+              "strengths": { "type": "array", "items": { "type": "object" } },
+              "weaknesses": { "type": "array", "items": { "type": "object" } },
+              "preferred_subjects": { "type": "array", "items": { "type": "string" } },
+              "average_quiz_score": { "type": "number" },
+              "preferred_difficulty": { "type": "string" }
+            }
+          },
+          "cached": { "type": "boolean" },
+          "processing_time_ms": { "type": "integer" }
+        }
+      },
+      "GenerateLessonContentRequest": {
+        "type": "object",
+        "required": ["grade_level", "subject", "topic"],
+        "properties": {
+          "grade_level": { "type": "integer", "minimum": 0, "maximum": 12 },
+          "subject": { "type": "string" },
+          "topic": { "type": "string" }
+        }
+      },
+      "GenerateLessonContentResponse": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "content_markdown": { "type": "string" },
+          "quiz_questions": { "type": "array", "items": { "$ref": "#/components/schemas/QuizQuestion" } },
+          "estimated_minutes": { "type": "integer" },
+          "points_value": { "type": "integer" },
+          "difficulty": { "type": "string" }
+        }
+      },
+      "GenerateRecommendationsRequest": {
+        "type": "object",
+        "required": ["childId"],
+        "properties": {
+          "childId": { "type": "string", "format": "uuid" },
+          "count": { "type": "integer", "default": 5 },
+          "filterSubjects": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "GenerateRecommendationsResponse": {
+        "type": "object",
+        "properties": {
+          "recommendations": { "type": "array", "items": { "type": "object" } },
+          "profile_summary": { "type": "object" }
+        }
+      },
+      "GenerateWeeklyReportsRequest": {
+        "type": "object",
+        "properties": {
+          "weekStartDate": { "type": "string", "format": "date" }
+        }
+      },
+      "GeneratePlatformImagesRequest": {
+        "type": "object",
+        "required": ["title", "prompt"],
+        "properties": {
+          "imageType": { "type": "string", "enum": ["dashboard", "subject", "badge", "mascot", "illustration", "ui"] },
+          "imageCategory": { "type": "string" },
+          "title": { "type": "string" },
+          "prompt": { "type": "string" },
+          "saveToStorage": { "type": "boolean", "default": false }
+        }
+      },
+      "BatchLessonGenerationRequest": {
+        "type": "object",
+        "required": ["gradeLevel", "subjects"],
+        "properties": {
+          "gradeLevel": { "type": "integer", "minimum": 0, "maximum": 12 },
+          "subjects": { "type": "array", "items": { "type": "string" } },
+          "count": { "type": "integer", "default": 10 },
+          "topics": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "RequestLessonShareRequest": {
+        "type": "object",
+        "required": ["lessonId", "childId"],
+        "properties": {
+          "lessonId": { "type": "string", "format": "uuid" },
+          "childId": { "type": "string", "format": "uuid" }
         }
       }
     }

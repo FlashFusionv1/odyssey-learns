@@ -1403,6 +1403,103 @@
           "rls_active": { "type": "boolean" },
           "checks_passed": { "type": "boolean" }
         }
+      },
+      "AnalyzeLearningProfileRequest": {
+        "type": "object",
+        "required": ["childId"],
+        "properties": {
+          "childId": { "type": "string", "format": "uuid" },
+          "forceRefresh": { "type": "boolean", "default": false }
+        }
+      },
+      "AnalyzeLearningProfileResponse": {
+        "type": "object",
+        "properties": {
+          "profile": {
+            "type": "object",
+            "properties": {
+              "strengths": { "type": "array", "items": { "type": "object" } },
+              "weaknesses": { "type": "array", "items": { "type": "object" } },
+              "preferred_subjects": { "type": "array", "items": { "type": "string" } },
+              "average_quiz_score": { "type": "number" },
+              "preferred_difficulty": { "type": "string" }
+            }
+          },
+          "cached": { "type": "boolean" },
+          "processing_time_ms": { "type": "integer" }
+        }
+      },
+      "GenerateLessonContentRequest": {
+        "type": "object",
+        "required": ["grade_level", "subject", "topic"],
+        "properties": {
+          "grade_level": { "type": "integer", "minimum": 0, "maximum": 12 },
+          "subject": { "type": "string" },
+          "topic": { "type": "string" }
+        }
+      },
+      "GenerateLessonContentResponse": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "content_markdown": { "type": "string" },
+          "quiz_questions": { "type": "array", "items": { "$ref": "#/components/schemas/QuizQuestion" } },
+          "estimated_minutes": { "type": "integer" },
+          "points_value": { "type": "integer" },
+          "difficulty": { "type": "string" }
+        }
+      },
+      "GenerateRecommendationsRequest": {
+        "type": "object",
+        "required": ["childId"],
+        "properties": {
+          "childId": { "type": "string", "format": "uuid" },
+          "count": { "type": "integer", "default": 5 },
+          "filterSubjects": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "GenerateRecommendationsResponse": {
+        "type": "object",
+        "properties": {
+          "recommendations": { "type": "array", "items": { "type": "object" } },
+          "profile_summary": { "type": "object" }
+        }
+      },
+      "GenerateWeeklyReportsRequest": {
+        "type": "object",
+        "properties": {
+          "weekStartDate": { "type": "string", "format": "date" }
+        }
+      },
+      "GeneratePlatformImagesRequest": {
+        "type": "object",
+        "required": ["title", "prompt"],
+        "properties": {
+          "imageType": { "type": "string", "enum": ["dashboard", "subject", "badge", "mascot", "illustration", "ui"] },
+          "imageCategory": { "type": "string" },
+          "title": { "type": "string" },
+          "prompt": { "type": "string" },
+          "saveToStorage": { "type": "boolean", "default": false }
+        }
+      },
+      "BatchLessonGenerationRequest": {
+        "type": "object",
+        "required": ["gradeLevel", "subjects"],
+        "properties": {
+          "gradeLevel": { "type": "integer", "minimum": 0, "maximum": 12 },
+          "subjects": { "type": "array", "items": { "type": "string" } },
+          "count": { "type": "integer", "default": 10 },
+          "topics": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "RequestLessonShareRequest": {
+        "type": "object",
+        "required": ["lessonId", "childId"],
+        "properties": {
+          "lessonId": { "type": "string", "format": "uuid" },
+          "childId": { "type": "string", "format": "uuid" }
+        }
       }
     }
   }

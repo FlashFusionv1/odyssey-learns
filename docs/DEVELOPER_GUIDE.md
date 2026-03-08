@@ -405,6 +405,11 @@ Required environment variables:
 ## Related Documentation
 
 - [Architecture](./ARCHITECTURE.md)
-- [API Documentation](./API.md)
+- [API Integration](./API_INTEGRATION.md)
+- [Edge Functions](./EDGE_FUNCTIONS.md)
+- [Database Schema](./DATABASE_SCHEMA.md)
 - [Testing Guide](./TESTING.md)
 - [Deployment Guide](./DEPLOYMENT.md)
+- [Security](./SECURITY.md)
+- [Interactive API Explorer](/api-docs)
+- [Searchable Docs Site](/docs)

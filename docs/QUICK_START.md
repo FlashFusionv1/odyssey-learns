@@ -179,12 +179,16 @@ npx playwright test --headed
 - 🔒 Read [SECURITY.md](./SECURITY.md) for security practices
 - 🧪 Read [TESTING_GUIDE.md](./TESTING_GUIDE.md) for testing patterns
 - 📊 Read [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md) for data model
+- 🔌 Read [EDGE_FUNCTIONS.md](./EDGE_FUNCTIONS.md) for backend functions
+- 📚 Browse the [Searchable Docs Site](/docs) for all documentation
+- 🛠️ Explore the [Interactive API Explorer](/api-docs)
 
 ---
 
 ## Getting Help
 
-- **Docs**: Browse the `docs/` folder
+- **Docs Site**: Browse `/docs` in the app (full-text search)
+- **API Explorer**: Browse `/api-docs` for Edge Function docs
 - **Discord**: Join our community (link in README)
 - **Issues**: Open a GitHub issue for bugs
 

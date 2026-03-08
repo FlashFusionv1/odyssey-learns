@@ -1,7 +1,7 @@
 # Developer Guide
 
-> **Version:** 1.6.0  
-> **Last Updated:** 2026-01-17
+> **Version:** 2.0.0  
+> **Last Updated:** 2026-03-08
 
 ## Quick Start
 

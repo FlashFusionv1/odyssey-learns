@@ -294,6 +294,121 @@ export interface VerifyBackupsResponse {
 }
 
 // ============================================
+// Analyze Learning Profile
+// ============================================
+
+export interface AnalyzeLearningProfileRequest {
+  childId: string;
+  forceRefresh?: boolean;
+}
+
+export interface AnalyzeLearningProfileResponse {
+  profile: {
+    strengths: Array<{ subject: string; avg_score: number }>;
+    weaknesses: Array<{ subject: string; avg_score: number }>;
+    preferred_subjects: string[];
+    average_quiz_score: number;
+    preferred_difficulty: string;
+  };
+  cached: boolean;
+  processing_time_ms: number;
+}
+
+// ============================================
+// Generate Lesson Content
+// ============================================
+
+export interface GenerateLessonContentRequest {
+  grade_level: number;
+  subject: string;
+  topic: string;
+}
+
+export interface GenerateLessonContentResponse {
+  title: string;
+  description: string;
+  content_markdown: string;
+  quiz_questions: Array<{
+    question: string;
+    options: string[];
+    correct_answer: number;
+    explanation: string;
+  }>;
+  estimated_minutes: number;
+  points_value: number;
+  difficulty: string;
+}
+
+// ============================================
+// Generate Recommendations
+// ============================================
+
+export interface GenerateRecommendationsRequest {
+  childId: string;
+  count?: number;
+  filterSubjects?: string[];
+}
+
+export interface GenerateRecommendationsResponse {
+  recommendations: Array<{
+    id: string;
+    title: string;
+    subject: string;
+    reason: string;
+  }>;
+  profile_summary: {
+    strengths: string[];
+    weaknesses: string[];
+  };
+}
+
+// ============================================
+// Generate Weekly Reports
+// ============================================
+
+export interface GenerateWeeklyReportsRequest {
+  weekStartDate?: string;
+}
+
+// ============================================
+// Generate Platform Images
+// ============================================
+
+export type ImageType = 'dashboard' | 'subject' | 'badge' | 'mascot' | 'illustration' | 'ui';
+
+export interface GeneratePlatformImagesRequest {
+  imageType: ImageType;
+  imageCategory?: string;
+  title: string;
+  prompt: string;
+  saveToStorage?: boolean;
+}
+
+export interface BatchImageGenerationRequest {
+  images: GeneratePlatformImagesRequest[];
+}
+
+// ============================================
+// Batch Lesson Generation
+// ============================================
+
+export interface BatchLessonGenerationRequest {
+  gradeLevel: number;
+  subjects: string[];
+  count?: number;
+  topics?: string[];
+}
+
+// ============================================
+// Request Lesson Share
+// ============================================
+
+export interface RequestLessonShareRequest {
+  lessonId: string;
+  childId: string;
+}
+
+// ============================================
 // API Client Helper Types
 // ============================================
 
@@ -302,8 +417,15 @@ export type EdgeFunctionName =
   | 'health-check'
   | 'ai-insights'
   | 'ai-tutor'
+  | 'analyze-learning-profile'
   | 'generate-custom-lesson'
+  | 'generate-lesson-content'
   | 'generate-nudges'
+  | 'generate-recommendations'
+  | 'generate-weekly-reports'
+  | 'generate-platform-images'
+  | 'batch-lesson-generation'
+  | 'request-lesson-share'
   | 'verify-recaptcha'
   | 'export-child-data'
   | 'delete-child-account'
@@ -312,6 +434,10 @@ export type EdgeFunctionName =
   | 'survey-analytics'
   | 'performance-alerts'
   | 'security-alert'
+  | 'seed-lessons'
+  | 'seed-kindergarten-lessons'
+  | 'seed-grade-2-lessons'
+  | 'seed-videos'
   | 'verify-backups';
 
 /** Map of function names to their request/response types */
@@ -319,8 +445,15 @@ export interface EdgeFunctionMap {
   'health-check': { request: void; response: HealthCheckResponse };
   'ai-insights': { request: AiInsightsRequest; response: AiInsightsResponse };
   'ai-tutor': { request: AiTutorRequest; response: ReadableStream };
+  'analyze-learning-profile': { request: AnalyzeLearningProfileRequest; response: AnalyzeLearningProfileResponse };
   'generate-custom-lesson': { request: GenerateCustomLessonRequest; response: GenerateCustomLessonResponse };
+  'generate-lesson-content': { request: GenerateLessonContentRequest; response: GenerateLessonContentResponse };
   'generate-nudges': { request: GenerateNudgesRequest; response: GenerateNudgesResponse };
+  'generate-recommendations': { request: GenerateRecommendationsRequest; response: GenerateRecommendationsResponse };
+  'generate-weekly-reports': { request: GenerateWeeklyReportsRequest; response: SuccessResponse };
+  'generate-platform-images': { request: GeneratePlatformImagesRequest; response: SuccessResponse };
+  'batch-lesson-generation': { request: BatchLessonGenerationRequest; response: SuccessResponse };
+  'request-lesson-share': { request: RequestLessonShareRequest; response: SuccessResponse };
   'verify-recaptcha': { request: VerifyRecaptchaRequest; response: VerifyRecaptchaResponse };
   'export-child-data': { request: ExportChildDataRequest; response: ExportChildDataResponse };
   'delete-child-account': { request: DeleteChildAccountRequest; response: DeleteChildAccountResponse };
@@ -329,5 +462,9 @@ export interface EdgeFunctionMap {
   'survey-analytics': { request: void; response: SurveyAnalyticsResponse };
   'performance-alerts': { request: void; response: PerformanceAlertsResponse };
   'security-alert': { request: SecurityAlertRequest; response: SuccessResponse };
+  'seed-lessons': { request: Record<string, unknown>; response: SuccessResponse };
+  'seed-kindergarten-lessons': { request: Record<string, unknown>; response: SuccessResponse };
+  'seed-grade-2-lessons': { request: Record<string, unknown>; response: SuccessResponse };
+  'seed-videos': { request: void; response: SuccessResponse };
   'verify-backups': { request: void; response: VerifyBackupsResponse };
 }

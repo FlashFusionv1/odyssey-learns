@@ -7,7 +7,7 @@
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - Git
 - Modern browser (Chrome, Firefox, Safari, Edge)
 

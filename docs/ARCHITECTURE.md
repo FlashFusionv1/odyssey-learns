@@ -169,15 +169,25 @@ graph TD
 - TopBar.tsx - Header bar
 
 **learning/** - Learning activities
+- AILessonGenerator.tsx - AI lesson creator
 - ChallengeModeToggle.tsx - Difficulty switcher
 - CollaborativeActivity.tsx - Group learning
 - CustomLessonGenerator.tsx - AI lesson creator
 - DigitalNotebook.tsx - Student notes
 - LessonActionButtons.tsx - Lesson controls
+- LessonAudioPlayer.tsx - Audio narration
+- LessonCard.tsx - Lesson display card
+- LessonPreview.tsx - Lesson preview
+- RecommendedLessons.tsx - AI recommendations
 - ReportLessonButton.tsx - Flag content
 - RequestShareButton.tsx - Request approval
 - SafeMarkdown.tsx - Secure markdown renderer
 - ShareLessonModal.tsx - Share dialog
+- TopicSuggestions.tsx - Topic suggestions
+
+**messaging/** - Communication features
+- VideoMessageInbox.tsx - Video messages
+- VideoRecorder.tsx - Record video messages
 
 **monitoring/** - System health
 - HealthStatus.tsx - Status indicator
@@ -186,18 +196,55 @@ graph TD
 **notifications/** - Notification system
 - NotificationBell.tsx - Notification center
 
+**nudges/** - AI-powered nudges
+- NudgeBanner.tsx - Banner nudge display
+- NudgeCard.tsx - Card nudge display
+- NudgeContainer.tsx - Nudge container
+- NudgeModal.tsx - Modal nudge display
+
 **onboarding/** - User onboarding
+- ChildOnboardingTutorial.tsx - Child-specific tutorial
+- DeferredSetupBanner.tsx - Setup reminder
+- FeatureSpotlight.tsx - Feature highlight
+- HelpButton.tsx - Contextual help
+- OnboardingProvider.tsx - Onboarding state
 - OnboardingTutorial.tsx - Guided tour
+- QuickStartWizard.tsx - Quick setup
 
 **parent/** - Parent dashboard widgets
 - AIInsights.tsx - AI-generated insights
 - BonusLessonManager.tsx - Grant bonus lessons
+- DataExportManager.tsx - Data export (GDPR/COPPA)
+- DeleteChildAccount.tsx - Account deletion
+- EngagementScoreCard.tsx - Engagement metrics
+- LiveActivityFeed.tsx - Real-time activity
 - ParentChildMessaging.tsx - In-app messaging
+- ParentNotificationCenter.tsx - Notification hub
+- PeerConnectionApprovals.tsx - Friend approvals
 - PendingShareApprovals.tsx - Approve lesson shares
 - RewardManagement.tsx - Create rewards
 - RewardRedemptions.tsx - Approve redemptions
 - ScreenTimeTracker.tsx - Screen time tracking
 - WeeklyReportCard.tsx - Weekly summary
+
+**play/** - Play zone activities
+- ActivityCard.tsx - Activity display
+- ActivityPlayer.tsx - Activity player
+- CalmZone.tsx - Relaxation activities
+- ContentTypeFilter.tsx - Content filter
+
+**progress/** - Progress analytics
+- AchievementTimeline.tsx - Achievement history
+- ActivityTrendChart.tsx - Activity trends
+- EngagementOverview.tsx - Engagement metrics
+- LearningProfileCard.tsx - Learning profile
+- SkillMasteryGrid.tsx - Skill mastery
+- SubjectProgressChart.tsx - Subject progress
+
+**pwa/** - Progressive Web App
+- PWAInstallPrompt.tsx - Install prompt
+- PWASettingsCard.tsx - PWA settings
+- PWAUpdatePrompt.tsx - Update notification
 
 **quests/** - Daily quest system
 - DailyQuest.tsx - Base quest component
@@ -205,6 +252,10 @@ graph TD
 - Elementary35Quest.tsx - 3-5 age tier
 - Middle68Quest.tsx - 6-8 age tier
 - High912Quest.tsx - 9-12 age tier
+
+**room/** - Virtual room
+- DecorationShop.tsx - Buy decorations
+- RoomDisplay.tsx - Room renderer
 
 **social/** - Social features
 - PeerConnections.tsx - Friend system logic

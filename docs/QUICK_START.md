@@ -65,7 +65,7 @@ Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ```bash
 # Development
-npm run dev          # Start dev server (port 8080)
+npm run dev          # Start dev server (port 5173)
 npm run build        # Production build
 npm run preview      # Preview production build
 

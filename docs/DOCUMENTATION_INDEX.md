@@ -1,6 +1,13 @@
 # Documentation Index
 
-> **Complete guide to all Odyssey Learns documentation**
+> **Complete guide to all Inner Odyssey documentation**  
+> **Last Updated:** 2026-03-08 | **Total Documents:** 80+
+
+## 🔍 Interactive Documentation
+
+- **[Searchable Docs Site](/docs)** - Full-text search across all documentation
+- **[Interactive API Explorer](/api-docs)** - Swagger-style Edge Function documentation
+- **[Documentation Map](./DOCUMENTATION_MAP.md)** - Quick navigation by audience
 
 ## 📚 Quick Navigation
 

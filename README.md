@@ -1,8 +1,9 @@
 # Inner Odyssey - The Learning Adventure
 
-[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 [![Beta](https://img.shields.io/badge/status-Beta-yellow.svg)](docs/BETA_LAUNCH_CHECKLIST.md)
+[![Docs](https://img.shields.io/badge/docs-online-green.svg)](/docs)
 
 A comprehensive K-12 educational platform combining emotional intelligence training, academic excellence, and real-world life skills in an engaging, gamified learning environment.
 

@@ -218,7 +218,7 @@ See **[PERFORMANCE.md](docs/PERFORMANCE.md)** for optimization guide.
 ## 🧪 Testing
 
 ### Testing Strategy
-- **Unit Tests:** Component logic, utility functions (Jest + React Testing Library)
+- **Unit Tests:** Component logic, utility functions (Vitest + React Testing Library)
 - **Integration Tests:** User flows, API interactions (Playwright)
 - **End-to-End Tests:** Critical paths (signup, lesson completion, point redemption)
 - **Security Tests:** RLS policy validation, input sanitization

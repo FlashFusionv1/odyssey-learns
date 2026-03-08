@@ -263,44 +263,84 @@ graph TD
 - SharedActivities.tsx - Group activity logic
 - SharedActivitiesUI.tsx - Group activity UI
 
+**teacher/** - Teacher portal
+- AssignmentManager.tsx - Assignment CRUD
+- ClassAnalytics.tsx - Class metrics
+- ClassManagement.tsx - Class/roster management
+- TeacherDashboard.tsx - Teacher home
+- TeacherOnboarding.tsx - Teacher setup
+
+**video/** - Video features
+- VideoLessonCard.tsx - Video lesson card
+- VideoPlayer.tsx - Video playback
+
+**docs/** - Documentation site
+- DocsHome.tsx - Docs landing
+- DocsSidebar.tsx - Category navigation
+- DocsViewer.tsx - Markdown renderer
+
+**ai-tutor/** - AI tutoring
+- AITutorButton.tsx - Trigger button
+- AITutorChat.tsx - Chat interface
+
 **ui/** - shadcn/ui components (50+ components)
 - button.tsx, card.tsx, dialog.tsx, etc.
-- Custom: back-button.tsx, loading-spinner.tsx, password-input.tsx, progress-ring.tsx, subject-badge.tsx
+- Custom: back-button.tsx, loading-spinner.tsx, password-input.tsx, progress-ring.tsx, subject-badge.tsx, stat-card.tsx, status-badge.tsx, feature-card.tsx
 
 ---
 
 ### 3. Business Logic Layer (src/lib/, src/hooks/)
 
-**Custom Hooks:**
+**Custom Hooks (25+ hooks):**
 
 **useAuth.tsx** - Authentication state management
-- Manages user session
-- Provides signUp(), signIn(), signOut()
-- Auto-refreshes tokens
+- Manages user session, signUp(), signIn(), signOut()
+- Auto-refreshes tokens, admin role detection
 
 **useValidatedChild.tsx** - Secure child selection
 - Server-side validation via RLS
 - Prevents localStorage spoofing attacks
-- Auto-corrects invalid selections
 
 **usePlatformLessonQuota.tsx** - Daily lesson quota
-- Checks base limit (5/day)
-- Includes bonus lessons
-- Includes tokens (3/week)
+- Checks base limit (5/day), bonus lessons, tokens (3/week)
 
 **useLessonAnalytics.ts** - Lesson engagement tracking
-- Tracks views, saves, shares
-- Calculates engagement score
 
-**useRecaptcha.tsx** - reCAPTCHA integration
-- Invisible reCAPTCHA v3
-- Score-based verification
+**useRecaptcha.tsx** - reCAPTCHA v3 integration
+
+**useAINudges.tsx** - AI-powered engagement nudges
+
+**useChildProgressAnalytics.tsx** - Progress analytics data
+
+**useChildRoom.tsx** - Virtual room state management
+
+**useEngagementScore.tsx** - Engagement metric calculation
+
+**useLearningProfile.tsx** - Learning profile data
+
+**useMultiplayerGame.tsx** - Multiplayer game state
+
+**useNarration.ts** - Voice narration controls
+
+**useOnboarding.tsx** - Onboarding flow state
+
+**usePWA.tsx** - Progressive Web App lifecycle
+
+**useRealtimeMessages.tsx** - Real-time messaging
+
+**useRealtimePresence.tsx** - User presence tracking
+
+**useRealtimeProgress.tsx** - Live progress updates
+
+**useRecommendations.tsx** - AI-powered lesson recommendations
+
+**useSessionTimeout.tsx** - Session management
+
+**useVideoMessages.tsx** - Video messaging
 
 **use-mobile.tsx** - Responsive breakpoints
-- Detects mobile viewport
 
 **use-toast.ts** - Toast notifications
-- Global notification system
 
 ---
 

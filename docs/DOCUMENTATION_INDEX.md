@@ -137,6 +137,10 @@
 - [x] README_COMPLETE (Comprehensive)
 - [x] CHANGELOG
 - [x] ARCHITECTURE
+- [x] DATABASE_SCHEMA
+- [x] SECURITY
+- [x] AUTHENTICATION
+- [x] COMPLIANCE
 - [x] agents.md
 - [x] claude.md
 - [x] gemini.md
@@ -144,18 +148,28 @@
 - [x] CODEBASE_AUDIT
 - [x] IMPROVEMENT_PLAN
 - [x] REFACTOR_PLAN
+- [x] EDGE_FUNCTIONS
+- [x] API_INTEGRATION
+- [x] COMPONENTS
+- [x] DEVELOPER_GUIDE
+- [x] DEVELOPER_ONBOARDING
+- [x] DEVELOPER_CHEAT_SHEET
+- [x] DEPLOYMENT
+- [x] MONITORING
+- [x] TROUBLESHOOTING
+- [x] TESTING / TESTING_GUIDE
+- [x] ACCESSIBILITY
+- [x] CONTRIBUTING
+- [x] Interactive Docs Site (/docs)
+- [x] Interactive API Explorer (/api-docs)
 
 ### In Progress 🔄
-- [ ] API_DOCUMENTATION.md (Needed)
-- [ ] CONTRIBUTING.md (Needed)
-- [ ] USER_GUIDE.md (Needed)
-- [ ] DEPLOYMENT_GUIDE.md (Needed)
+- [ ] USER_GUIDE.md (End-user focused)
+- [ ] OPERATIONAL_RUNBOOKS.md (Incident procedures)
 
 ### Planned 📝
-- [ ] TESTING_STRATEGY.md
-- [ ] PERFORMANCE_GUIDE.md
-- [ ] MONITORING_GUIDE.md
-- [ ] INCIDENT_RESPONSE.md
+- [ ] PERFORMANCE_GUIDE.md (Optimization guide)
+- [ ] INCIDENT_RESPONSE_GUIDE.md
 
 ---
 

@@ -200,10 +200,10 @@ See **[TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** for comprehensive debuggin
 
 ## 📊 Performance
 
-### Current Metrics (as of 2025-11-15)
+### Current Metrics (as of 2026-03-08)
 - **Lighthouse Score:** 92/100 (mobile)
 - **Load Time:** ~2.1s (initial page load)
-- **Bundle Size:** 743 KB (gzipped)
+- **Bundle Size:** ~850 KB (gzipped)
 - **Uptime:** 99.8% (last 30 days)
 
 ### Optimization Techniques

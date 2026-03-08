@@ -95,6 +95,19 @@ graph TD
 - LessonPerformanceAnalytics.tsx - Student performance
 - StudentPerformanceReport.tsx - Individual reports
 
+**Documentation & API Pages:**
+- DocsPage.tsx - Searchable docs site (/docs)
+- ApiDocs.tsx - Interactive API explorer (/api-docs)
+
+**Additional Pages:**
+- Play.tsx - Play zone with activities
+- KidsRoom.tsx - Virtual room decoration
+- MultiplayerGames.tsx - Multiplayer game lobby
+- Social.tsx - Peer connections
+- TeacherPortal.tsx - Teacher dashboard
+- VideoLibrary.tsx - Video content library
+- VideoPlayer.tsx - Video playback
+
 ---
 
 ### 2. Component Architecture

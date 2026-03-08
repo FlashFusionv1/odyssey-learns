@@ -24,7 +24,7 @@ npm install
 # Start development server
 npm run dev
 
-# Open http://localhost:8080
+# Open http://localhost:5173
 ```
 
 ---

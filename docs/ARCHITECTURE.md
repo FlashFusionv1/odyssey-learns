@@ -449,64 +449,46 @@ type Lesson = Database['public']['Tables']['lessons']['Row'];
 
 ### 5. Backend Layer (supabase/functions/)
 
-**Edge Functions:**
+**Edge Functions (26 total):**
 
-**ai-insights/** - AI-powered parent insights
-- Model: google/gemini-2.5-pro
-- Analyzes recent activity, emotions, performance
-- Generates personalized insights
+**AI & Content Generation:**
+- **ai-insights/** - AI-powered parent insights (gemini-2.5-pro)
+- **ai-tutor/** - Interactive AI tutor chatbot
+- **batch-lesson-generation/** - Bulk lesson seeding (admin-only)
+- **generate-custom-lesson/** - AI custom lesson generator (rate: 3/day per child)
+- **generate-lesson-content/** - Platform lesson generator (admin-only)
+- **generate-nudges/** - AI-generated engagement nudges
+- **generate-recommendations/** - AI lesson recommendations
+- **generate-platform-images/** - AI image generation
 
-**batch-lesson-generation/** - Bulk lesson seeding
-- Admin-only
-- Generates multiple lessons in one call
-- Model: google/gemini-2.5-pro
+**Analytics & Reporting:**
+- **generate-weekly-reports/** - Automated weekly email reports
+- **track-lesson-analytics/** - Lesson engagement tracking
+- **track-video-analytics/** - Video view tracking
+- **survey-analytics/** - Survey data aggregation
+- **performance-alerts/** - Performance monitoring alerts
+- **analyze-learning-profile/** - Learning profile analysis
 
-**generate-custom-lesson/** - AI custom lesson generator
-- Model: google/gemini-2.5-pro
-- Content moderation check (gemini-2.5-flash)
-- Rate limit: 3/day per child
-- Quota enforcement
+**Account & Data Management:**
+- **delete-child-account/** - COPPA-compliant child account deletion
+- **export-child-data/** - GDPR/COPPA data export
+- **request-lesson-share/** - Lesson sharing workflow
 
-**generate-lesson-content/** - Platform lesson generator
-- Admin-only
-- Structured lesson generation
+**Content Seeding:**
+- **seed-kindergarten-lessons/** - Seed 50 K lessons (admin-only)
+- **seed-grade-2-lessons/** - Seed 50 Grade 2 lessons (admin-only)
+- **seed-lessons/** - Generic lesson seeder (admin-only)
+- **seed-videos/** - Video content seeder
 
-**generate-weekly-reports/** - Automated weekly emails
-- Runs Sunday 8 PM (cron job)
-- Aggregates week's progress
-- Generates insights per child
+**Security & System:**
+- **health-check/** - System health (public, no auth)
+- **verify-recaptcha/** - reCAPTCHA v3 server validation (public)
+- **security-alert/** - Security incident alerts
+- **verify-backups/** - Backup verification
 
-**health-check/** - System health monitoring
-- Public endpoint (no auth)
-- Returns: status, timestamp, version
-
-**request-lesson-share/** - Lesson sharing workflow
-- Changes share_status to 'pending_approval'
-- Creates lesson_reviews record
-- Auto-assigns reviewer
-
-**seed-kindergarten-lessons/** - Seed 50 K lessons
-- Admin-only
-- Reads from docs/kindergarten-lesson-outlines.md
-- Inserts into lessons table
-
-**seed-grade-2-lessons/** - Seed 50 Grade 2 lessons
-- Admin-only
-- Reads from docs/grade-2-lesson-outlines.md
-
-**seed-lessons/** - Generic lesson seeder
-- Admin-only
-- Flexible seeding tool
-
-**track-lesson-analytics/** - Lesson engagement tracking
-- Tracks views, saves, shares
-- Updates lesson_analytics table
-- Awards creator points
-
-**verify-recaptcha/** - reCAPTCHA server-side verification
-- Public endpoint (no auth)
-- Validates reCAPTCHA v3 tokens
-- Returns score (0-1)
+**Interactive Documentation:**
+- API docs available at `/api-docs` (Swagger-style explorer)
+- OpenAPI spec at `/api/openapi.json`
 
 ---
 

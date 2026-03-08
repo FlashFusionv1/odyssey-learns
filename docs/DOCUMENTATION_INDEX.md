@@ -370,10 +370,11 @@ Have suggestions for improving documentation?
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.0 | 2026-03-08 | Added interactive docs site, API explorer, expanded coverage to 80+ docs |
 | 1.0 | 2025-12-30 | Initial complete documentation suite |
 
 ---
 
-**Last Updated**: 2025-12-30  
-**Maintained by**: Odyssey Learns Team  
-**Contact**: docs@odysseylearns.com
+**Last Updated**: 2026-03-08  
+**Maintained by**: Inner Odyssey Development Team  
+**Contact**: docs@innerodyssey.com

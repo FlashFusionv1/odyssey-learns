@@ -48,7 +48,7 @@ A comprehensive K-12 educational platform combining emotional intelligence train
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ and npm
+- Node.js 20+ and npm 10+
 - Git for version control
 - Modern web browser (Chrome, Firefox, Safari, Edge)
 

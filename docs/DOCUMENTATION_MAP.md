@@ -135,9 +135,11 @@ docs/
 | Need | Go To |
 |------|-------|
 | **Browse All Docs** | [/docs](/docs) (searchable documentation site) |
+| **Explore API** | [/api-docs](/api-docs) (interactive API explorer) |
 | Start developing | [DEVELOPER_CHEAT_SHEET.md](./DEVELOPER_CHEAT_SHEET.md) |
 | Understand architecture | [ARCHITECTURE.md](./ARCHITECTURE.md) |
 | Query the database | [API_INTEGRATION.md](./API_INTEGRATION.md) |
+| Edge function reference | [EDGE_FUNCTIONS.md](./EDGE_FUNCTIONS.md) |
 | Add a new component | [COMPONENTS.md](./COMPONENTS.md) |
 | Write tests | [TESTING_GUIDE.md](./TESTING_GUIDE.md) |
 | Fix security issue | [SECURITY.md](./SECURITY.md) |

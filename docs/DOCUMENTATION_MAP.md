@@ -102,12 +102,20 @@ docs/
 ```
 docs/
 ├── ONBOARDING_SYSTEM.md         # User onboarding
-├── EDGE_FUNCTIONS.md            # Backend functions
+├── EDGE_FUNCTIONS.md            # Backend functions (26 functions)
 ├── PWA_SETUP.md                 # PWA configuration
 ├── ROUTING.md                   # Route structure
 └── features/
     └── NARRATION_FEATURE.md     # Voice narration
 ```
+
+### Interactive Documentation
+| Resource | URL | Description |
+|----------|-----|-------------|
+| **Docs Site** | [/docs](/docs) | Searchable documentation with 63+ files |
+| **API Docs** | [/api-docs](/api-docs) | Interactive Swagger-style API explorer |
+| **OpenAPI Spec** | [/api/openapi.json](/api/openapi.json) | Raw OpenAPI 3.1 specification |
+| **TypeScript Types** | `src/types/api.ts` | Auto-generated API request/response types |
 
 ### Project Planning
 ```

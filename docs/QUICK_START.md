@@ -46,7 +46,7 @@ cp .env.example .env
 npm run dev
 ```
 
-Open [http://localhost:8080](http://localhost:8080) in your browser.
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ---
 
@@ -65,7 +65,7 @@ Open [http://localhost:8080](http://localhost:8080) in your browser.
 
 ```bash
 # Development
-npm run dev          # Start dev server (port 8080)
+npm run dev          # Start dev server (port 5173)
 npm run build        # Production build
 npm run preview      # Preview production build
 
@@ -179,12 +179,16 @@ npx playwright test --headed
 - 🔒 Read [SECURITY.md](./SECURITY.md) for security practices
 - 🧪 Read [TESTING_GUIDE.md](./TESTING_GUIDE.md) for testing patterns
 - 📊 Read [DATABASE_SCHEMA.md](./DATABASE_SCHEMA.md) for data model
+- 🔌 Read [EDGE_FUNCTIONS.md](./EDGE_FUNCTIONS.md) for backend functions
+- 📚 Browse the [Searchable Docs Site](/docs) for all documentation
+- 🛠️ Explore the [Interactive API Explorer](/api-docs)
 
 ---
 
 ## Getting Help
 
-- **Docs**: Browse the `docs/` folder
+- **Docs Site**: Browse `/docs` in the app (full-text search)
+- **API Explorer**: Browse `/api-docs` for Edge Function docs
 - **Discord**: Join our community (link in README)
 - **Issues**: Open a GitHub issue for bugs
 

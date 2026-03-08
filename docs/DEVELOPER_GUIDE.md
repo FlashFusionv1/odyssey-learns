@@ -1,13 +1,13 @@
 # Developer Guide
 
-> **Version:** 1.6.0  
-> **Last Updated:** 2026-01-17
+> **Version:** 2.0.0  
+> **Last Updated:** 2026-03-08
 
 ## Quick Start
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - Git
 - Modern browser (Chrome, Firefox, Safari, Edge)
 
@@ -24,7 +24,7 @@ npm install
 # Start development server
 npm run dev
 
-# Open http://localhost:8080
+# Open http://localhost:5173
 ```
 
 ---
@@ -405,6 +405,11 @@ Required environment variables:
 ## Related Documentation
 
 - [Architecture](./ARCHITECTURE.md)
-- [API Documentation](./API.md)
+- [API Integration](./API_INTEGRATION.md)
+- [Edge Functions](./EDGE_FUNCTIONS.md)
+- [Database Schema](./DATABASE_SCHEMA.md)
 - [Testing Guide](./TESTING.md)
 - [Deployment Guide](./DEPLOYMENT.md)
+- [Security](./SECURITY.md)
+- [Interactive API Explorer](/api-docs)
+- [Searchable Docs Site](/docs)

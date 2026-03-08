@@ -95,6 +95,19 @@ graph TD
 - LessonPerformanceAnalytics.tsx - Student performance
 - StudentPerformanceReport.tsx - Individual reports
 
+**Documentation & API Pages:**
+- DocsPage.tsx - Searchable docs site (/docs)
+- ApiDocs.tsx - Interactive API explorer (/api-docs)
+
+**Additional Pages:**
+- Play.tsx - Play zone with activities
+- KidsRoom.tsx - Virtual room decoration
+- MultiplayerGames.tsx - Multiplayer game lobby
+- Social.tsx - Peer connections
+- TeacherPortal.tsx - Teacher dashboard
+- VideoLibrary.tsx - Video content library
+- VideoPlayer.tsx - Video playback
+
 ---
 
 ### 2. Component Architecture
@@ -136,29 +149,45 @@ graph TD
 - ErrorBoundary.tsx - Global error catcher
 
 **gamification/** - Points and rewards
+- Leaderboard.tsx - Age-adaptive leaderboard
 - LessonTokenDisplay.tsx - Token balance
-- PointCounter.tsx - Point animations
-- ProgressBar.tsx - Progress visualization
-- StreakTracker.tsx - Daily streak display
+
+**games/** - Multiplayer features
+- GameLobby.tsx - Game lobby
+- GameQuestion.tsx - Game question display
+- GameResults.tsx - Game results
+- GameSelector.tsx - Game picker
 
 **layout/** - Page layouts
 - AgeAdaptiveNav.tsx - Age-specific navigation
 - AppLayout.tsx - Main app wrapper
+- LandingNav.tsx - Landing page navigation
+- LandingFooter.tsx - Landing page footer
 - MobileOptimized.tsx - Mobile-first layout
 - Navigation.tsx - Primary navigation
 - ParentLayout.tsx - Parent portal wrapper
 - TopBar.tsx - Header bar
 
 **learning/** - Learning activities
+- AILessonGenerator.tsx - AI lesson creator
 - ChallengeModeToggle.tsx - Difficulty switcher
 - CollaborativeActivity.tsx - Group learning
 - CustomLessonGenerator.tsx - AI lesson creator
 - DigitalNotebook.tsx - Student notes
 - LessonActionButtons.tsx - Lesson controls
+- LessonAudioPlayer.tsx - Audio narration
+- LessonCard.tsx - Lesson display card
+- LessonPreview.tsx - Lesson preview
+- RecommendedLessons.tsx - AI recommendations
 - ReportLessonButton.tsx - Flag content
 - RequestShareButton.tsx - Request approval
 - SafeMarkdown.tsx - Secure markdown renderer
 - ShareLessonModal.tsx - Share dialog
+- TopicSuggestions.tsx - Topic suggestions
+
+**messaging/** - Communication features
+- VideoMessageInbox.tsx - Video messages
+- VideoRecorder.tsx - Record video messages
 
 **monitoring/** - System health
 - HealthStatus.tsx - Status indicator
@@ -167,18 +196,55 @@ graph TD
 **notifications/** - Notification system
 - NotificationBell.tsx - Notification center
 
+**nudges/** - AI-powered nudges
+- NudgeBanner.tsx - Banner nudge display
+- NudgeCard.tsx - Card nudge display
+- NudgeContainer.tsx - Nudge container
+- NudgeModal.tsx - Modal nudge display
+
 **onboarding/** - User onboarding
+- ChildOnboardingTutorial.tsx - Child-specific tutorial
+- DeferredSetupBanner.tsx - Setup reminder
+- FeatureSpotlight.tsx - Feature highlight
+- HelpButton.tsx - Contextual help
+- OnboardingProvider.tsx - Onboarding state
 - OnboardingTutorial.tsx - Guided tour
+- QuickStartWizard.tsx - Quick setup
 
 **parent/** - Parent dashboard widgets
 - AIInsights.tsx - AI-generated insights
 - BonusLessonManager.tsx - Grant bonus lessons
+- DataExportManager.tsx - Data export (GDPR/COPPA)
+- DeleteChildAccount.tsx - Account deletion
+- EngagementScoreCard.tsx - Engagement metrics
+- LiveActivityFeed.tsx - Real-time activity
 - ParentChildMessaging.tsx - In-app messaging
+- ParentNotificationCenter.tsx - Notification hub
+- PeerConnectionApprovals.tsx - Friend approvals
 - PendingShareApprovals.tsx - Approve lesson shares
 - RewardManagement.tsx - Create rewards
 - RewardRedemptions.tsx - Approve redemptions
 - ScreenTimeTracker.tsx - Screen time tracking
 - WeeklyReportCard.tsx - Weekly summary
+
+**play/** - Play zone activities
+- ActivityCard.tsx - Activity display
+- ActivityPlayer.tsx - Activity player
+- CalmZone.tsx - Relaxation activities
+- ContentTypeFilter.tsx - Content filter
+
+**progress/** - Progress analytics
+- AchievementTimeline.tsx - Achievement history
+- ActivityTrendChart.tsx - Activity trends
+- EngagementOverview.tsx - Engagement metrics
+- LearningProfileCard.tsx - Learning profile
+- SkillMasteryGrid.tsx - Skill mastery
+- SubjectProgressChart.tsx - Subject progress
+
+**pwa/** - Progressive Web App
+- PWAInstallPrompt.tsx - Install prompt
+- PWASettingsCard.tsx - PWA settings
+- PWAUpdatePrompt.tsx - Update notification
 
 **quests/** - Daily quest system
 - DailyQuest.tsx - Base quest component
@@ -187,50 +253,94 @@ graph TD
 - Middle68Quest.tsx - 6-8 age tier
 - High912Quest.tsx - 9-12 age tier
 
+**room/** - Virtual room
+- DecorationShop.tsx - Buy decorations
+- RoomDisplay.tsx - Room renderer
+
 **social/** - Social features
 - PeerConnections.tsx - Friend system logic
 - PeerConnectionsUI.tsx - Friend list UI
 - SharedActivities.tsx - Group activity logic
 - SharedActivitiesUI.tsx - Group activity UI
 
+**teacher/** - Teacher portal
+- AssignmentManager.tsx - Assignment CRUD
+- ClassAnalytics.tsx - Class metrics
+- ClassManagement.tsx - Class/roster management
+- TeacherDashboard.tsx - Teacher home
+- TeacherOnboarding.tsx - Teacher setup
+
+**video/** - Video features
+- VideoLessonCard.tsx - Video lesson card
+- VideoPlayer.tsx - Video playback
+
+**docs/** - Documentation site
+- DocsHome.tsx - Docs landing
+- DocsSidebar.tsx - Category navigation
+- DocsViewer.tsx - Markdown renderer
+
+**ai-tutor/** - AI tutoring
+- AITutorButton.tsx - Trigger button
+- AITutorChat.tsx - Chat interface
+
 **ui/** - shadcn/ui components (50+ components)
 - button.tsx, card.tsx, dialog.tsx, etc.
-- Custom: back-button.tsx, loading-spinner.tsx, password-input.tsx, progress-ring.tsx, subject-badge.tsx
+- Custom: back-button.tsx, loading-spinner.tsx, password-input.tsx, progress-ring.tsx, subject-badge.tsx, stat-card.tsx, status-badge.tsx, feature-card.tsx
 
 ---
 
 ### 3. Business Logic Layer (src/lib/, src/hooks/)
 
-**Custom Hooks:**
+**Custom Hooks (25+ hooks):**
 
 **useAuth.tsx** - Authentication state management
-- Manages user session
-- Provides signUp(), signIn(), signOut()
-- Auto-refreshes tokens
+- Manages user session, signUp(), signIn(), signOut()
+- Auto-refreshes tokens, admin role detection
 
 **useValidatedChild.tsx** - Secure child selection
 - Server-side validation via RLS
 - Prevents localStorage spoofing attacks
-- Auto-corrects invalid selections
 
 **usePlatformLessonQuota.tsx** - Daily lesson quota
-- Checks base limit (5/day)
-- Includes bonus lessons
-- Includes tokens (3/week)
+- Checks base limit (5/day), bonus lessons, tokens (3/week)
 
 **useLessonAnalytics.ts** - Lesson engagement tracking
-- Tracks views, saves, shares
-- Calculates engagement score
 
-**useRecaptcha.tsx** - reCAPTCHA integration
-- Invisible reCAPTCHA v3
-- Score-based verification
+**useRecaptcha.tsx** - reCAPTCHA v3 integration
+
+**useAINudges.tsx** - AI-powered engagement nudges
+
+**useChildProgressAnalytics.tsx** - Progress analytics data
+
+**useChildRoom.tsx** - Virtual room state management
+
+**useEngagementScore.tsx** - Engagement metric calculation
+
+**useLearningProfile.tsx** - Learning profile data
+
+**useMultiplayerGame.tsx** - Multiplayer game state
+
+**useNarration.ts** - Voice narration controls
+
+**useOnboarding.tsx** - Onboarding flow state
+
+**usePWA.tsx** - Progressive Web App lifecycle
+
+**useRealtimeMessages.tsx** - Real-time messaging
+
+**useRealtimePresence.tsx** - User presence tracking
+
+**useRealtimeProgress.tsx** - Live progress updates
+
+**useRecommendations.tsx** - AI-powered lesson recommendations
+
+**useSessionTimeout.tsx** - Session management
+
+**useVideoMessages.tsx** - Video messaging
 
 **use-mobile.tsx** - Responsive breakpoints
-- Detects mobile viewport
 
 **use-toast.ts** - Toast notifications
-- Global notification system
 
 ---
 
@@ -339,64 +449,46 @@ type Lesson = Database['public']['Tables']['lessons']['Row'];
 
 ### 5. Backend Layer (supabase/functions/)
 
-**Edge Functions:**
+**Edge Functions (26 total):**
 
-**ai-insights/** - AI-powered parent insights
-- Model: google/gemini-2.5-pro
-- Analyzes recent activity, emotions, performance
-- Generates personalized insights
+**AI & Content Generation:**
+- **ai-insights/** - AI-powered parent insights (gemini-2.5-pro)
+- **ai-tutor/** - Interactive AI tutor chatbot
+- **batch-lesson-generation/** - Bulk lesson seeding (admin-only)
+- **generate-custom-lesson/** - AI custom lesson generator (rate: 3/day per child)
+- **generate-lesson-content/** - Platform lesson generator (admin-only)
+- **generate-nudges/** - AI-generated engagement nudges
+- **generate-recommendations/** - AI lesson recommendations
+- **generate-platform-images/** - AI image generation
 
-**batch-lesson-generation/** - Bulk lesson seeding
-- Admin-only
-- Generates multiple lessons in one call
-- Model: google/gemini-2.5-pro
+**Analytics & Reporting:**
+- **generate-weekly-reports/** - Automated weekly email reports
+- **track-lesson-analytics/** - Lesson engagement tracking
+- **track-video-analytics/** - Video view tracking
+- **survey-analytics/** - Survey data aggregation
+- **performance-alerts/** - Performance monitoring alerts
+- **analyze-learning-profile/** - Learning profile analysis
 
-**generate-custom-lesson/** - AI custom lesson generator
-- Model: google/gemini-2.5-pro
-- Content moderation check (gemini-2.5-flash)
-- Rate limit: 3/day per child
-- Quota enforcement
+**Account & Data Management:**
+- **delete-child-account/** - COPPA-compliant child account deletion
+- **export-child-data/** - GDPR/COPPA data export
+- **request-lesson-share/** - Lesson sharing workflow
 
-**generate-lesson-content/** - Platform lesson generator
-- Admin-only
-- Structured lesson generation
+**Content Seeding:**
+- **seed-kindergarten-lessons/** - Seed 50 K lessons (admin-only)
+- **seed-grade-2-lessons/** - Seed 50 Grade 2 lessons (admin-only)
+- **seed-lessons/** - Generic lesson seeder (admin-only)
+- **seed-videos/** - Video content seeder
 
-**generate-weekly-reports/** - Automated weekly emails
-- Runs Sunday 8 PM (cron job)
-- Aggregates week's progress
-- Generates insights per child
+**Security & System:**
+- **health-check/** - System health (public, no auth)
+- **verify-recaptcha/** - reCAPTCHA v3 server validation (public)
+- **security-alert/** - Security incident alerts
+- **verify-backups/** - Backup verification
 
-**health-check/** - System health monitoring
-- Public endpoint (no auth)
-- Returns: status, timestamp, version
-
-**request-lesson-share/** - Lesson sharing workflow
-- Changes share_status to 'pending_approval'
-- Creates lesson_reviews record
-- Auto-assigns reviewer
-
-**seed-kindergarten-lessons/** - Seed 50 K lessons
-- Admin-only
-- Reads from docs/kindergarten-lesson-outlines.md
-- Inserts into lessons table
-
-**seed-grade-2-lessons/** - Seed 50 Grade 2 lessons
-- Admin-only
-- Reads from docs/grade-2-lesson-outlines.md
-
-**seed-lessons/** - Generic lesson seeder
-- Admin-only
-- Flexible seeding tool
-
-**track-lesson-analytics/** - Lesson engagement tracking
-- Tracks views, saves, shares
-- Updates lesson_analytics table
-- Awards creator points
-
-**verify-recaptcha/** - reCAPTCHA server-side verification
-- Public endpoint (no auth)
-- Validates reCAPTCHA v3 tokens
-- Returns score (0-1)
+**Interactive Documentation:**
+- API docs available at `/api-docs` (Swagger-style explorer)
+- OpenAPI spec at `/api/openapi.json`
 
 ---
 
